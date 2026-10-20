@@ -143,11 +143,10 @@
       color: var(--chip-text, #451a03);
     }
 
-    /* Distinct source calendar styling */
-    .cal-theme-0 { border-left-color: #2563eb; background-color: #eff6ff; color: #1e3a8a; } /* Blue (Personal) */
-    .cal-theme-1 { border-left-color: #ea580c; background-color: #fff7ed; color: #7c2d12; } /* Orange/Warm (Kayla) */
-    .cal-theme-2 { border-left-color: #9333ea; background-color: #faf5ff; color: #581c87; } /* Purple (Wedding) */
-    .cal-theme-3 { border-left-color: #059669; background-color: #ecfdf5; color: #064e3b; } /* Emerald (Other) */
+    .cal-theme-0 { border-left-color: #2563eb; background-color: #eff6ff; color: #1e3a8a; }
+    .cal-theme-1 { border-left-color: #ea580c; background-color: #fff7ed; color: #7c2d12; }
+    .cal-theme-2 { border-left-color: #9333ea; background-color: #faf5ff; color: #581c87; }
+    .cal-theme-3 { border-left-color: #059669; background-color: #ecfdf5; color: #064e3b; }
 
     ::-webkit-scrollbar { width: 4px; height: 4px; }
     ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 9999px; }
@@ -155,7 +154,6 @@
 </head>
 <body>
 
-  <!-- Top Display & Wall Bar -->
   <header class="w-full max-w-[1440px] flex flex-wrap items-center justify-between gap-3 bg-zinc-900/90 text-zinc-100 px-4 py-2.5 rounded-full mb-3 backdrop-blur-md border border-zinc-800 text-xs sm:text-sm z-30 shadow-lg">
     <div class="flex items-center gap-3">
       <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
@@ -184,17 +182,10 @@
     </div>
   </header>
 
-  <!-- Main Wall Calendar Display Container -->
   <main class="calendar-frame" id="wallCalendarStage">
     <div class="flex flex-col min-w-0 bg-[var(--paper-bg)]">
-      
-      <!-- Top Illustrated Seasonal Banner (Full vector art restored) -->
       <div class="relative w-full h-[220px] sm:h-[240px] overflow-hidden select-none border-b-2 border-[var(--grid-border)]" id="bannerContainer"></div>
-
-      <!-- Sunday-First Weekdays Header Strip -->
       <div class="weekday-strip" id="weekdayRow"></div>
-
-      <!-- 7 Columns x 5 Rows Days Grid -->
       <div class="month-matrix" id="daysGrid"></div>
 
       <div class="px-6 py-2 flex justify-between items-center text-xs opacity-75 font-semibold" style="color: var(--theme-ink);">
@@ -203,7 +194,6 @@
       </div>
     </div>
 
-    <!-- Side Agenda Panel -->
     <aside class="border-t-[3px] lg:border-t-0 lg:border-l-[3px] border-[var(--board-border)] p-5 flex flex-col bg-[var(--agenda-bg,var(--paper-bg))]" id="agendaSidebar">
       <div class="pb-3 border-b-2 border-[var(--grid-border)] mb-4 flex items-baseline justify-between">
         <div>
@@ -218,369 +208,210 @@
   </main>
 
   <script>
-    // -------------------------------------------------------------
-    // Live Cloudflare Worker Proxy Endpoint
-    // -------------------------------------------------------------
     const PROXY_URL = "https://calendar-proxy.mvgrosskreuz.workers.dev";
 
-    /* =========================================================================
-       THEME DEFINITIONS WITH COMPLETE SVG ARTWORK
-       ========================================================================= */
     const THEMES = {
-      october: {
-        id: "october",
-        name: "🎃 October Halloween (Spooky Harvest)",
-        monthIndex: 9,
-        fonts: {
-          title: "'Caveat', cursive",
-          accent: "'Patrick Hand', cursive",
-          body: "'Patrick Hand', cursive, sans-serif"
-        },
-        palette: {
-          screenBackdrop: "#16120e",
-          paperBg: "#fffcf4",
-          agendaBg: "#faf4e8",
-          boardBorder: "#271b12",
-          gridBorder: "#271b12",
-          themeInk: "#261a11",
-          cellBg: "#ffffff",
-          cellMutedBg: "rgba(247, 240, 226, 0.45)",
-          cellTodayBg: "#fff7ed",
-          todayAccent: "#ea580c",
-          dayNumColor: "#1f150e",
-          chipBg: "#fef3c7",
-          chipText: "#451a03",
-          chipBorder: "#d97706"
-        },
-        weekdayColors: [
-          { name: "SUN", bg: "#fca679", text: "#6b240c" },
-          { name: "MON", bg: "#d8cce4", text: "#3b2259" },
-          { name: "TUE", bg: "#f7b988", text: "#78350f" },
-          { name: "WED", bg: "#bee3c8", text: "#1e3a2b" },
-          { name: "THU", bg: "#e0cdf7", text: "#432b68" },
-          { name: "FRI", bg: "#fed7aa", text: "#7c2d12" },
-          { name: "SAT", bg: "#c5d2c1", text: "#2a3e2a" }
-        ],
+      0: {
+        name: "❄️ January (Frost & Pine)",
+        fonts: { title: "'Mountains of Christmas', cursive", accent: "'Cinzel', serif", body: "'Source Sans 3', sans-serif" },
+        palette: { screenBackdrop: "#0b1520", paperBg: "#f5f9fc", agendaBg: "#ebf2f7", boardBorder: "#192e40", gridBorder: "#1d364b", themeInk: "#0f2333", cellBg: "#ffffff", cellMutedBg: "rgba(224, 236, 245, 0.45)", cellTodayBg: "#e0f2fe", todayAccent: "#0284c7", dayNumColor: "#082f49", chipBg: "#e0f2fe", chipText: "#0369a1", chipBorder: "#0284c7" },
+        weekdayColors: [{name:"SUN",bg:"#93c5fd",text:"#1e3a8a"},{name:"MON",bg:"#e2e8f0",text:"#334155"},{name:"TUE",bg:"#e2e8f0",text:"#334155"},{name:"WED",bg:"#bae6fd",text:"#0369a1"},{name:"THU",bg:"#e2e8f0",text:"#334155"},{name:"FRI",bg:"#e2e8f0",text:"#334155"},{name:"SAT",bg:"#cbd5e1",text:"#1e293b"}],
+        footerNote: "❄️ Winter Frost Edition",
+        renderBanner: (m, y) => `
+          <svg class="absolute inset-0 w-full h-full" viewBox="0 0 1200 240" fill="none" preserveAspectRatio="xMidYMid slice">
+            <rect width="100%" height="100%" fill="#edf5fa"/>
+            <path d="M0 240 Q300 160 600 210 Q900 170 1200 240 Z" fill="#d9e9f2"/>
+            <g transform="translate(140, 50)"><polygon points="50,20 15,90 85,90" fill="#1e3a5f"/><polygon points="50,60 5,140 95,140" fill="#2d4f7c"/><rect x="42" y="140" width="16" height="24" fill="#3e2723"/></g>
+            <g transform="translate(980, 60)"><polygon points="40,25 15,85 65,85" fill="#1e3a5f"/><polygon points="40,65 5,130 75,130" fill="#2d4f7c"/><rect x="34" y="130" width="12" height="20" fill="#3e2723"/></g>
+            <circle cx="350" cy="60" r="3" fill="#94a3b8"/><circle cx="850" cy="70" r="4" fill="#94a3b8"/><circle cx="500" cy="40" r="2.5" fill="#94a3b8"/>
+          </svg>
+          <div class="relative z-10 flex flex-col items-center justify-center text-center h-full"><h1 class="text-7xl sm:text-8xl md:text-9xl text-[#0c4a6e] font-bold" style="font-family: 'Mountains of Christmas', cursive;">${m}</h1><p class="text-xl sm:text-2xl tracking-[0.25em] text-[#0369a1] font-bold mt-1" style="font-family: 'Cinzel', serif;">${y}</p></div>`
+      },
+      1: {
+        name: "💖 February (Rose & Cozy Hearth)",
+        fonts: { title: "'Playfair Display', serif", accent: "'Caveat', cursive", body: "'Source Sans 3', sans-serif" },
+        palette: { screenBackdrop: "#1c0d12", paperBg: "#fff9fa", agendaBg: "#fcf0f2", boardBorder: "#4a1926", gridBorder: "#52212d", themeInk: "#380d17", cellBg: "#ffffff", cellMutedBg: "rgba(247, 228, 233, 0.45)", cellTodayBg: "#ffe4e6", todayAccent: "#e11d48", dayNumColor: "#4c0519", chipBg: "#ffe4e6", chipText: "#881337", chipBorder: "#f43f5e" },
+        weekdayColors: [{name:"SUN",bg:"#fda4af",text:"#881337"},{name:"MON",bg:"#fecdd3",text:"#9f1239"},{name:"TUE",bg:"#fce7f3",text:"#831843"},{name:"WED",bg:"#fed7aa",text:"#7c2d12"},{name:"THU",bg:"#fecdd3",text:"#9f1239"},{name:"FRI",bg:"#f43f5e",text:"#ffffff"},{name:"SAT",bg:"#fecdd3",text:"#9f1239"}],
+        footerNote: "💖 Hearth & Valentine Edition",
+        renderBanner: (m, y) => `
+          <svg class="absolute inset-0 w-full h-full" viewBox="0 0 1200 240" fill="none" preserveAspectRatio="xMidYMid slice">
+            <rect width="100%" height="100%" fill="#fff1f2"/>
+            <path d="M150 90 C150 70 170 50 190 70 C210 50 230 70 230 90 C230 130 190 150 190 160 C190 150 150 130 150 90 Z" fill="#fda4af" opacity="0.7"/>
+            <path d="M970 80 C970 65 985 50 1000 65 C1015 50 1030 65 1030 80 C1030 110 1000 125 1000 135 C1000 125 970 110 970 80 Z" fill="#fda4af" opacity="0.6"/>
+          </svg>
+          <div class="relative z-10 flex flex-col items-center justify-center text-center h-full"><h1 class="text-6xl sm:text-7xl md:text-8xl text-[#881337] font-bold" style="font-family: 'Playfair Display', serif;">${m}</h1><p class="text-2xl sm:text-3xl font-bold tracking-widest text-[#be123c] mt-2" style="font-family: 'Caveat', cursive;">${y}</p></div>`
+      },
+      2: {
+        name: "🍀 March (Clover & Emerald Meadow)",
+        fonts: { title: "'Caveat', cursive", accent: "'Patrick Hand', cursive", body: "'Source Sans 3', sans-serif" },
+        palette: { screenBackdrop: "#0b1c11", paperBg: "#f7fcf8", agendaBg: "#eff8f1", boardBorder: "#143a21", gridBorder: "#184527", themeInk: "#0e2917", cellBg: "#ffffff", cellMutedBg: "rgba(225, 242, 229, 0.45)", cellTodayBg: "#dcfce7", todayAccent: "#16a34a", dayNumColor: "#14532d", chipBg: "#dcfce7", chipText: "#14532d", chipBorder: "#16a34a" },
+        weekdayColors: [{name:"SUN",bg:"#86efac",text:"#14532d"},{name:"MON",bg:"#bbf7d0",text:"#166534"},{name:"TUE",bg:"#dcfce7",text:"#14532d"},{name:"WED",bg:"#bbf7d0",text:"#166534"},{name:"THU",bg:"#dcfce7",text:"#14532d"},{name:"FRI",bg:"#22c55e",text:"#ffffff"},{name:"SAT",bg:"#86efac",text:"#14532d"}],
+        footerNote: "🍀 Emerald Spring Meadow Edition",
+        renderBanner: (m, y) => `
+          <svg class="absolute inset-0 w-full h-full" viewBox="0 0 1200 240" fill="none" preserveAspectRatio="xMidYMid slice">
+            <rect width="100%" height="100%" fill="#f0fdf4"/>
+            <path d="M-20 240 Q300 170 600 210 Q900 180 1220 240 Z" fill="#dcfce7"/>
+            <g transform="translate(180, 80)"><circle cx="30" cy="30" r="15" fill="#4ade80"/><circle cx="50" cy="30" r="15" fill="#4ade80"/><circle cx="40" cy="45" r="15" fill="#4ade80"/><line x1="40" y1="45" x2="40" y2="85" stroke="#15803d" stroke-width="4"/></g>
+            <g transform="translate(980, 70)"><circle cx="25" cy="25" r="12" fill="#4ade80"/><circle cx="42" cy="25" r="12" fill="#4ade80"/><circle cx="33" cy="38" r="12" fill="#4ade80"/><line x1="33" y1="38" x2="33" y2="75" stroke="#15803d" stroke-width="3"/></g>
+          </svg>
+          <div class="relative z-10 flex flex-col items-center justify-center text-center h-full"><h1 class="text-7xl sm:text-8xl md:text-9xl text-[#14532d]" style="font-family: 'Caveat', cursive;">${m}</h1><div class="text-2xl sm:text-3xl font-bold tracking-widest text-[#15803d] mt-1" style="font-family: 'Patrick Hand', cursive;">✦ ${y} ✦</div></div>`
+      },
+      3: {
+        name: "🌧️ April (Spring Rain & Fresh Sprout)",
+        fonts: { title: "'Playfair Display', serif", accent: "'Comfortaa', cursive", body: "'Source Sans 3', sans-serif" },
+        palette: { screenBackdrop: "#111827", paperBg: "#f8fafc", agendaBg: "#f1f5f9", boardBorder: "#1e293b", gridBorder: "#334155", themeInk: "#0f172a", cellBg: "#ffffff", cellMutedBg: "rgba(226, 232, 240, 0.45)", cellTodayBg: "#e0f2fe", todayAccent: "#0284c7", dayNumColor: "#0f172a", chipBg: "#e0f2fe", chipText: "#0369a1", chipBorder: "#38bdf8" },
+        weekdayColors: [{name:"SUN",bg:"#7dd3fc",text:"#0369a1"},{name:"MON",bg:"#bae6fd",text:"#0284c7"},{name:"TUE",bg:"#e2e8f0",text:"#334155"},{name:"WED",bg:"#bae6fd",text:"#0284c7"},{name:"THU",bg:"#e2e8f0",text:"#334155"},{name:"FRI",bg:"#fed7aa",text:"#7c2d12"},{name:"SAT",bg:"#cbd5e1",text:"#1e293b"}],
+        footerNote: "🌧️ April Showers & Renewal Edition",
+        renderBanner: (m, y) => `
+          <svg class="absolute inset-0 w-full h-full" viewBox="0 0 1200 240" fill="none" preserveAspectRatio="xMidYMid slice">
+            <rect width="100%" height="100%" fill="#f1f5f9"/>
+            <path d="M120 70 Q160 30 200 65 Q230 40 260 70 Q280 90 260 115 L140 115 Q110 100 120 70 Z" fill="#cbd5e1"/>
+            <line x1="160" y1="130" x2="150" y2="155" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="190" y1="135" x2="180" y2="160" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="220" y1="130" x2="210" y2="155" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M960 70 Q990 40 1020 65 Q1040 50 1060 70 Q1075 90 1060 110 L970 110 Q950 95 960 70 Z" fill="#cbd5e1"/>
+            <line x1="990" y1="125" x2="980" y2="150" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="1020" y1="125" x2="1010" y2="150" stroke="#38bdf8" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+          <div class="relative z-10 flex flex-col items-center justify-center text-center h-full"><h1 class="text-6xl sm:text-7xl md:text-8xl text-[#0f172a] font-bold" style="font-family: 'Playfair Display', serif;">${m}</h1><p class="text-lg sm:text-xl tracking-[0.25em] uppercase text-[#0284c7] font-semibold mt-1" style="font-family: 'Comfortaa', cursive;">${y}</p></div>`
+      },
+      4: {
+        name: "🌿 May (Botanical Blossom & Peony)",
+        fonts: { title: "'Playfair Display', serif", accent: "'Comfortaa', cursive", body: "'Source Sans 3', sans-serif" },
+        palette: { screenBackdrop: "#111b15", paperBg: "#f6f8f5", agendaBg: "#edf3ee", boardBorder: "#203a2c", gridBorder: "#274736", themeInk: "#1a3526", cellBg: "#ffffff", cellMutedBg: "rgba(227, 237, 230, 0.45)", cellTodayBg: "#f0fdf4", todayAccent: "#16a34a", dayNumColor: "#143823", chipBg: "#dcfce7", chipText: "#14532d", chipBorder: "#22c55e" },
+        weekdayColors: [{name:"SUN",bg:"#fbcfe8",text:"#831843"},{name:"MON",bg:"#dcfce7",text:"#14532d"},{name:"TUE",bg:"#e2e8f0",text:"#334155"},{name:"WED",bg:"#d1fae5",text:"#065f46"},{name:"THU",bg:"#e2e8f0",text:"#334155"},{name:"FRI",bg:"#fef08a",text:"#713f12"},{name:"SAT",bg:"#e0e7ff",text:"#3730a3"}],
+        footerNote: "🌿 Botanical Blossom & Garden Edition",
+        renderBanner: (m, y) => `
+          <svg class="absolute inset-0 w-full h-full" viewBox="0 0 1200 240" fill="none" preserveAspectRatio="xMidYMid slice">
+            <rect width="100%" height="100%" fill="#f4f8f4"/>
+            <path d="M-20 80 Q200 140 400 60 Q600 0 800 60 Q1000 140 1220 80" stroke="#22543d" stroke-width="3" fill="none"/>
+            <g transform="translate(120, 60)"><circle cx="20" cy="30" r="14" fill="#a7f3d0" stroke="#1b4332" stroke-width="2"/><circle cx="65" cy="40" r="16" fill="#fbcfe8" stroke="#831843" stroke-width="2"/><circle cx="65" cy="40" r="5" fill="#fde047"/></g>
+            <g transform="translate(950, 60)"><circle cx="20" cy="40" r="16" fill="#fbcfe8" stroke="#831843" stroke-width="2"/><circle cx="50" cy="20" r="13" fill="#a7f3d0" stroke="#1b4332" stroke-width="2"/></g>
+          </svg>
+          <div class="relative z-10 flex flex-col items-center justify-center text-center h-full"><h1 class="text-6xl sm:text-7xl md:text-8xl text-[#1a4329] font-bold" style="font-family: 'Playfair Display', serif;">${m}</h1><p class="text-lg sm:text-xl tracking-[0.25em] uppercase text-[#2d6a4f] font-semibold mt-1" style="font-family: 'Comfortaa', cursive;">${y}</p></div>`
+      },
+      5: {
+        name: "☀️ June (Sunny Solstice & Meadow)",
+        fonts: { title: "'Caveat', cursive", accent: "'Patrick Hand', cursive", body: "'Source Sans 3', sans-serif" },
+        palette: { screenBackdrop: "#1c1809", paperBg: "#fffef7", agendaBg: "#fef9e7", boardBorder: "#3d3209", gridBorder: "#4a3c0a", themeInk: "#292104", cellBg: "#ffffff", cellMutedBg: "rgba(254, 243, 199, 0.35)", cellTodayBg: "#fef3c7", todayAccent: "#f59e0b", dayNumColor: "#451a03", chipBg: "#fef3c7", chipText: "#78350f", chipBorder: "#f59e0b" },
+        weekdayColors: [{name:"SUN",bg:"#fde047",text:"#713f12"},{name:"MON",bg:"#fef08a",text:"#713f12"},{name:"TUE",bg:"#fed7aa",text:"#7c2d12"},{name:"WED",bg:"#fef08a",text:"#713f12"},{name:"THU",bg:"#fed7aa",text:"#7c2d12"},{name:"FRI",bg:"#fde047",text:"#713f12"},{name:"SAT",bg:"#fef08a",text:"#713f12"}],
+        footerNote: "☀️ Bright Midsummer Solstice Edition",
+        renderBanner: (m, y) => `
+          <svg class="absolute inset-0 w-full h-full" viewBox="0 0 1200 240" fill="none" preserveAspectRatio="xMidYMid slice">
+            <rect width="100%" height="100%" fill="#fffde6"/>
+            <circle cx="600" cy="120" r="130" fill="#fef08a" opacity="0.6"/>
+            <circle cx="160" cy="80" r="45" fill="#facc15" opacity="0.8"/>
+            <circle cx="1020" cy="80" r="45" fill="#facc15" opacity="0.8"/>
+          </svg>
+          <div class="relative z-10 flex flex-col items-center justify-center text-center h-full"><h1 class="text-7xl sm:text-8xl md:text-9xl text-[#713f12]" style="font-family: 'Caveat', cursive;">${m}</h1><div class="text-2xl sm:text-3xl font-bold tracking-widest text-[#b45309] mt-1" style="font-family: 'Patrick Hand', cursive;">✦ ${y} ✦</div></div>`
+      },
+      6: {
+        name: "🎆 July (Starlight & Summer Night)",
+        fonts: { title: "'Cinzel', serif", accent: "'Source Sans 3', sans-serif", body: "'Source Sans 3', sans-serif" },
+        palette: { screenBackdrop: "#0a0e1a", paperBg: "#f8fafc", agendaBg: "#f1f5f9", boardBorder: "#1e293b", gridBorder: "#27354a", themeInk: "#0f172a", cellBg: "#ffffff", cellMutedBg: "rgba(226, 232, 240, 0.45)", cellTodayBg: "#e0e7ff", todayAccent: "#4338ca", dayNumColor: "#1e1b4b", chipBg: "#e0e7ff", chipText: "#312e81", chipBorder: "#6366f1" },
+        weekdayColors: [{name:"SUN",bg:"#fca5a5",text:"#7f1d1d"},{name:"MON",bg:"#e2e8f0",text:"#334155"},{name:"TUE",bg:"#e2e8f0",text:"#334155"},{name:"WED",bg:"#e2e8f0",text:"#334155"},{name:"THU",bg:"#93c5fd",text:"#1e3a8a"},{name:"FRI",bg:"#e2e8f0",text:"#334155"},{name:"SAT",bg:"#cbd5e1",text:"#1e293b"}],
+        footerNote: "🎆 Independence & Starlight Summer Edition",
+        renderBanner: (m, y) => `
+          <svg class="absolute inset-0 w-full h-full" viewBox="0 0 1200 240" fill="none" preserveAspectRatio="xMidYMid slice">
+            <rect width="100%" height="100%" fill="#f1f5f9"/>
+            <g transform="translate(180, 80)"><circle cx="0" cy="0" r="3" fill="#ef4444"/><line x1="0" y1="0" x2="-20" y2="-20" stroke="#ef4444" stroke-width="2"/><line x1="0" y1="0" x2="20" y2="-20" stroke="#3b82f6" stroke-width="2"/><line x1="0" y1="0" x2="0" y2="25" stroke="#eab308" stroke-width="2"/></g>
+            <g transform="translate(1000, 70)"><circle cx="0" cy="0" r="3" fill="#3b82f6"/><line x1="0" y1="0" x2="-18" y2="-18" stroke="#3b82f6" stroke-width="2"/><line x1="0" y1="0" x2="18" y2="-18" stroke="#ef4444" stroke-width="2"/><line x1="0" y1="0" x2="0" y2="22" stroke="#eab308" stroke-width="2"/></g>
+          </svg>
+          <div class="relative z-10 flex flex-col items-center justify-center text-center h-full"><h1 class="text-6xl sm:text-7xl md:text-8xl text-[#1e1b4b] font-bold" style="font-family: 'Cinzel', serif;">${m}</h1><p class="text-xl sm:text-2xl tracking-[0.3em] uppercase text-[#4338ca] font-semibold mt-1">${y}</p></div>`
+      },
+      7: {
+        name: "🌻 August (Golden Sunflower & Wheat)",
+        fonts: { title: "'Playfair Display', serif", accent: "'Cinzel', serif", body: "'Source Sans 3', sans-serif" },
+        palette: { screenBackdrop: "#1c1409", paperBg: "#fffdf5", agendaBg: "#faf3e6", boardBorder: "#452d10", gridBorder: "#523714", themeInk: "#38230b", cellBg: "#ffffff", cellMutedBg: "rgba(250, 237, 212, 0.45)", cellTodayBg: "#fef3c7", todayAccent: "#d97706", dayNumColor: "#451a03", chipBg: "#fef3c7", chipText: "#78350f", chipBorder: "#d97706" },
+        weekdayColors: [{name:"SUN",bg:"#fbbf24",text:"#78350f"},{name:"MON",bg:"#fed7aa",text:"#7c2d12"},{name:"TUE",bg:"#fef08a",text:"#713f12"},{name:"WED",bg:"#fed7aa",text:"#7c2d12"},{name:"THU",bg:"#fef08a",text:"#713f12"},{name:"FRI",bg:"#fbbf24",text:"#78350f"},{name:"SAT",bg:"#fed7aa",text:"#7c2d12"}],
+        footerNote: "🌻 Golden Sunflower Harvest Edition",
+        renderBanner: (m, y) => `
+          <svg class="absolute inset-0 w-full h-full" viewBox="0 0 1200 240" fill="none" preserveAspectRatio="xMidYMid slice">
+            <rect width="100%" height="100%" fill="#fffbeb"/>
+            <g transform="translate(180, 70)"><circle cx="40" cy="40" r="30" fill="#f59e0b"/><circle cx="40" cy="40" r="16" fill="#78350f"/><line x1="40" y1="70" x2="40" y2="130" stroke="#65a30d" stroke-width="4"/></g>
+            <g transform="translate(980, 80)"><circle cx="35" cy="35" r="26" fill="#f59e0b"/><circle cx="35" cy="35" r="14" fill="#78350f"/><line x1="35" y1="61" x2="35" y2="120" stroke="#65a30d" stroke-width="4"/></g>
+          </svg>
+          <div class="relative z-10 flex flex-col items-center justify-center text-center h-full"><h1 class="text-6xl sm:text-7xl md:text-8xl text-[#451a03] font-bold" style="font-family: 'Playfair Display', serif;">${m}</h1><p class="text-xl sm:text-2xl tracking-[0.25em] uppercase text-[#b45309] font-semibold mt-1" style="font-family: 'Cinzel', serif;">${y}</p></div>`
+      },
+      8: {
+        name: "🍎 September (Late Summer Orchard)",
+        fonts: { title: "'Caveat', cursive", accent: "'Patrick Hand', cursive", body: "'Source Sans 3', sans-serif" },
+        palette: { screenBackdrop: "#1c110e", paperBg: "#fffbf5", agendaBg: "#faf0e6", boardBorder: "#3d2216", gridBorder: "#4a2a1c", themeInk: "#2b170e", cellBg: "#ffffff", cellMutedBg: "rgba(247, 231, 218, 0.45)", cellTodayBg: "#ffedd5", todayAccent: "#ea580c", dayNumColor: "#431407", chipBg: "#ffedd5", chipText: "#7c2d12", chipBorder: "#ea580c" },
+        weekdayColors: [{name:"SUN",bg:"#fca5a5",text:"#7f1d1d"},{name:"MON",bg:"#fed7aa",text:"#7c2d12"},{name:"TUE",bg:"#fef08a",text:"#713f12"},{name:"WED",bg:"#bbf7d0",text:"#14532d"},{name:"THU",bg:"#fed7aa",text:"#7c2d12"},{name:"FRI",bg:"#ef4444",text:"#ffffff"},{name:"SAT",bg:"#fed7aa",text:"#7c2d12"}],
+        footerNote: "🍎 Apple Orchard & Golden September Edition",
+        renderBanner: (m, y) => `
+          <svg class="absolute inset-0 w-full h-full" viewBox="0 0 1200 240" fill="none" preserveAspectRatio="xMidYMid slice">
+            <rect width="100%" height="100%" fill="#fff7ed"/>
+            <g transform="translate(160, 75)"><circle cx="35" cy="40" r="25" fill="#dc2626"/><rect x="33" y="10" width="4" height="10" fill="#78350f"/></g>
+            <g transform="translate(990, 80)"><circle cx="30" cy="35" r="22" fill="#ea580c"/><rect x="29" y="10" width="3" height="8" fill="#78350f"/></g>
+          </svg>
+          <div class="relative z-10 flex flex-col items-center justify-center text-center h-full"><h1 class="text-7xl sm:text-8xl md:text-9xl text-[#431407]" style="font-family: 'Caveat', cursive;">${m}</h1><div class="text-2xl sm:text-3xl font-bold tracking-widest text-[#c2410c] mt-1" style="font-family: 'Patrick Hand', cursive;">✦ ${y} ✦</div></div>`
+      },
+      9: {
+        name: "🎃 October (Spooky Harvest Halloween)",
+        fonts: { title: "'Caveat', cursive", accent: "'Patrick Hand', cursive", body: "'Patrick Hand', cursive, sans-serif" },
+        palette: { screenBackdrop: "#16120e", paperBg: "#fffcf4", agendaBg: "#faf4e8", boardBorder: "#271b12", gridBorder: "#271b12", themeInk: "#261a11", cellBg: "#ffffff", cellMutedBg: "rgba(247, 240, 226, 0.45)", cellTodayBg: "#fff7ed", todayAccent: "#ea580c", dayNumColor: "#1f150e", chipBg: "#fef3c7", chipText: "#451a03", chipBorder: "#d97706" },
+        weekdayColors: [{name:"SUN",bg:"#fca679",text:"#6b240c"},{name:"MON",bg:"#d8cce4",text:"#3b2259"},{name:"TUE",bg:"#f7b988",text:"#78350f"},{name:"WED",bg:"#bee3c8",text:"#1e3a2b"},{name:"THU",bg:"#e0cdf7",text:"#432b68"},{name:"FRI",bg:"#fed7aa",text:"#7c2d12"},{name:"SAT",bg:"#c5d2c1",text:"#2a3e2a"}],
         footerNote: "🎃 Hand-Drawn Spooky Harvest Edition",
-        renderBanner: (monthName, year) => `
-          <svg class="absolute inset-0 w-full h-full" viewBox="0 0 1200 240" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+        renderBanner: (m, y) => `
+          <svg class="absolute inset-0 w-full h-full" viewBox="0 0 1200 240" fill="none" preserveAspectRatio="xMidYMid slice">
             <defs>
-              <radialGradient id="octMoon" cx="50%" cy="40%" r="55%">
-                <stop offset="0%" stop-color="#fff8db" stop-opacity="0.95"/>
-                <stop offset="60%" stop-color="#ffe699" stop-opacity="0.35"/>
-                <stop offset="100%" stop-color="#fdf6e7" stop-opacity="0"/>
-              </radialGradient>
-              <linearGradient id="treeG" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#3d2314"/><stop offset="100%" stop-color="#24150c"/>
-              </linearGradient>
+              <radialGradient id="octMoon" cx="50%" cy="40%" r="55%"><stop offset="0%" stop-color="#fff8db" stop-opacity="0.95"/><stop offset="60%" stop-color="#ffe699" stop-opacity="0.35"/><stop offset="100%" stop-color="#fdf6e7" stop-opacity="0"/></radialGradient>
+              <linearGradient id="treeG" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3d2314"/><stop offset="100%" stop-color="#24150c"/></linearGradient>
             </defs>
             <rect width="100%" height="100%" fill="#fffbf2"/>
             <circle cx="600" cy="90" r="145" fill="url(#octMoon)"/>
-
             <path d="M-20 0 L70 0 C50 45 90 70 145 75 C105 85 55 110 35 160 C20 110 -10 60 -20 0 Z" fill="url(#treeG)"/>
             <line x1="85" y1="65" x2="85" y2="110" stroke="#221711" stroke-width="2.5"/>
             <rect x="70" y="110" width="30" height="42" rx="4" fill="#2d1c13" stroke="#e08a1e" stroke-width="2"/>
             <rect x="75" y="118" width="20" height="26" rx="2" fill="#ffea75" opacity="0.9"/>
             <circle cx="85" cy="131" r="5" fill="#f97316"/>
-
-            <g transform="translate(130, 68)">
-              <path d="M70 72 L35 -15 Q50 -25 80 -10 L105 72 Z" fill="#2d2238" stroke="#1c1424" stroke-width="3"/>
-              <ellipse cx="70" cy="74" rx="55" ry="14" fill="#261b30" stroke="#1c1424" stroke-width="3"/>
-              <ellipse cx="68" cy="120" rx="46" ry="38" fill="#f97316" stroke="#221711" stroke-width="3.5"/>
-              <ellipse cx="68" cy="120" rx="25" ry="36" fill="#ea580c"/>
-              <polygon points="52,106 60,106 56,98" fill="#221711"/>
-              <polygon points="76,106 84,106 80,98" fill="#221711"/>
-              <path d="M48 126 Q68 144 88 126 Q68 134 48 126 Z" fill="#221711"/>
-            </g>
-
-            <g transform="translate(255, 105)">
-              <ellipse cx="45" cy="85" rx="36" ry="26" fill="#241e2b" stroke="#15101a" stroke-width="3"/>
-              <circle cx="42" cy="46" r="26" fill="#241e2b" stroke="#15101a" stroke-width="3"/>
-              <polygon points="22,34 16,10 34,24" fill="#241e2b" stroke="#15101a" stroke-width="2.5"/>
-              <polygon points="50,24 68,10 62,34" fill="#241e2b" stroke="#15101a" stroke-width="2.5"/>
-              <circle cx="34.5" cy="45" r="4.5" fill="#fbbf24"/>
-              <circle cx="53.5" cy="45" r="4.5" fill="#fbbf24"/>
-              <circle cx="35" cy="45" r="2.5" fill="#18181b"/>
-              <circle cx="54" cy="45" r="2.5" fill="#18181b"/>
-              <polygon points="42,54 45,58 39,58" fill="#f472b6"/>
-              <ellipse cx="98" cy="88" rx="20" ry="16" fill="#fb923c" stroke="#221711" stroke-width="2.5"/>
-            </g>
-
-            <g fill="#211928">
-              <path d="M410 45 Q420 32 430 40 Q436 32 444 38 Q438 48 434 52 Q424 45 410 45 Z"/>
-              <path d="M510 26 Q522 10 534 20 Q542 10 552 18 Q546 30 540 34 Q528 26 510 26 Z" transform="scale(0.85) translate(80, 0)"/>
-              <path d="M720 28 Q730 16 740 22 Q746 16 754 20 Q750 30 746 33 Q736 28 720 28 Z"/>
-            </g>
-
-            <g transform="translate(755, 75)">
-              <path d="M45 40 C45 12 95 12 95 40 C95 85 105 110 88 115 C75 120 70 108 60 115 C50 120 40 105 35 115 C25 105 45 80 45 40 Z" fill="#ffffff" stroke="#221711" stroke-width="3"/>
-              <circle cx="56" cy="48" r="3.5" fill="#1e1b4b"/>
-              <circle cx="76" cy="48" r="3.5" fill="#1e1b4b"/>
-              <ellipse cx="50" cy="54" rx="4" ry="2.5" fill="#f472b6" opacity="0.6"/>
-              <ellipse cx="82" cy="54" rx="4" ry="2.5" fill="#f472b6" opacity="0.6"/>
-              <ellipse cx="66" cy="78" rx="14" ry="12" fill="#f97316" stroke="#221711" stroke-width="2"/>
-            </g>
-
-            <g transform="translate(970, 32)">
-              <path d="M50 180 L50 90 L85 50 L120 90 L120 180 Z" fill="#2d2238" stroke="#15101a" stroke-width="3"/>
-              <path d="M20 180 L20 110 L50 85 L50 180 Z" fill="#241b2e" stroke="#15101a" stroke-width="3"/>
-              <polygon points="85,15 70,55 100,55" fill="#1e1426" stroke="#15101a" stroke-width="2.5"/>
-              <rect x="75" y="70" width="20" height="25" rx="10" fill="#fde047" stroke="#15101a" stroke-width="2"/>
-              <rect x="30" y="120" width="14" height="20" rx="2" fill="#fde047" stroke="#15101a" stroke-width="2"/>
-              <rect x="65" y="125" width="18" height="24" rx="2" fill="#fde047" stroke="#15101a" stroke-width="2"/>
-              <ellipse cx="28" cy="180" rx="34" ry="26" fill="#ea580c" stroke="#221711" stroke-width="3"/>
-            </g>
-
-            <path d="M470 180 Q485 160 500 180 Q485 195 470 180 Z" fill="#f97316" stroke="#221711" stroke-width="1.5"/>
-            <path d="M680 185 Q695 170 705 190 Q690 200 680 185 Z" fill="#ef4444" stroke="#221711" stroke-width="1.5"/>
+            <g transform="translate(130, 68)"><path d="M70 72 L35 -15 Q50 -25 80 -10 L105 72 Z" fill="#2d2238" stroke="#1c1424" stroke-width="3"/><ellipse cx="70" cy="74" rx="55" ry="14" fill="#261b30" stroke="#1c1424" stroke-width="3"/><ellipse cx="68" cy="120" rx="46" ry="38" fill="#f97316" stroke="#221711" stroke-width="3.5"/><polygon points="52,106 60,106 56,98" fill="#221711"/><polygon points="76,106 84,106 80,98" fill="#221711"/><path d="M48 126 Q68 144 88 126 Q68 134 48 126 Z" fill="#221711"/></g>
+            <g transform="translate(255, 105)"><ellipse cx="45" cy="85" rx="36" ry="26" fill="#241e2b" stroke="#15101a" stroke-width="3"/><circle cx="42" cy="46" r="26" fill="#241e2b" stroke="#15101a" stroke-width="3"/><polygon points="22,34 16,10 34,24" fill="#241e2b" stroke="#15101a" stroke-width="2.5"/><polygon points="50,24 68,10 62,34" fill="#241e2b" stroke="#15101a" stroke-width="2.5"/><circle cx="34.5" cy="45" r="4.5" fill="#fbbf24"/><circle cx="53.5" cy="45" r="4.5" fill="#fbbf24"/></g>
+            <g transform="translate(755, 75)"><path d="M45 40 C45 12 95 12 95 40 C95 85 105 110 88 115 C75 120 70 108 60 115 C50 120 40 105 35 115 C25 105 45 80 45 40 Z" fill="#ffffff" stroke="#221711" stroke-width="3"/><circle cx="56" cy="48" r="3.5" fill="#1e1b4b"/><circle cx="76" cy="48" r="3.5" fill="#1e1b4b"/><ellipse cx="66" cy="78" rx="14" ry="12" fill="#f97316" stroke="#221711" stroke-width="2"/></g>
+            <g transform="translate(970, 32)"><path d="M50 180 L50 90 L85 50 L120 90 L120 180 Z" fill="#2d2238" stroke="#15101a" stroke-width="3"/><path d="M20 180 L20 110 L50 85 L50 180 Z" fill="#241b2e" stroke="#15101a" stroke-width="3"/><polygon points="85,15 70,55 100,55" fill="#1e1426" stroke="#15101a" stroke-width="2.5"/><rect x="75" y="70" width="20" height="25" rx="10" fill="#fde047" stroke="#15101a" stroke-width="2"/></g>
           </svg>
-          <div class="relative z-10 flex flex-col items-center justify-center text-center h-full" style="margin-top: -10px;">
-            <h1 class="text-7xl sm:text-8xl md:text-9xl tracking-tight text-[#1a120c]" style="font-family: 'Caveat', cursive; line-height: 0.85;">
-              ${monthName}
-            </h1>
-            <div class="text-2xl sm:text-3xl font-bold tracking-widest text-[#7c2d12] mt-2 flex items-center gap-3" style="font-family: 'Patrick Hand', cursive;">
-              <span class="text-amber-500">✦</span>
-              <span>${year}</span>
-              <span class="text-amber-500">✦</span>
-            </div>
-          </div>
-        `
+          <div class="relative z-10 flex flex-col items-center justify-center text-center h-full" style="margin-top: -10px;"><h1 class="text-7xl sm:text-8xl md:text-9xl tracking-tight text-[#1a120c]" style="font-family: 'Caveat', cursive; line-height: 0.85;">${m}</h1><div class="text-2xl sm:text-3xl font-bold tracking-widest text-[#7c2d12] mt-2 flex items-center gap-3" style="font-family: 'Patrick Hand', cursive;"><span class="text-amber-500">✦</span><span>${y}</span><span class="text-amber-500">✦</span></div></div>`
       },
-
-      november: {
-        id: "november",
-        name: "🍂 November Cozy Harvest (Thanksgiving)",
-        monthIndex: 10,
-        fonts: {
-          title: "'Playfair Display', serif",
-          accent: "'Cinzel', serif",
-          body: "'Source Sans 3', sans-serif"
-        },
-        palette: {
-          screenBackdrop: "#1c1511",
-          paperBg: "#faf5ed",
-          agendaBg: "#f4ebe0",
-          boardBorder: "#422817",
-          gridBorder: "#533420",
-          themeInk: "#382215",
-          cellBg: "#fcfaf6",
-          cellMutedBg: "rgba(235, 222, 207, 0.45)",
-          cellTodayBg: "#fef3c7",
-          todayAccent: "#b45309",
-          dayNumColor: "#382215",
-          chipBg: "#fed7aa",
-          chipText: "#451a03",
-          chipBorder: "#c2410c"
-        },
-        weekdayColors: [
-          { name: "SUN", bg: "#d97706", text: "#ffffff" },
-          { name: "MON", bg: "#e2c499", text: "#451a03" },
-          { name: "TUE", bg: "#eed9be", text: "#451a03" },
-          { name: "WED", bg: "#d59b62", text: "#ffffff" },
-          { name: "THU", bg: "#991b1b", text: "#ffffff" },
-          { name: "FRI", bg: "#e2c499", text: "#451a03" },
-          { name: "SAT", bg: "#eed9be", text: "#451a03" }
-        ],
-        footerNote: "🍂 Cozy Harvest & Gratitude Edition",
-        renderBanner: (monthName, year) => `
-          <svg class="absolute inset-0 w-full h-full" viewBox="0 0 1200 240" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+      10: {
+        name: "🍂 November (Cozy Thanksgiving Harvest)",
+        fonts: { title: "'Playfair Display', serif", accent: "'Cinzel', serif", body: "'Source Sans 3', sans-serif" },
+        palette: { screenBackdrop: "#1c1511", paperBg: "#faf5ed", agendaBg: "#f4ebe0", boardBorder: "#422817", gridBorder: "#533420", themeInk: "#382215", cellBg: "#fcfaf6", cellMutedBg: "rgba(235, 222, 207, 0.45)", cellTodayBg: "#fef3c7", todayAccent: "#b45309", dayNumColor: "#382215", chipBg: "#fed7aa", chipText: "#451a03", chipBorder: "#c2410c" },
+        weekdayColors: [{name:"SUN",bg:"#d97706",text:"#ffffff"},{name:"MON",bg:"#e2c499",text:"#451a03"},{name:"TUE",bg:"#eed9be",text:"#451a03"},{name:"WED",bg:"#d59b62",text:"#ffffff"},{name:"THU",bg:"#991b1b",text:"#ffffff"},{name:"FRI",bg:"#e2c499",text:"#451a03"},{name:"SAT",bg:"#eed9be",text:"#451a03"}],
+        footerNote: "🍂 Cozy Harvest & Thanksgiving Edition",
+        renderBanner: (m, y) => `
+          <svg class="absolute inset-0 w-full h-full" viewBox="0 0 1200 240" fill="none" preserveAspectRatio="xMidYMid slice">
             <rect width="100%" height="100%" fill="#fbf6ee"/>
-            <defs>
-              <linearGradient id="novSun" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#fff1d6"/><stop offset="100%" stop-color="#f5e0be"/>
-              </linearGradient>
-            </defs>
-            <circle cx="600" cy="110" r="160" fill="url(#novSun)"/>
-            <g transform="translate(100, 60)">
-              <ellipse cx="60" cy="110" rx="45" ry="35" fill="#d97706" stroke="#451a03" stroke-width="3"/>
-              <ellipse cx="110" cy="120" rx="35" ry="25" fill="#65a30d" stroke="#451a03" stroke-width="3"/>
-              <path d="M-10 130 C10 60 70 80 130 90" stroke="#78350f" stroke-width="8" stroke-linecap="round"/>
-              <ellipse cx="20" cy="120" rx="25" ry="20" fill="#991b1b" stroke="#451a03" stroke-width="2"/>
-            </g>
-            <g transform="translate(940, 70)">
-              <ellipse cx="100" cy="80" rx="60" ry="40" fill="#b45309" stroke="#451a03" stroke-width="3"/>
-              <ellipse cx="100" cy="75" rx="50" ry="32" fill="#d97706"/>
-              <ellipse cx="100" cy="70" rx="40" ry="24" fill="#ca8a04"/>
-              <circle cx="100" cy="100" r="30" fill="#78350f" stroke="#451a03" stroke-width="3"/>
-              <circle cx="85" cy="85" r="16" fill="#78350f" stroke="#451a03" stroke-width="2"/>
-              <polygon points="74,86 64,90 74,94" fill="#ea580c"/>
-              <path d="M72 94 Q70 106 76 104" stroke="#dc2626" stroke-width="4" stroke-linecap="round"/>
-            </g>
-            <g stroke="#451a03" stroke-width="1.5">
-              <path d="M380 60 Q400 40 420 60 Q400 80 380 60 Z" fill="#b45309"/>
-              <path d="M450 180 Q475 160 490 185 Q465 200 450 180 Z" fill="#d97706"/>
-              <path d="M710 170 Q735 150 750 175 Q725 190 710 170 Z" fill="#991b1b"/>
-              <path d="M780 50 Q800 30 815 55 Q795 70 780 50 Z" fill="#ea580c"/>
-            </g>
+            <g transform="translate(100, 60)"><ellipse cx="60" cy="110" rx="45" ry="35" fill="#d97706" stroke="#451a03" stroke-width="3"/><ellipse cx="110" cy="120" rx="35" ry="25" fill="#65a30d" stroke="#451a03" stroke-width="3"/></g>
+            <g transform="translate(940, 70)"><ellipse cx="100" cy="80" rx="60" ry="40" fill="#b45309" stroke="#451a03" stroke-width="3"/><ellipse cx="100" cy="75" rx="50" ry="32" fill="#d97706"/><circle cx="100" cy="100" r="30" fill="#78350f" stroke="#451a03" stroke-width="3"/></g>
           </svg>
-          <div class="relative z-10 flex flex-col items-center justify-center text-center h-full">
-            <h1 class="text-6xl sm:text-7xl md:text-8xl tracking-tight text-[#422212] font-bold" style="font-family: 'Playfair Display', serif;">
-              ${monthName}
-            </h1>
-            <p class="text-xl sm:text-2xl tracking-[0.3em] uppercase text-[#9a3412] mt-2 font-bold" style="font-family: 'Cinzel', serif;">
-              ${year}
-            </p>
-          </div>
-        `
+          <div class="relative z-10 flex flex-col items-center justify-center text-center h-full"><h1 class="text-6xl sm:text-7xl md:text-8xl tracking-tight text-[#422212] font-bold" style="font-family: 'Playfair Display', serif;">${m}</h1><p class="text-xl sm:text-2xl tracking-[0.3em] uppercase text-[#9a3412] mt-2 font-bold" style="font-family: 'Cinzel', serif;">${y}</p></div>`
       },
-
-      december: {
-        id: "december",
-        name: "❄️ December Winter Solstice (Holiday)",
-        monthIndex: 11,
-        fonts: {
-          title: "'Mountains of Christmas', cursive",
-          accent: "'Cinzel', serif",
-          body: "'Source Sans 3', sans-serif"
-        },
-        palette: {
-          screenBackdrop: "#0a131a",
-          paperBg: "#f6fafc",
-          agendaBg: "#edf5f8",
-          boardBorder: "#132d3d",
-          gridBorder: "#1a384b",
-          themeInk: "#0c2331",
-          cellBg: "#ffffff",
-          cellMutedBg: "rgba(224, 237, 245, 0.45)",
-          cellTodayBg: "#e0f2fe",
-          todayAccent: "#0284c7",
-          dayNumColor: "#082f49",
-          chipBg: "#dcfce7",
-          chipText: "#14532d",
-          chipBorder: "#16a34a"
-        },
-        weekdayColors: [
-          { name: "SUN", bg: "#b91c1c", text: "#ffffff" },
-          { name: "MON", bg: "#dbeafe", text: "#1e3a8a" },
-          { name: "TUE", bg: "#e2e8f0", text: "#334155" },
-          { name: "WED", bg: "#dcfce7", text: "#166534" },
-          { name: "THU", bg: "#e2e8f0", text: "#334155" },
-          { name: "FRI", bg: "#15803d", text: "#ffffff" },
-          { name: "SAT", bg: "#fef08a", text: "#713f12" }
-        ],
-        footerNote: "❄️ Winter Solstice & Merry Holiday Edition",
-        renderBanner: (monthName, year) => `
-          <svg class="absolute inset-0 w-full h-full" viewBox="0 0 1200 240" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+      11: {
+        name: "🎄 December (Festive Solstice & Holiday)",
+        fonts: { title: "'Mountains of Christmas', cursive", accent: "'Cinzel', serif", body: "'Source Sans 3', sans-serif" },
+        palette: { screenBackdrop: "#0a131a", paperBg: "#f6fafc", agendaBg: "#edf5f8", boardBorder: "#132d3d", gridBorder: "#1a384b", themeInk: "#0c2331", cellBg: "#ffffff", cellMutedBg: "rgba(224, 237, 245, 0.45)", cellTodayBg: "#e0f2fe", todayAccent: "#0284c7", dayNumColor: "#082f49", chipBg: "#dcfce7", chipText: "#14532d", chipBorder: "#16a34a" },
+        weekdayColors: [{name:"SUN",bg:"#b91c1c",text:"#ffffff"},{name:"MON",bg:"#dbeafe",text:"#1e3a8a"},{name:"TUE",bg:"#e2e8f0",text:"#334155"},{name:"WED",bg:"#dcfce7",text:"#166534"},{name:"THU",bg:"#e2e8f0",text:"#334155"},{name:"FRI",bg:"#15803d",text:"#ffffff"},{name:"SAT",bg:"#fef08a",text:"#713f12"}],
+        footerNote: "🎄 Merry Holiday & Solstice Edition",
+        renderBanner: (m, y) => `
+          <svg class="absolute inset-0 w-full h-full" viewBox="0 0 1200 240" fill="none" preserveAspectRatio="xMidYMid slice">
             <rect width="100%" height="100%" fill="#edf7fc"/>
-            <defs>
-              <linearGradient id="snowG" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#ffffff"/><stop offset="100%" stop-color="#d8ebf6"/>
-              </linearGradient>
-            </defs>
-            <path d="M-50 240 Q200 130 500 200 Q800 240 1250 170 L1250 240 Z" fill="url(#snowG)"/>
-            <g transform="translate(100, 40)">
-              <polygon points="60,20 20,80 100,80" fill="#14532d"/>
-              <polygon points="60,60 10,120 110,120" fill="#166534"/>
-              <polygon points="60,100 0,165 120,165" fill="#15803d"/>
-              <rect x="50" y="165" width="20" height="25" fill="#78350f"/>
-              <path d="M60 20 L40 60 Q60 50 80 60 Z" fill="#ffffff"/>
-              <path d="M60 60 L30 100 Q60 90 90 100 Z" fill="#ffffff"/>
-            </g>
-            <g transform="translate(240, 70)">
-              <rect x="18" y="20" width="24" height="35" rx="3" fill="#0f172a" stroke="#ca8a04" stroke-width="2"/>
-              <circle cx="30" cy="37" r="7" fill="#fde047" filter="drop-shadow(0 0 8px #facc15)"/>
-              <line x1="30" y1="55" x2="30" y2="140" stroke="#0f172a" stroke-width="5"/>
-            </g>
-            <g transform="translate(980, 50)">
-              <polygon points="60,30 25,85 95,85" fill="#14532d"/>
-              <polygon points="60,70 15,130 105,130" fill="#15803d"/>
-              <rect x="52" y="130" width="16" height="30" fill="#78350f"/>
-              <path d="M-20 120 L-20 60 C-20 40 10 40 10 60" stroke="#dc2626" stroke-width="8" stroke-linecap="round" fill="none"/>
-              <path d="M-20 120 L-20 60 C-20 40 10 40 10 60" stroke="#ffffff" stroke-width="8" stroke-linecap="round" stroke-dasharray="10 10" fill="none"/>
-            </g>
-            <g fill="#93c5fd" opacity="0.8">
-              <circle cx="380" cy="50" r="3"/><circle cx="420" cy="90" r="2.5"/><circle cx="490" cy="40" r="4"/>
-              <circle cx="710" cy="60" r="3.5"/><circle cx="780" cy="35" r="2.5"/><circle cx="830" cy="85" r="4"/>
-            </g>
+            <path d="M-50 240 Q200 130 500 200 Q800 240 1250 170 L1250 240 Z" fill="#d8ebf6"/>
+            <g transform="translate(100, 40)"><polygon points="60,20 20,80 100,80" fill="#14532d"/><polygon points="60,60 10,120 110,120" fill="#166534"/><polygon points="60,100 0,165 120,165" fill="#15803d"/><rect x="50" y="165" width="20" height="25" fill="#78350f"/></g>
+            <g transform="translate(980, 50)"><polygon points="60,30 25,85 95,85" fill="#14532d"/><polygon points="60,70 15,130 105,130" fill="#15803d"/><rect x="52" y="130" width="16" height="30" fill="#78350f"/></g>
           </svg>
-          <div class="relative z-10 flex flex-col items-center justify-center text-center h-full">
-            <h1 class="text-7xl sm:text-8xl md:text-9xl text-[#0c4a6e] font-bold" style="font-family: 'Mountains of Christmas', cursive;">
-              ${monthName}
-            </h1>
-            <p class="text-xl sm:text-2xl tracking-[0.25em] text-[#0369a1] font-bold mt-1" style="font-family: 'Cinzel', serif;">
-              ${year}
-            </p>
-          </div>
-        `
-      },
-
-      botanical: {
-        id: "botanical",
-        name: "🌿 Spring Botanical (Floral & Sage)",
-        monthIndex: 4,
-        fonts: {
-          title: "'Playfair Display', serif",
-          accent: "'Comfortaa', cursive",
-          body: "'Source Sans 3', sans-serif"
-        },
-        palette: {
-          screenBackdrop: "#111b15",
-          paperBg: "#f6f8f5",
-          agendaBg: "#edf3ee",
-          boardBorder: "#203a2c",
-          gridBorder: "#274736",
-          themeInk: "#1a3526",
-          cellBg: "#ffffff",
-          cellMutedBg: "rgba(227, 237, 230, 0.45)",
-          cellTodayBg: "#f0fdf4",
-          todayAccent: "#16a34a",
-          dayNumColor: "#143823",
-          chipBg: "#dcfce7",
-          chipText: "#14532d",
-          chipBorder: "#22c55e"
-        },
-        weekdayColors: [
-          { name: "SUN", bg: "#fbcfe8", text: "#831843" },
-          { name: "MON", bg: "#dcfce7", text: "#14532d" },
-          { name: "TUE", bg: "#e2e8f0", text: "#334155" },
-          { name: "WED", bg: "#d1fae5", text: "#065f46" },
-          { name: "THU", bg: "#e2e8f0", text: "#334155" },
-          { name: "FRI", bg: "#fef08a", text: "#713f12" },
-          { name: "SAT", bg: "#e0e7ff", text: "#3730a3" }
-        ],
-        footerNote: "🌿 Hand-Pressed Botanical Garden Edition",
-        renderBanner: (monthName, year) => `
-          <svg class="absolute inset-0 w-full h-full" viewBox="0 0 1200 240" fill="none" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-            <rect width="100%" height="100%" fill="#f4f8f4"/>
-            <path d="M-20 80 Q200 140 400 60 Q600 0 800 60 Q1000 140 1220 80" stroke="#22543d" stroke-width="3" fill="none"/>
-            <g transform="translate(120, 60)">
-              <circle cx="20" cy="30" r="14" fill="#a7f3d0" stroke="#1b4332" stroke-width="2"/>
-              <circle cx="45" cy="15" r="12" fill="#a7f3d0" stroke="#1b4332" stroke-width="2"/>
-              <circle cx="65" cy="40" r="16" fill="#fbcfe8" stroke="#831843" stroke-width="2"/>
-              <circle cx="65" cy="40" r="5" fill="#fde047"/>
-            </g>
-            <g transform="translate(950, 60)">
-              <circle cx="20" cy="40" r="16" fill="#fbcfe8" stroke="#831843" stroke-width="2"/>
-              <circle cx="20" cy="40" r="5" fill="#fde047"/>
-              <circle cx="50" cy="20" r="13" fill="#a7f3d0" stroke="#1b4332" stroke-width="2"/>
-              <circle cx="75" cy="35" r="15" fill="#fed7aa" stroke="#9a3412" stroke-width="2"/>
-            </g>
-          </svg>
-          <div class="relative z-10 flex flex-col items-center justify-center text-center h-full">
-            <h1 class="text-6xl sm:text-7xl md:text-8xl text-[#1a4329] font-bold" style="font-family: 'Playfair Display', serif;">
-              ${monthName}
-            </h1>
-            <p class="text-lg sm:text-xl tracking-[0.25em] uppercase text-[#2d6a4f] font-semibold mt-1" style="font-family: 'Comfortaa', cursive;">
-              ${year}
-            </p>
-          </div>
-        `
+          <div class="relative z-10 flex flex-col items-center justify-center text-center h-full"><h1 class="text-7xl sm:text-8xl md:text-9xl text-[#0c4a6e] font-bold" style="font-family: 'Mountains of Christmas', cursive;">${m}</h1><p class="text-xl sm:text-2xl tracking-[0.25em] text-[#0369a1] font-bold mt-1" style="font-family: 'Cinzel', serif;">${y}</p></div>`
       }
     };
 
-    /* =========================================================================
-       APPLICATION STATE
-       ========================================================================= */
     const state = {
       displayedYear: 2026,
       displayedMonth: 9, // October = 9
-      activeThemeId: "october",
       events: []
     };
 
-    function applyTheme(themeId) {
-      state.activeThemeId = themeId;
-      const theme = THEMES[themeId] || THEMES.october;
+    function applyTheme(monthIndex) {
+      const theme = THEMES[monthIndex] || THEMES[9];
       const root = document.documentElement;
 
       root.style.setProperty("--screen-backdrop", theme.palette.screenBackdrop);
@@ -622,7 +453,7 @@
 
       document.getElementById("currentMonthNavLabel").textContent = `${monthName} ${year}`;
 
-      const theme = THEMES[state.activeThemeId] || THEMES.october;
+      const theme = THEMES[month] || THEMES[9];
       document.getElementById("bannerContainer").innerHTML = theme.renderBanner(monthName, year);
 
       const firstDayOfMonth = new Date(year, month, 1).getDay();
@@ -636,7 +467,6 @@
       const daysGrid = document.getElementById("daysGrid");
       daysGrid.innerHTML = "";
 
-      // Prior month padding
       for (let i = firstDayOfMonth - 1; i >= 0; i--) {
         const num = daysInPriorMonth - i;
         const cell = document.createElement("div");
@@ -645,11 +475,9 @@
         daysGrid.appendChild(cell);
       }
 
-      // Calendar coloring map
       const calClassMap = new Map();
       let colorIdx = 0;
 
-      // Active month cells
       for (let day = 1; day <= daysInCurrentMonth; day++) {
         const cell = document.createElement("div");
         const isToday = isActualCurrentMonth && (day === todayDateNumber);
@@ -683,7 +511,6 @@
         daysGrid.appendChild(cell);
       }
 
-      // Trailing padding days
       const totalCellsFilled = firstDayOfMonth + daysInCurrentMonth;
       const targetTotal = totalCellsFilled <= 35 ? 35 : 42;
       const trailingDaysNeeded = targetTotal - totalCellsFilled;
@@ -756,9 +583,6 @@
       });
     }
 
-    /* =========================================================================
-       OAUTH SYNC ENGINE (Direct from Worker JSON)
-       ========================================================================= */
     async function syncGoogleCalendar() {
       const statusEl = document.getElementById("syncStatus");
       statusEl.textContent = "GCal: Syncing...";
@@ -794,47 +618,39 @@
       document.getElementById("wallClock").textContent = `${hours}:${mins}:${secs} ${ampm}`;
     }
 
-    function autoMatchThemeToMonth(monthIdx) {
-      if (monthIdx === 9) applyTheme("october");
-      else if (monthIdx === 10) applyTheme("november");
-      else if (monthIdx === 11) applyTheme("december");
-      else applyTheme("botanical");
-      document.getElementById("themeDropdown").value = state.activeThemeId;
+    function setMonthAndSyncTheme(mIndex) {
+      state.displayedMonth = mIndex;
+      applyTheme(mIndex);
+      document.getElementById("themeDropdown").value = mIndex;
+      renderCalendar();
     }
 
     function initUI() {
       const dropdown = document.getElementById("themeDropdown");
-      dropdown.innerHTML = Object.values(THEMES).map(t => `
-        <option value="${t.id}" ${t.id === state.activeThemeId ? 'selected' : ''}>${t.name}</option>
+      dropdown.innerHTML = Object.entries(THEMES).map(([idx, t]) => `
+        <option value="${idx}" ${Number(idx) === state.displayedMonth ? 'selected' : ''}>${t.name}</option>
       `).join("");
 
       dropdown.addEventListener("change", (e) => {
-        const selected = THEMES[e.target.value];
-        if (selected) {
-          state.displayedMonth = selected.monthIndex;
-          applyTheme(selected.id);
-          renderCalendar();
-        }
+        setMonthAndSyncTheme(Number(e.target.value));
       });
 
       document.getElementById("prevMonthBtn").addEventListener("click", () => {
-        state.displayedMonth--;
-        if (state.displayedMonth < 0) {
-          state.displayedMonth = 11;
+        let m = state.displayedMonth - 1;
+        if (m < 0) {
+          m = 11;
           state.displayedYear--;
         }
-        autoMatchThemeToMonth(state.displayedMonth);
-        renderCalendar();
+        setMonthAndSyncTheme(m);
       });
 
       document.getElementById("nextMonthBtn").addEventListener("click", () => {
-        state.displayedMonth++;
-        if (state.displayedMonth > 11) {
-          state.displayedMonth = 0;
+        let m = state.displayedMonth + 1;
+        if (m > 11) {
+          m = 0;
           state.displayedYear++;
         }
-        autoMatchThemeToMonth(state.displayedMonth);
-        renderCalendar();
+        setMonthAndSyncTheme(m);
       });
 
       document.getElementById("manualRefreshBtn").addEventListener("click", syncGoogleCalendar);
@@ -853,8 +669,12 @@
     }
 
     window.addEventListener("DOMContentLoaded", () => {
+      const now = new Date();
+      state.displayedMonth = now.getMonth();
+      state.displayedYear = now.getFullYear();
+
       initUI();
-      applyTheme(state.activeThemeId);
+      applyTheme(state.displayedMonth);
       renderCalendar();
       syncGoogleCalendar();
     });
