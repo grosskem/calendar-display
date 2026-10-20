@@ -583,7 +583,7 @@
       });
     }
 
-    async function syncGoogleCalendar() {
+  async function syncGoogleCalendar() {
       const statusEl = document.getElementById("syncStatus");
       statusEl.textContent = "GCal: Syncing...";
 
@@ -596,9 +596,52 @@
 
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-        const events = await res.json();
-        state.events = events;
-        statusEl.textContent = `GCal: Synced (${events.length} items)`;
+        const rawEvents = await res.json();
+
+        // Format dates and times in America/Chicago
+        state.events = rawEvents.map(e => {
+          if (e.allDay) {
+            return {
+              summary: e.summary,
+              date: e.start, // YYYY-MM-DD
+              time: "All Day",
+              allDay: true,
+              calendarTitle: e.calendarTitle
+            };
+          }
+
+          const d = new Date(e.start);
+
+          // Get year, month, and day in America/Chicago
+          const dateParts = new Intl.DateTimeFormat("en-US", {
+            timeZone: "America/Chicago",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit"
+          }).formatToParts(d);
+
+          const y = dateParts.find(p => p.type === "year").value;
+          const m = dateParts.find(p => p.type === "month").value;
+          const day = dateParts.find(p => p.type === "day").value;
+
+          // Format time in America/Chicago
+          const timeStr = new Intl.DateTimeFormat("en-US", {
+            timeZone: "America/Chicago",
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true
+          }).format(d);
+
+          return {
+            summary: e.summary,
+            date: `${y}-${m}-${day}`,
+            time: timeStr,
+            allDay: false,
+            calendarTitle: e.calendarTitle
+          };
+        });
+
+        statusEl.textContent = `GCal: Synced (${state.events.length} items)`;
       } catch (err) {
         clearTimeout(timeoutId);
         console.warn("Could not sync from worker:", err);
