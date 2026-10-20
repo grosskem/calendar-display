@@ -250,9 +250,7 @@
 
   <script>
     // -----------------------------------------------------------
-    // Set your proxy URL here:
-    // If using the standalone Worker: "https://calendar-proxy.<subdomain>.workers.dev"
-    // If using Pages Functions: "/api/calendar"
+    // PASTE YOUR WORKER URL HERE (Ensure no angle brackets remain)
     // -----------------------------------------------------------
     const PROXY_URL = "https://calendar-proxy.mvgrosskreuz.workers.dev";
 
@@ -315,52 +313,12 @@
       }
     }
 
-    function parseICS(icsText) {
-      const events = [];
-      const lines = icsText.replace(/\r\n /g, "").replace(/\r/g, "").split("\n");
-      let inEvent = false;
-      let cur = {};
-
-      for (let line of lines) {
-        if (line.startsWith("BEGIN:VEVENT")) {
-          inEvent = true;
-          cur = {};
-        } else if (line.startsWith("END:VEVENT")) {
-          inEvent = false;
-          if (cur.date && cur.summary) {
-            events.push(cur);
-          }
-        } else if (inEvent) {
-          if (line.startsWith("SUMMARY:")) {
-            cur.summary = line.substring(8).trim();
-          } else if (line.startsWith("DTSTART")) {
-            const parts = line.split(":");
-            const val = parts[1];
-            if (val && val.length === 8) {
-              cur.date = `${val.substring(0,4)}-${val.substring(4,6)}-${val.substring(6,8)}`;
-              cur.time = "All Day";
-            } else if (val) {
-              const yr = val.substring(0,4), mo = val.substring(4,6), dy = val.substring(6,8);
-              const hr = val.substring(9,11), mn = val.substring(11,13);
-              const dt = new Date(Date.UTC(yr, mo-1, dy, hr, mn));
-              const localY = dt.getFullYear();
-              const localM = String(dt.getMonth() + 1).padStart(2, '0');
-              const localD = String(dt.getDate()).padStart(2, '0');
-              cur.date = `${localY}-${localM}-${localD}`;
-              cur.time = dt.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
-            }
-          }
-        }
-      }
-      return events;
-    }
-
     async function syncCalendar() {
       const statusEl = document.getElementById("syncStatus");
       statusEl.textContent = "Fetching events...";
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 8000);
+      const timeoutId = setTimeout(() => controller.abort(), 12000);
 
       try {
         const res = await fetch(PROXY_URL, { signal: controller.signal });
@@ -370,8 +328,7 @@
           throw new Error(`HTTP ${res.status}`);
         }
 
-        const rawICS = await res.text();
-        const events = parseICS(rawICS);
+        const events = await res.json();
         statusEl.textContent = `Synced: ${events.length} events loaded`;
 
         // Clear existing chips
@@ -383,7 +340,7 @@
           if (cell) {
             const chip = document.createElement("div");
             chip.className = "chip";
-            chip.title = e.summary;
+            chip.title = `${e.summary} (${e.calendarTitle || ''})`;
             chip.textContent = e.summary;
             cell.appendChild(chip);
           }
@@ -423,13 +380,13 @@
       }
     }
 
-    // 1. Immediately draw the base October grid and dates
+    // Initialize base board layout
     renderBaseGrid();
 
-    // 2. Fetch and render Google Calendar events
+    // Fetch and sync calendar data
     syncCalendar();
 
-    // 3. Auto-sync every 15 minutes
+    // Auto-refresh every 15 minutes
     setInterval(syncCalendar, 15 * 60 * 1000);
   </script>
 </body>
