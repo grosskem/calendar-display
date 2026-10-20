@@ -143,10 +143,24 @@
       color: var(--chip-text, #451a03);
     }
 
+    /* Shared Multi-Calendar Palette */
     .cal-theme-0 { border-left-color: #2563eb; background-color: #eff6ff; color: #1e3a8a; }
     .cal-theme-1 { border-left-color: #ea580c; background-color: #fff7ed; color: #7c2d12; }
     .cal-theme-2 { border-left-color: #9333ea; background-color: #faf5ff; color: #581c87; }
     .cal-theme-3 { border-left-color: #059669; background-color: #ecfdf5; color: #064e3b; }
+
+    /* Corresponding Agenda Borders & Badges */
+    .agenda-cal-0 { border-left-color: #2563eb !important; }
+    .agenda-cal-0 .agenda-date-label, .agenda-cal-0 .agenda-cal-tag { color: #2563eb !important; }
+
+    .agenda-cal-1 { border-left-color: #ea580c !important; }
+    .agenda-cal-1 .agenda-date-label, .agenda-cal-1 .agenda-cal-tag { color: #ea580c !important; }
+
+    .agenda-cal-2 { border-left-color: #9333ea !important; }
+    .agenda-cal-2 .agenda-date-label, .agenda-cal-2 .agenda-cal-tag { color: #9333ea !important; }
+
+    .agenda-cal-3 { border-left-color: #059669 !important; }
+    .agenda-cal-3 .agenda-date-label, .agenda-cal-3 .agenda-cal-tag { color: #059669 !important; }
 
     ::-webkit-scrollbar { width: 4px; height: 4px; }
     ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 9999px; }
@@ -208,6 +222,9 @@
   </main>
 
   <script>
+    // -------------------------------------------------------------
+    // Live Cloudflare Worker Proxy Endpoint
+    // -------------------------------------------------------------
     const PROXY_URL = "https://calendar-proxy.mvgrosskreuz.workers.dev";
 
     const THEMES = {
@@ -406,9 +423,22 @@
 
     const state = {
       displayedYear: 2026,
-      displayedMonth: 9, // October = 9
+      displayedMonth: 9,
       events: []
     };
+
+    // Shared calendar registry so grid chips and sidebar cards always share identical colors
+    const calClassMap = new Map();
+    let colorIdx = 0;
+
+    function getCalIndex(title) {
+      const cleanTitle = title || "General";
+      if (!calClassMap.has(cleanTitle)) {
+        calClassMap.set(cleanTitle, colorIdx % 4);
+        colorIdx++;
+      }
+      return calClassMap.get(cleanTitle);
+    }
 
     function applyTheme(monthIndex) {
       const theme = THEMES[monthIndex] || THEMES[9];
@@ -475,9 +505,6 @@
         daysGrid.appendChild(cell);
       }
 
-      const calClassMap = new Map();
-      let colorIdx = 0;
-
       for (let day = 1; day <= daysInCurrentMonth; day++) {
         const cell = document.createElement("div");
         const isToday = isActualCurrentMonth && (day === todayDateNumber);
@@ -490,13 +517,9 @@
         const matchingEvents = state.events.filter(e => e.date === dateKey);
 
         const chipsHtml = matchingEvents.slice(0, 3).map(e => {
-          if (!calClassMap.has(e.calendarTitle)) {
-            calClassMap.set(e.calendarTitle, `cal-theme-${colorIdx % 4}`);
-            colorIdx++;
-          }
-          const themeClass = calClassMap.get(e.calendarTitle);
+          const colorNumber = getCalIndex(e.calendarTitle);
           return `
-            <div class="event-badge ${themeClass}" title="${e.summary} (${e.time} - ${e.calendarTitle})">
+            <div class="event-badge cal-theme-${colorNumber}" title="${e.summary} (${e.time} - ${e.calendarTitle})">
               <span>${e.time !== "All Day" ? e.time + " " : ""}${e.summary}</span>
             </div>
           `;
@@ -558,16 +581,17 @@
         const dateFormatted = dObj.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
         const isToday = (dObj.getTime() === now.getTime());
 
+        const cIdx = getCalIndex(e.calendarTitle);
+
         const item = document.createElement("div");
-        item.className = "p-3 rounded-lg border text-xs sm:text-sm transition-all";
-        item.style.backgroundColor = isToday ? "var(--cell-today-bg)" : "rgba(255,255,255,0.7)";
-        item.style.borderColor = isToday ? "var(--today-accent)" : "rgba(0,0,0,0.08)";
-        item.style.borderLeftWidth = "4px";
-        item.style.borderLeftColor = isToday ? "var(--today-accent)" : "var(--chip-border)";
+        item.className = `p-3 rounded-lg border text-xs sm:text-sm transition-all agenda-cal-${cIdx}`;
+        item.style.backgroundColor = isToday ? "var(--cell-today-bg)" : "rgba(255,255,255,0.85)";
+        item.style.borderColor = isToday ? "var(--today-accent)" : "rgba(0,0,0,0.1)";
+        item.style.borderLeftWidth = "5px";
 
         item.innerHTML = `
           <div class="flex items-center justify-between">
-            <span class="text-[0.7rem] uppercase font-bold tracking-wider" style="color: var(--today-accent);">
+            <span class="text-[0.7rem] uppercase font-bold tracking-wider agenda-date-label">
               ${isToday ? 'Today • ' : ''}${dateFormatted}
             </span>
             <span class="text-[0.72rem] font-semibold opacity-75">${e.time}</span>
@@ -575,15 +599,16 @@
           <div class="text-sm font-bold mt-1 text-[var(--theme-ink)]">
             ${e.summary}
           </div>
-          <div class="text-[0.7rem] opacity-60 font-bold uppercase mt-0.5 tracking-wider">
-            🏷️ ${e.calendarTitle}
+          <div class="text-[0.7rem] font-bold uppercase mt-1 tracking-wider agenda-cal-tag flex items-center gap-1">
+            <span>🏷️</span>
+            <span>${e.calendarTitle}</span>
           </div>
         `;
         agendaList.appendChild(item);
       });
     }
 
-  async function syncGoogleCalendar() {
+    async function syncGoogleCalendar() {
       const statusEl = document.getElementById("syncStatus");
       statusEl.textContent = "GCal: Syncing...";
 
@@ -598,21 +623,29 @@
 
         const rawEvents = await res.json();
 
-        // Format dates and times in America/Chicago
         state.events = rawEvents.map(e => {
-          if (e.allDay) {
+          if (e.date && !e.start) {
             return {
               summary: e.summary,
-              date: e.start, // YYYY-MM-DD
+              date: e.date,
+              time: e.time || "All Day",
+              allDay: e.time === "All Day",
+              calendarTitle: e.calendarTitle || "General"
+            };
+          }
+
+          if (e.allDay || (e.start && e.start.length === 10)) {
+            return {
+              summary: e.summary,
+              date: e.start,
               time: "All Day",
               allDay: true,
-              calendarTitle: e.calendarTitle
+              calendarTitle: e.calendarTitle || "General"
             };
           }
 
           const d = new Date(e.start);
 
-          // Get year, month, and day in America/Chicago
           const dateParts = new Intl.DateTimeFormat("en-US", {
             timeZone: "America/Chicago",
             year: "numeric",
@@ -624,7 +657,6 @@
           const m = dateParts.find(p => p.type === "month").value;
           const day = dateParts.find(p => p.type === "day").value;
 
-          // Format time in America/Chicago
           const timeStr = new Intl.DateTimeFormat("en-US", {
             timeZone: "America/Chicago",
             hour: "numeric",
@@ -637,7 +669,7 @@
             date: `${y}-${m}-${day}`,
             time: timeStr,
             allDay: false,
-            calendarTitle: e.calendarTitle
+            calendarTitle: e.calendarTitle || "General"
           };
         });
 
