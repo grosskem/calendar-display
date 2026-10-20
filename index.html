@@ -1,15 +1,17 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full w-full overflow-hidden">
+<html lang="en" class="h-full w-full m-0 p-0 overflow-hidden">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Wall Calendar Display</title>
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Fonts: Patrick Hand, Caveat, Playfair Display & Plus Jakarta Sans -->
+
+  <!-- Google Fonts: Curated Typography for all 12 Months -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Patrick+Hand&family=Playfair+Display:ital,wght@1,600;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Cinzel:wght@600;700;800&family=Comfortaa:wght@600;700&family=Great+Vibes&family=Henny+Penny&family=Mountains+of+Christmas:wght@700&family=Pacifico&family=Patrick+Hand&family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
     * {
@@ -18,48 +20,44 @@
       -moz-osx-font-smoothing: grayscale;
     }
 
+    :root {
+      --screen-backdrop: #16120e;
+      --paper-bg: #fffcf4;
+      --sidebar-bg: #faf4e8;
+      --board-border: #271b12;
+      --grid-border: #271b12;
+      --theme-ink: #261a11;
+      --cell-bg: #ffffff;
+      --cell-muted-bg: rgba(247, 240, 226, 0.45);
+      --cell-today-bg: #fff7ed;
+      --today-accent: #ea580c;
+      --day-num-color: #1f150e;
+      --font-title: 'Caveat', cursive;
+      --font-accent: 'Patrick Hand', cursive;
+      --font-body: 'Patrick Hand', cursive, sans-serif;
+    }
+
     body {
       margin: 0;
       padding: 0;
       width: 100vw;
       height: 100vh;
       overflow: hidden;
-      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--paper-bg);
+      color: var(--theme-ink);
+      font-family: var(--font-body);
       user-select: none;
       -webkit-user-select: none;
+      transition: background-color 0.4s ease, color 0.4s ease;
     }
 
-    .font-hand {
-      font-family: 'Patrick Hand', 'Caveat', cursive;
-    }
-    .font-caveat {
-      font-family: 'Caveat', cursive;
-    }
-    .font-cursive {
-      font-family: 'Playfair Display', Georgia, serif;
-      font-style: italic;
-    }
-
-    /* Subtle parchment grain */
+    /* Subtle authentic parchment paper grain */
     .paper-texture {
-      background-image: radial-gradient(rgba(45, 25, 10, 0.025) 1px, transparent 0);
-      background-size: 20px 20px;
+      background-image: radial-gradient(rgba(45, 25, 10, 0.035) 1px, transparent 0);
+      background-size: 22px 22px;
     }
 
-    /* Custom smooth scrollbar for agenda and cell overflowing events */
-    .custom-scroll::-webkit-scrollbar {
-      width: 4px;
-      height: 4px;
-    }
-    .custom-scroll::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    .custom-scroll::-webkit-scrollbar-thumb {
-      background: var(--theme-scroll, rgba(160, 80, 30, 0.25));
-      border-radius: 9999px;
-    }
-
-    /* Fullscreen reset constraints */
+    /* Edge-to-edge fullscreen reset */
     :fullscreen, :-webkit-full-screen, :-moz-full-screen, :-ms-fullscreen {
       margin: 0 !important;
       padding: 0 !important;
@@ -68,129 +66,172 @@
       overflow: hidden !important;
     }
 
-    /* Organic Day Tile Styling (Soft rounded card aesthetic) */
+    /* Weekday Ribbon Strips */
+    .weekday-strip-container {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      font-family: var(--font-accent);
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-size: 0.95rem;
+    }
+
+    .weekday-pill {
+      padding: 6px 0;
+      text-align: center;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      transition: all 0.3s ease;
+    }
+
+    /* Organic Floating Paper Day Tiles */
     .day-tile {
       border-radius: 14px;
-      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      border: 1.5px solid var(--grid-border);
+      background-color: var(--cell-bg);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.3s ease;
       position: relative;
     }
 
-    /* Distinct highlight for Today's Card */
-    .day-tile-today {
-      border-radius: 16px;
-      box-shadow: 0 4px 14px -2px var(--theme-today-glow, rgba(234, 88, 12, 0.25)),
-                  inset 0 0 0 2px var(--theme-accent, #ea580c);
+    .day-tile.muted-tile {
+      background-color: var(--cell-muted-bg) !important;
+      opacity: 0.45;
+      border-color: transparent !important;
     }
+
+    .day-tile.today-tile {
+      background-color: var(--cell-today-bg) !important;
+      box-shadow: 0 6px 18px -2px rgba(234, 88, 12, 0.3), inset 0 0 0 2px var(--today-accent) !important;
+      border-color: var(--today-accent) !important;
+    }
+
+    .day-number-badge {
+      font-size: 1.15rem;
+      font-weight: 700;
+      line-height: 1;
+      font-family: var(--font-accent);
+      color: var(--day-num-color);
+    }
+
+    .today-tile .day-number-badge {
+      background-color: var(--today-accent);
+      color: #ffffff !important;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 9999px;
+      margin-left: -2px;
+      margin-top: -2px;
+    }
+
+    /* Calendar Multi-color chips */
+    .cal-theme-wedding {
+      border-left: 3.5px solid #d97706 !important;
+      background-color: #fef3c7 !important;
+      color: #78350f !important;
+    }
+    .cal-theme-kayla {
+      border-left: 3.5px solid #9333ea !important;
+      background-color: #faf5ff !important;
+      color: #581c87 !important;
+    }
+    .cal-theme-mvg {
+      border-left: 3.5px solid #0284c7 !important;
+      background-color: #f0f9ff !important;
+      color: #0369a1 !important;
+    }
+    .cal-theme-default {
+      border-left: 3.5px solid #16a34a !important;
+      background-color: #f0fdf4 !important;
+      color: #14532d !important;
+    }
+
+    /* Agenda matching card styles */
+    .agenda-card-wedding { border-left-color: #d97706 !important; }
+    .agenda-card-kayla   { border-left-color: #9333ea !important; }
+    .agenda-card-mvg     { border-left-color: #0284c7 !important; }
+    .agenda-card-default { border-left-color: #16a34a !important; }
+
+    /* Custom ultra-clean scrollbars */
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.18); border-radius: 9999px; }
 
     @keyframes spin-slow {
       from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
     }
-    .spin-icon {
-      animation: spin-slow 0.8s linear infinite;
-    }
+    .spin-icon { animation: spin-slow 0.8s linear infinite; }
   </style>
 </head>
-<body id="calendar-body" class="w-full h-full text-stone-800 paper-texture transition-colors duration-500">
+<body id="calendar-body" class="w-full h-full paper-texture">
 
-  <!-- Full-Bleed 100vw x 100vh Canvas with Zero External Margins -->
-  <div id="calendar-root" class="w-full h-full flex flex-row overflow-hidden">
+  <!-- 100vw x 100vh FULL BLEED STAGE (ZERO OUTER BAR, ZERO PAGE MARGINS) -->
+  <div class="w-full h-full flex flex-row overflow-hidden">
 
-    <!-- LEFT 75%: Monthly Banner + Weekday Pills + Organic Day Tiles Grid -->
-    <main class="flex-1 flex flex-col h-full min-w-0 border-r border-black/10 overflow-hidden relative p-2.5 sm:p-3.5 space-y-2">
+    <!-- LEFT 74%: Storybook Banner, Themed Weekday Pills, and Rounded Day Grid -->
+    <main class="flex-1 flex flex-col h-full min-w-0 p-2.5 sm:p-3 space-y-2 border-r-2 border-[var(--board-border)] overflow-hidden">
 
       <!-- THEMED STORYBOOK ILLUSTRATED BANNER -->
-      <section id="banner-section" class="relative h-32 md:h-36 lg:h-40 w-full rounded-2xl flex items-center justify-between px-6 lg:px-10 shrink-0 overflow-hidden select-none border shadow-sm transition-colors duration-500">
-        
-        <!-- SVG Backdrop / Sky canvas -->
-        <svg id="banner-sky-svg" class="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none" viewBox="0 0 1200 160">
-        </svg>
-
-        <!-- Left Thematic Storybook Element -->
-        <div id="art-left-container" class="relative z-10 flex items-end self-end mb-1 pointer-events-none">
-        </div>
-
-        <!-- Center Month / Year Navigation & Discreet Header -->
-        <div class="relative z-20 flex flex-col items-center justify-center text-center">
-          <div class="flex items-center space-x-3">
-            <button id="btn-prev-month" title="Previous Month (←)" class="p-1 rounded-full text-black/40 hover:text-black/80 hover:bg-black/5 active:scale-90 transition">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
-            </button>
-
-            <h1 id="month-title" class="font-cursive text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-stone-900 drop-shadow-sm select-none">
-              October
-            </h1>
-
-            <button id="btn-next-month" title="Next Month (→)" class="p-1 rounded-full text-black/40 hover:text-black/80 hover:bg-black/5 active:scale-90 transition">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
-            </button>
-          </div>
-
-          <div class="flex items-center space-x-2 mt-0.5">
-            <span id="banner-sparkle-1" class="text-xs transition-colors duration-300">✦</span>
-            <span id="year-title" class="font-bold tracking-widest text-xs md:text-sm uppercase opacity-75">2026</span>
-            <span id="banner-sparkle-2" class="text-xs transition-colors duration-300">✦</span>
-            <span id="sync-dot" title="GCal Status" class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block ml-1"></span>
-          </div>
-        </div>
-
-        <!-- Right Thematic Storybook Element -->
-        <div id="art-right-container" class="relative z-10 flex items-end self-end mb-1 pointer-events-none">
-        </div>
-
+      <section id="banner-container" class="relative h-32 md:h-36 lg:h-40 w-full rounded-2xl flex items-center justify-between px-6 lg:px-10 shrink-0 overflow-hidden select-none border-2 border-[var(--grid-border)] shadow-sm transition-colors duration-500">
+        <!-- Injected SVG Storybook Artwork + Center Month Title -->
       </section>
 
-      <!-- WEEKDAY HEADER PILLS (7 Soft Rounded Ribbons) -->
-      <div id="weekday-bar" class="grid grid-cols-7 gap-2 text-center font-bold text-[11px] md:text-xs select-none shrink-0 tracking-wider">
-        <div id="wk-sun" class="py-1.5 rounded-xl shadow-xs transition-colors">SUN</div>
-        <div id="wk-mon" class="py-1.5 rounded-xl shadow-xs transition-colors">MON</div>
-        <div id="wk-tue" class="py-1.5 rounded-xl shadow-xs transition-colors">TUE</div>
-        <div id="wk-wed" class="py-1.5 rounded-xl shadow-xs transition-colors">WED</div>
-        <div id="wk-thu" class="py-1.5 rounded-xl shadow-xs transition-colors">THU</div>
-        <div id="wk-fri" class="py-1.5 rounded-xl shadow-xs transition-colors">FRI</div>
-        <div id="wk-sat" class="py-1.5 rounded-xl shadow-xs transition-colors">SAT</div>
+      <!-- THEMED WEEKDAY HEADER PILLS (SUN - SAT) -->
+      <div id="weekday-row" class="weekday-strip-container shrink-0">
+        <!-- Injected via active theme with custom palettes -->
       </div>
 
-      <!-- CALENDAR GRID: ORGANIC ROUNDED TILES (Dynamic 5 or 6 row layout) -->
-      <div id="calendar-grid" class="grid grid-cols-7 gap-2 flex-1 w-full min-h-0 overflow-hidden">
-        <!-- Generates 35 or 42 organic day cards -->
+      <!-- ORGANIC ROUNDED DAY TILES GRID -->
+      <div id="days-grid" class="grid grid-cols-7 gap-1.5 flex-1 w-full min-h-0 overflow-hidden">
+        <!-- 35 or 42 rounded day cards generated dynamically -->
       </div>
 
     </main>
 
-    <!-- RIGHT 25%: UPCOMING EVENTS AGENDA PANEL -->
-    <aside id="agenda-sidebar" class="w-80 sm:w-88 md:w-96 lg:w-[26rem] flex flex-col h-full shrink-0 select-none border-l border-black/10 transition-colors duration-500 bg-white/40">
+    <!-- RIGHT 26%: UPCOMING AGENDA PANEL -->
+    <aside id="agenda-sidebar" class="w-80 sm:w-88 md:w-96 lg:w-[26rem] flex flex-col h-full shrink-0 select-none bg-[var(--sidebar-bg)] transition-colors duration-500">
       
       <!-- Agenda Header -->
-      <div class="px-5 py-4 border-b border-black/10 flex items-center justify-between shrink-0">
+      <div class="px-5 py-3.5 border-b-2 border-[var(--grid-border)] flex items-center justify-between shrink-0">
         <div>
-          <h2 id="agenda-heading" class="font-hand text-2xl font-bold leading-tight tracking-wide">Upcoming Events</h2>
-          <p id="agenda-subheading" class="text-[10px] font-bold tracking-widest uppercase opacity-60">Next 30 Days</p>
+          <h2 class="text-2xl font-bold tracking-tight" style="font-family: var(--font-title);">Upcoming Events</h2>
+          <p class="text-xs uppercase tracking-wider opacity-70 font-semibold" style="font-family: var(--font-accent);">Next 30 Days</p>
         </div>
 
         <div class="flex items-center space-x-2">
-          <!-- Event Count Badge -->
-          <span id="agenda-badge" class="px-2.5 py-0.5 text-xs font-bold rounded-full border transition-all duration-300">
+          <span id="agenda-count-badge" class="px-2.5 py-0.5 text-xs font-bold rounded-full border border-amber-800/20 bg-amber-500/15 text-[var(--theme-ink)]">
             0
           </span>
-          <!-- Discreet Sync & Fullscreen quick triggers -->
-          <button id="btn-sync-quick" title="Sync with Google Calendar (Hotkey: R)" class="p-1.5 rounded-lg text-black/40 hover:text-black/80 hover:bg-black/5 active:scale-95 transition">
+          <!-- Discreet Sync & Fullscreen Buttons -->
+          <button id="btn-sync-quick" title="Sync with Google Calendar (R)" class="p-1 rounded-lg text-black/40 hover:text-black/80 hover:bg-black/5 active:scale-95 transition">
             <svg id="sync-svg-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
           </button>
-          <button id="btn-fs-quick" title="Toggle Fullscreen (Hotkey: F)" class="p-1.5 rounded-lg text-black/40 hover:text-black/80 hover:bg-black/5 active:scale-95 transition">
+          <button id="btn-fs-quick" title="Toggle Fullscreen (F)" class="p-1 rounded-lg text-black/40 hover:text-black/80 hover:bg-black/5 active:scale-95 transition">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
           </button>
         </div>
       </div>
 
-      <!-- Agenda Scrollable Event Cards List -->
-      <div id="agenda-list" class="flex-1 overflow-y-auto p-3.5 space-y-2.5 custom-scroll">
+      <!-- Agenda Cards List -->
+      <div id="agenda-list" class="flex-1 overflow-y-auto p-3.5 space-y-2.5">
+        <!-- Rendered events -->
       </div>
 
-      <!-- Live Clock & Status in America/Chicago -->
-      <div class="px-4 py-2 border-t border-black/10 flex items-center justify-between text-[11px] opacity-70 shrink-0 font-medium font-mono">
-        <span id="live-time-display">--:--:--</span>
-        <span id="calendar-proxy-status">Ready</span>
+      <!-- Discreet Footer with Live Clock & Sync Status -->
+      <div class="px-4 py-2 border-t-2 border-[var(--grid-border)] flex items-center justify-between text-xs opacity-75 font-semibold font-mono shrink-0">
+        <span id="wall-clock">--:--:-- --</span>
+        <span id="sync-status-label" class="flex items-center gap-1.5">
+          <span id="sync-dot" class="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
+          <span>GCal Ready</span>
+        </span>
       </div>
 
     </aside>
@@ -198,1046 +239,831 @@
   </div>
 
   <script>
+    // Live Cloudflare Worker Proxy Endpoint
+    const PROXY_URL = "https://calendar-proxy.mvgrosskreuz.workers.dev";
+
     /* =====================================================================
-       12 SEASONAL THEMES: PALETTES, ROUNDED TILES & STORYBOOK SVGs
+       12 SEASONAL THEMES: DEDICATED FONTS, WEEKDAY PALETTES & RETRO SVGs
        ===================================================================== */
-    const MONTH_THEMES = [
-      // 0: JANUARY - Frosty Winter Cabin & Pine
-      {
-        monthName: "January",
-        bodyBg: "#f3f7fa",
-        sidebarBg: "#e9f0f5",
-        bannerBg: "#e1ecf4",
-        tileBg: "#ffffff",
-        tileMutedBg: "rgba(225, 236, 244, 0.45)",
-        tileBorder: "rgba(186, 215, 233, 0.7)",
-        accentColor: "#0284c7",
-        textPrimary: "#1e293b",
-        sparkleColor: "#38bdf8",
-        todayGlow: "rgba(2, 132, 199, 0.3)",
-        scrollThumb: "rgba(56, 189, 248, 0.4)",
-        weekdays: [
-          { bg: "#dbeafe", text: "#1e40af" },
-          { bg: "#e0f2fe", text: "#0369a1" },
-          { bg: "#e2e8f0", text: "#334155" },
-          { bg: "#ccfbf1", text: "#0f766e" },
-          { bg: "#e0e7ff", text: "#3730a3" },
-          { bg: "#bae6fd", text: "#0284c7" },
-          { bg: "#cbd5e1", text: "#1e293b" }
+    const THEMES = {
+      0: {
+        name: "January",
+        fonts: {
+          title: "'Mountains of Christmas', cursive",
+          accent: "'Cinzel', serif",
+          body: "'Source Sans 3', sans-serif"
+        },
+        palette: {
+          screenBackdrop: "#0b1520",
+          paperBg: "#f4f8fb",
+          sidebarBg: "#e9f2f8",
+          boardBorder: "#192e40",
+          gridBorder: "#1d364b",
+          themeInk: "#0f2333",
+          cellBg: "#ffffff",
+          cellMutedBg: "rgba(224, 236, 245, 0.45)",
+          cellTodayBg: "#e0f2fe",
+          todayAccent: "#0284c7",
+          dayNumColor: "#082f49"
+        },
+        weekdayColors: [
+          { name: "SUN", bg: "#93c5fd", text: "#1e3a8a" },
+          { name: "MON", bg: "#e2e8f0", text: "#334155" },
+          { name: "TUE", bg: "#e2e8f0", text: "#334155" },
+          { name: "WED", bg: "#bae6fd", text: "#0369a1" },
+          { name: "THU", bg: "#e2e8f0", text: "#334155" },
+          { name: "FRI", bg: "#e2e8f0", text: "#334155" },
+          { name: "SAT", bg: "#cbd5e1", text: "#1e293b" }
         ],
-        pillBase: "bg-sky-50 border-sky-300 text-sky-950",
-        weddingPill: "bg-indigo-50 border-indigo-400 text-indigo-950",
-        kaylaPill: "bg-cyan-50 border-cyan-400 text-cyan-950",
-        skySvg: `
-          <rect width="1200" height="160" fill="#eaf2f8" opacity="0.6"/>
-          <path d="M0,120 Q300,90 600,110 T1200,100 L1200,160 L0,160 Z" fill="#d9e7f2" opacity="0.7"/>
-          <circle cx="200" cy="30" r="2.5" fill="#bae6fd"/><circle cx="550" cy="40" r="3" fill="#bae6fd"/><circle cx="900" cy="25" r="2" fill="#bae6fd"/>
-          <circle cx="600" cy="80" r="60" fill="#bae6fd" opacity="0.2" filter="blur(10px)"/>
-        `,
-        artLeft: `
-          <div class="relative w-36 h-28 flex items-end">
-            <svg viewBox="0 0 140 100" class="w-full h-full drop-shadow-sm">
-              <polygon points="25,50 35,25 45,50" fill="#335c67"/>
-              <polygon points="22,65 35,40 48,65" fill="#2d525c"/>
-              <rect x="45" y="45" width="60" height="45" fill="#78350f" rx="4"/>
-              <polygon points="38,45 75,18 112,45" fill="#451a03"/>
-              <path d="M36,45 Q75,15 114,45 C110,48 100,43 90,47 C80,44 70,47 60,43 C50,46 40,43 36,45 Z" fill="#ffffff"/>
-              <rect x="88" y="22" width="10" height="18" fill="#991b1b"/>
-              <path d="M93,18 Q97,10 92,5 Q87,0 95,-6" fill="none" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round"/>
-              <rect x="55" y="55" width="16" height="16" rx="3" fill="#fde047" stroke="#451a03" stroke-width="2"/>
-              <line x1="63" y1="55" x2="63" y2="71" stroke="#451a03" stroke-width="1.5"/>
-              <line x1="55" y1="63" x2="71" y2="63" stroke="#451a03" stroke-width="1.5"/>
-              <rect x="80" y="58" width="16" height="32" rx="2" fill="#451a03"/>
-              <circle cx="84" cy="74" r="1.5" fill="#fde047"/>
-            </svg>
-          </div>
-        `,
-        artRight: `
-          <div class="relative w-32 h-28 flex items-end">
-            <svg viewBox="0 0 120 100" class="w-full h-full drop-shadow-sm">
-              <polygon points="50,45 70,12 90,45" fill="#1e3a40"/>
-              <polygon points="44,68 70,32 96,68" fill="#1b3338"/>
-              <polygon points="38,92 70,52 102,92" fill="#15282c"/>
-              <path d="M52,44 Q70,36 88,44 Q70,39 52,44 Z" fill="#ffffff"/>
-              <path d="M46,67 Q70,58 94,67 Q70,61 46,67 Z" fill="#ffffff"/>
-              <path d="M40,91 Q70,80 100,91 Q70,83 40,91 Z" fill="#ffffff"/>
-              <rect x="15" y="75" width="14" height="20" fill="#78350f" rx="2"/>
-              <ellipse cx="22" cy="70" rx="7" ry="6" fill="#b91c1c"/>
-              <circle cx="22" cy="67" r="4.5" fill="#7f1d1d"/>
-              <circle cx="25" cy="66" r="0.8" fill="#ffffff"/>
-              <polygon points="27,67 31,68 27,70" fill="#f59e0b"/>
-            </svg>
-          </div>
-        `
-      },
-
-      // 1: FEBRUARY - Botanical Lovebirds & Wax Seal Envelope
-      {
-        monthName: "February",
-        bodyBg: "#fef7f9",
-        sidebarBg: "#faedf2",
-        bannerBg: "#fce4ec",
-        tileBg: "#ffffff",
-        tileMutedBg: "rgba(252, 228, 236, 0.45)",
-        tileBorder: "rgba(244, 114, 182, 0.35)",
-        accentColor: "#e11d48",
-        textPrimary: "#4c0519",
-        sparkleColor: "#f43f5e",
-        todayGlow: "rgba(225, 29, 72, 0.25)",
-        scrollThumb: "rgba(244, 63, 94, 0.35)",
-        weekdays: [
-          { bg: "#ffe4e6", text: "#9f1239" },
-          { bg: "#fce7f3", text: "#831843" },
-          { bg: "#fae8ff", text: "#701a75" },
-          { bg: "#fed7aa", text: "#9a3412" },
-          { bg: "#ffe4e6", text: "#9f1239" },
-          { bg: "#fce7f3", text: "#831843" },
-          { bg: "#ede9fe", text: "#5b21b6" }
-        ],
-        pillBase: "bg-rose-50 border-rose-300 text-rose-950",
-        weddingPill: "bg-fuchsia-50 border-fuchsia-400 text-fuchsia-950",
-        kaylaPill: "bg-pink-50 border-pink-400 text-pink-950",
-        skySvg: `
-          <rect width="1200" height="160" fill="#fdf2f4" opacity="0.6"/>
-          <circle cx="500" cy="80" r="65" fill="#fbcfe8" opacity="0.3" filter="blur(12px)"/>
-          <path d="M0,130 Q400,115 800,125 T1200,120 L1200,160 L0,160 Z" fill="#fae8eb" opacity="0.8"/>
-        `,
-        artLeft: `
-          <div class="relative w-32 h-28 flex items-end">
-            <svg viewBox="0 0 120 100" class="w-full h-full drop-shadow-sm">
-              <rect x="25" y="45" width="70" height="48" rx="5" fill="#fff1f2" stroke="#e11d48" stroke-width="2"/>
-              <polyline points="25,45 60,70 95,45" fill="none" stroke="#e11d48" stroke-width="2"/>
-              <circle cx="60" cy="70" r="9" fill="#be123c"/>
-              <path d="M57,68 C57,65 60,65 60,68 C60,65 63,65 63,68 C63,71 60,73 60,74 C60,73 57,71 57,68 Z" fill="#ffffff"/>
-              <path d="M35,28 C35,22 42,22 42,27 C42,22 49,22 49,27 C49,33 42,37 42,39 C42,37 35,33 35,28 Z" fill="#fb7185"/>
-              <path d="M72,18 C72,13 77,13 77,17 C77,13 82,13 82,17 C82,22 77,25 77,27 C77,25 72,22 72,18 Z" fill="#fda4af"/>
-            </svg>
-          </div>
-        `,
-        artRight: `
-          <div class="relative w-32 h-28 flex items-end">
-            <svg viewBox="0 0 120 100" class="w-full h-full drop-shadow-sm">
-              <path d="M20,60 Q60,10 100,60" fill="none" stroke="#059669" stroke-width="3" stroke-linecap="round"/>
-              <circle cx="35" cy="40" r="4" fill="#fb7185"/>
-              <circle cx="85" cy="40" r="4" fill="#f43f5e"/>
-              <ellipse cx="45" cy="55" rx="10" ry="8" fill="#fda4af"/>
-              <circle cx="51" cy="52" r="5" fill="#fb7185"/>
-              <polygon points="56,52 61,54 56,56" fill="#f59e0b"/>
-              <circle cx="52" cy="51" r="0.8" fill="#000000"/>
-              <ellipse cx="75" cy="55" rx="10" ry="8" fill="#c084fc"/>
-              <circle cx="69" cy="52" r="5" fill="#a855f7"/>
-              <polygon points="64,52 59,54 64,56" fill="#f59e0b"/>
-              <circle cx="68" cy="51" r="0.8" fill="#000000"/>
-              <path d="M57,44 C57,41 60,41 60,43 C60,41 63,41 63,43 C63,47 60,49 60,50 C60,49 57,47 57,44 Z" fill="#e11d48"/>
-            </svg>
-          </div>
-        `
-      },
-
-      // 2: MARCH - Spring Clovers, Daffodils & Toadstools
-      {
-        monthName: "March",
-        bodyBg: "#f6fbf6",
-        sidebarBg: "#edf5ed",
-        bannerBg: "#e1f3e1",
-        tileBg: "#ffffff",
-        tileMutedBg: "rgba(225, 243, 225, 0.4)",
-        tileBorder: "rgba(74, 222, 128, 0.35)",
-        accentColor: "#15803d",
-        textPrimary: "#14532d",
-        sparkleColor: "#16a34a",
-        todayGlow: "rgba(21, 128, 61, 0.25)",
-        scrollThumb: "rgba(22, 163, 74, 0.35)",
-        weekdays: [
-          { bg: "#dcfce7", text: "#166534" },
-          { bg: "#fef9c3", text: "#854d0e" },
-          { bg: "#d1fae5", text: "#065f46" },
-          { bg: "#e0f2fe", text: "#0369a1" },
-          { bg: "#dcfce7", text: "#166534" },
-          { bg: "#ffedd5", text: "#9a3412" },
-          { bg: "#f3e8ff", text: "#6b21a8" }
-        ],
-        pillBase: "bg-emerald-50 border-emerald-400 text-emerald-950",
-        weddingPill: "bg-teal-50 border-teal-400 text-teal-950",
-        kaylaPill: "bg-lime-50 border-lime-500 text-lime-950",
-        skySvg: `
-          <rect width="1200" height="160" fill="#f0fdf4" opacity="0.6"/>
-          <path d="M0,125 Q500,100 900,120 T1200,115 L1200,160 L0,160 Z" fill="#dcfce7" opacity="0.7"/>
-          <circle cx="580" cy="75" r="65" fill="#fef08a" opacity="0.3" filter="blur(12px)"/>
-        `,
-        artLeft: `
-          <div class="relative w-36 h-28 flex items-end">
-            <svg viewBox="0 0 130 100" class="w-full h-full drop-shadow-sm">
-              <polygon points="40,55 90,55 83,95 47,95" fill="#c2410c"/>
-              <rect x="36" y="50" width="58" height="8" rx="2" fill="#ea580c"/>
-              <path d="M50,50 Q45,25 35,20" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round"/>
-              <path d="M65,50 Q65,20 68,10" fill="none" stroke="#15803d" stroke-width="3" stroke-linecap="round"/>
-              <circle cx="68" cy="10" r="10" fill="#facc15"/>
-              <circle cx="68" cy="10" r="5" fill="#eab308"/>
-              <circle cx="32" cy="18" r="4" fill="#22c55e"/><circle cx="38" cy="18" r="4" fill="#22c55e"/>
-              <circle cx="35" cy="14" r="4" fill="#16a34a"/><circle cx="35" cy="22" r="4" fill="#15803d"/>
-            </svg>
-          </div>
-        `,
-        artRight: `
-          <div class="relative w-32 h-28 flex items-end">
-            <svg viewBox="0 0 120 100" class="w-full h-full drop-shadow-sm">
-              <path d="M50,55 C50,85 45,95 45,95 L75,95 C75,95 70,85 70,55 Z" fill="#fef3c7"/>
-              <path d="M30,55 C30,25 90,25 90,55 Z" fill="#dc2626"/>
-              <circle cx="45" cy="42" r="4" fill="#ffffff"/><circle cx="60" cy="35" r="5" fill="#ffffff"/><circle cx="75" cy="44" r="3.5" fill="#ffffff"/>
-              <path d="M22,70 C22,90 20,95 20,95 L34,95 C34,95 32,90 32,70 Z" fill="#fef3c7"/>
-              <path d="M14,70 C14,55 42,55 42,70 Z" fill="#f87171"/>
-            </svg>
-          </div>
-        `
-      },
-
-      // 3: APRIL - Rain Showers, Yellow Umbrella & Spring Boots
-      {
-        monthName: "April",
-        bodyBg: "#f5f9fc",
-        sidebarBg: "#ebf2f8",
-        bannerBg: "#dceaf4",
-        tileBg: "#ffffff",
-        tileMutedBg: "rgba(220, 234, 244, 0.4)",
-        tileBorder: "rgba(125, 211, 252, 0.4)",
-        accentColor: "#0284c7",
-        textPrimary: "#0c4a6e",
-        sparkleColor: "#38bdf8",
-        todayGlow: "rgba(2, 132, 199, 0.25)",
-        scrollThumb: "rgba(56, 189, 248, 0.35)",
-        weekdays: [
-          { bg: "#e0f2fe", text: "#0369a1" },
-          { bg: "#ede9fe", text: "#5b21b6" },
-          { bg: "#dbeafe", text: "#1d4ed8" },
-          { bg: "#fce7f3", text: "#be185d" },
-          { bg: "#e0f2fe", text: "#0369a1" },
-          { bg: "#dcfce7", text: "#15803d" },
-          { bg: "#fef3c7", text: "#b45309" }
-        ],
-        pillBase: "bg-sky-50 border-sky-300 text-sky-950",
-        weddingPill: "bg-violet-50 border-violet-400 text-violet-950",
-        kaylaPill: "bg-blue-50 border-blue-400 text-blue-950",
-        skySvg: `
-          <rect width="1200" height="160" fill="#f0f7fc" opacity="0.6"/>
-          <path d="M0,130 Q400,110 800,125 T1200,120 L1200,160 L0,160 Z" fill="#e0effa" opacity="0.7"/>
-          <line x1="300" y1="20" x2="295" y2="35" stroke="#7dd3fc" stroke-width="1.5" stroke-dasharray="2,3"/>
-          <line x1="650" y1="30" x2="645" y2="45" stroke="#7dd3fc" stroke-width="1.5" stroke-dasharray="2,3"/>
-        `,
-        artLeft: `
-          <div class="relative w-36 h-28 flex items-end">
-            <svg viewBox="0 0 130 100" class="w-full h-full drop-shadow-sm">
-              <path d="M20,60 C20,18 105,18 105,60 C92,54 82,58 72,55 C62,58 52,54 42,56 C32,54 26,58 20,60 Z" fill="#facc15" stroke="#ca8a04" stroke-width="2"/>
-              <line x1="63" y1="20" x2="63" y2="82" stroke="#78350f" stroke-width="3" stroke-linecap="round"/>
-              <path d="M63,82 C63,92 50,92 50,84" fill="none" stroke="#78350f" stroke-width="3" stroke-linecap="round"/>
-              <ellipse cx="28" cy="72" rx="2" ry="4" fill="#38bdf8"/>
-            </svg>
-          </div>
-        `,
-        artRight: `
-          <div class="relative w-32 h-28 flex items-end">
-            <svg viewBox="0 0 120 100" class="w-full h-full drop-shadow-sm">
-              <line x1="45" y1="50" x2="35" y2="25" stroke="#16a34a" stroke-width="2"/>
-              <circle cx="35" cy="25" r="7" fill="#fb7185"/>
-              <circle cx="70" cy="20" r="7" fill="#f43f5e"/>
-              <path d="M35,45 L50,45 L50,75 L62,82 C64,88 56,92 48,92 L32,92 C28,92 28,82 32,80 L35,75 Z" fill="#facc15" stroke="#ca8a04" stroke-width="1.5"/>
-              <path d="M55,45 L70,45 L70,75 L82,82 C84,88 76,92 68,92 L52,92 C48,92 48,82 52,80 L55,75 Z" fill="#eab308" stroke="#a16207" stroke-width="1.5"/>
-            </svg>
-          </div>
-        `
-      },
-
-      // 4: MAY - Peonies in Mason Jar & Garden Bees
-      {
-        monthName: "May",
-        bodyBg: "#faf6f2",
-        sidebarBg: "#f2ece4",
-        bannerBg: "#fbebe0",
-        tileBg: "#ffffff",
-        tileMutedBg: "rgba(251, 235, 224, 0.4)",
-        tileBorder: "rgba(251, 146, 60, 0.35)",
-        accentColor: "#ea580c",
-        textPrimary: "#431407",
-        sparkleColor: "#f97316",
-        todayGlow: "rgba(234, 88, 12, 0.25)",
-        scrollThumb: "rgba(249, 115, 22, 0.35)",
-        weekdays: [
-          { bg: "#ffedd5", text: "#9a3412" },
-          { bg: "#dcfce7", text: "#166534" },
-          { bg: "#fce7f3", text: "#9d174d" },
-          { bg: "#fef9c3", text: "#854d0e" },
-          { bg: "#ffedd5", text: "#9a3412" },
-          { bg: "#e0e7ff", text: "#3730a3" },
-          { bg: "#fae8ff", text: "#86198f" }
-        ],
-        pillBase: "bg-orange-50 border-orange-300 text-orange-950",
-        weddingPill: "bg-rose-50 border-rose-400 text-rose-950",
-        kaylaPill: "bg-amber-50 border-amber-400 text-amber-950",
-        skySvg: `
-          <rect width="1200" height="160" fill="#fcf6f0" opacity="0.6"/>
-          <path d="M0,125 Q400,105 800,120 T1200,115 L1200,160 L0,160 Z" fill="#faeee3" opacity="0.8"/>
-          <circle cx="550" cy="75" r="65" fill="#ffedd5" opacity="0.4" filter="blur(12px)"/>
-        `,
-        artLeft: `
-          <div class="relative w-36 h-28 flex items-end">
-            <svg viewBox="0 0 130 100" class="w-full h-full drop-shadow-sm">
-              <rect x="42" y="45" width="46" height="50" rx="6" fill="#e0f2fe" opacity="0.75" stroke="#0284c7" stroke-width="1.5"/>
-              <rect x="46" y="40" width="38" height="6" rx="2" fill="#bae6fd" stroke="#0284c7" stroke-width="1.5"/>
-              <line x1="52" y1="42" x2="56" y2="85" stroke="#15803d" stroke-width="2"/>
-              <line x1="65" y1="42" x2="65" y2="85" stroke="#16a34a" stroke-width="2.5"/>
-              <circle cx="50" cy="28" r="14" fill="#f43f5e"/><circle cx="50" cy="28" r="8" fill="#fb7185"/>
-              <circle cx="75" cy="22" r="16" fill="#f472b6"/><circle cx="75" cy="22" r="9" fill="#fbcfe8"/>
-            </svg>
-          </div>
-        `,
-        artRight: `
-          <div class="relative w-32 h-28 flex items-end">
-            <svg viewBox="0 0 120 100" class="w-full h-full drop-shadow-sm">
-              <rect x="25" y="48" width="45" height="42" rx="5" fill="#047857"/>
-              <line x1="70" y1="65" x2="98" y2="40" stroke="#047857" stroke-width="5" stroke-linecap="round"/>
-              <polygon points="96,35 106,30 102,48 94,44" fill="#065f46"/>
-              <path d="M25,55 C10,55 10,85 25,85" fill="none" stroke="#047857" stroke-width="4"/>
-              <ellipse cx="90" cy="18" rx="6" ry="4.5" fill="#facc15"/>
-              <line x1="88" y1="14" x2="88" y2="22" stroke="#000000" stroke-width="1.5"/>
-              <ellipse cx="88" cy="12" rx="3" ry="5" fill="#e0f2fe" opacity="0.8"/>
-            </svg>
-          </div>
-        `
-      },
-
-      // 5: JUNE - Smiling Summer Sun & Wild Strawberries
-      {
-        monthName: "June",
-        bodyBg: "#fbfaf2",
-        sidebarBg: "#f4f2e4",
-        bannerBg: "#fef6d8",
-        tileBg: "#ffffff",
-        tileMutedBg: "rgba(254, 246, 216, 0.4)",
-        tileBorder: "rgba(250, 204, 21, 0.4)",
-        accentColor: "#ca8a04",
-        textPrimary: "#713f12",
-        sparkleColor: "#eab308",
-        todayGlow: "rgba(202, 138, 4, 0.25)",
-        scrollThumb: "rgba(234, 179, 8, 0.35)",
-        weekdays: [
-          { bg: "#fef08a", text: "#854d0e" },
-          { bg: "#fed7aa", text: "#9a3412" },
-          { bg: "#bbf7d0", text: "#166534" },
-          { bg: "#bae6fd", text: "#0369a1" },
-          { bg: "#fef08a", text: "#854d0e" },
-          { bg: "#fbcfe8", text: "#9d174d" },
-          { bg: "#e9d5ff", text: "#6b21a8" }
-        ],
-        pillBase: "bg-amber-50 border-amber-300 text-amber-950",
-        weddingPill: "bg-rose-50 border-rose-400 text-rose-950",
-        kaylaPill: "bg-yellow-50 border-yellow-400 text-yellow-950",
-        skySvg: `
-          <rect width="1200" height="160" fill="#fefce8" opacity="0.6"/>
-          <path d="M0,125 Q400,105 800,120 T1200,115 L1200,160 L0,160 Z" fill="#fef9c3" opacity="0.7"/>
-          <circle cx="600" cy="75" r="70" fill="#fde047" opacity="0.35" filter="blur(14px)"/>
-        `,
-        artLeft: `
-          <div class="relative w-36 h-28 flex items-end">
-            <svg viewBox="0 0 130 100" class="w-full h-full drop-shadow-sm">
-              <circle cx="65" cy="55" r="26" fill="#f59e0b"/>
-              <circle cx="65" cy="55" r="23" fill="#facc15"/>
-              <ellipse cx="57" cy="52" rx="2" ry="2.5" fill="#78350f"/>
-              <ellipse cx="73" cy="52" rx="2" ry="2.5" fill="#78350f"/>
-              <path d="M60,60 Q65,66 70,60" fill="none" stroke="#78350f" stroke-width="2" stroke-linecap="round"/>
-              <line x1="65" y1="20" x2="65" y2="10" stroke="#f59e0b" stroke-width="3" stroke-linecap="round"/>
-              <line x1="65" y1="90" x2="65" y2="100" stroke="#f59e0b" stroke-width="3" stroke-linecap="round"/>
-              <line x1="30" y1="55" x2="20" y2="55" stroke="#f59e0b" stroke-width="3" stroke-linecap="round"/>
-              <line x1="100" y1="55" x2="110" y2="55" stroke="#f59e0b" stroke-width="3" stroke-linecap="round"/>
-            </svg>
-          </div>
-        `,
-        artRight: `
-          <div class="relative w-32 h-28 flex items-end">
-            <svg viewBox="0 0 120 100" class="w-full h-full drop-shadow-sm">
-              <path d="M20,95 Q50,60 100,85" fill="none" stroke="#16a34a" stroke-width="3"/>
-              <path d="M42,75 C42,92 58,92 58,75 C58,70 42,70 42,75 Z" fill="#dc2626"/>
-              <polygon points="46,70 50,64 54,70" fill="#15803d"/>
-              <ellipse cx="60" cy="30" rx="3" ry="12" fill="#0284c7"/>
-              <ellipse cx="50" cy="27" rx="9" ry="2.5" fill="#bae6fd" opacity="0.8"/>
-              <ellipse cx="70" cy="27" rx="9" ry="2.5" fill="#bae6fd" opacity="0.8"/>
-            </svg>
-          </div>
-        `
-      },
-
-      // 6: JULY - Campfire, Roasted Marshmallows & Brass Lantern
-      {
-        monthName: "July",
-        bodyBg: "#f6f8fa",
-        sidebarBg: "#ebf0f5",
-        bannerBg: "#dde8f2",
-        tileBg: "#ffffff",
-        tileMutedBg: "rgba(221, 232, 242, 0.4)",
-        tileBorder: "rgba(244, 63, 94, 0.3)",
-        accentColor: "#b91c1c",
-        textPrimary: "#1e293b",
-        sparkleColor: "#f59e0b",
-        todayGlow: "rgba(185, 28, 28, 0.25)",
-        scrollThumb: "rgba(225, 29, 72, 0.35)",
-        weekdays: [
-          { bg: "#fee2e2", text: "#991b1b" },
-          { bg: "#e0f2fe", text: "#0369a1" },
-          { bg: "#f1f5f9", text: "#334155" },
-          { bg: "#fee2e2", text: "#991b1b" },
-          { bg: "#e0f2fe", text: "#0369a1" },
-          { bg: "#fef3c7", text: "#854d0e" },
-          { bg: "#dbeafe", text: "#1e40af" }
-        ],
-        pillBase: "bg-red-50 border-red-300 text-red-950",
-        weddingPill: "bg-blue-50 border-blue-400 text-blue-950",
-        kaylaPill: "bg-orange-50 border-orange-400 text-orange-950",
-        skySvg: `
-          <rect width="1200" height="160" fill="#f0f4f8" opacity="0.6"/>
-          <path d="M0,125 Q400,95 800,115 T1200,110 L1200,160 L0,160 Z" fill="#e2e8f0" opacity="0.7"/>
-          <circle cx="600" cy="75" r="65" fill="#fed7aa" opacity="0.3" filter="blur(12px)"/>
-        `,
-        artLeft: `
-          <div class="relative w-36 h-28 flex items-end">
-            <svg viewBox="0 0 130 100" class="w-full h-full drop-shadow-sm">
-              <ellipse cx="65" cy="85" rx="30" ry="8" fill="#451a03"/>
-              <line x1="40" y1="88" x2="88" y2="78" stroke="#78350f" stroke-width="7" stroke-linecap="round"/>
-              <line x1="42" y1="78" x2="90" y2="88" stroke="#542308" stroke-width="7" stroke-linecap="round"/>
-              <circle cx="65" cy="65" r="22" fill="#fb923c" opacity="0.4" filter="blur(6px)"/>
-              <path d="M50,80 Q55,45 65,35 Q75,45 80,80 Q65,70 50,80 Z" fill="#ea580c"/>
-              <path d="M56,80 Q62,55 65,48 Q70,55 74,80 Q65,74 56,80 Z" fill="#facc15"/>
-              <line x1="95" y1="35" x2="70" y2="60" stroke="#78350f" stroke-width="2"/>
-              <rect x="66" y="56" width="8" height="6" rx="1.5" fill="#fef08a"/>
-            </svg>
-          </div>
-        `,
-        artRight: `
-          <div class="relative w-32 h-28 flex items-end">
-            <svg viewBox="0 0 120 100" class="w-full h-full drop-shadow-sm">
-              <rect x="42" y="35" width="36" height="50" rx="5" fill="#fef3c7" stroke="#b45309" stroke-width="2"/>
-              <polygon points="36,35 60,18 84,35" fill="#78350f"/>
-              <circle cx="60" cy="14" r="6" fill="none" stroke="#78350f" stroke-width="2"/>
-              <circle cx="60" cy="60" r="10" fill="#fde047" opacity="0.8"/>
-            </svg>
-          </div>
-        `
-      },
-
-      // 7: AUGUST - Sunflower Meadow & Golden Wheat
-      {
-        monthName: "August",
-        bodyBg: "#fefcf4",
-        sidebarBg: "#f9f6e6",
-        bannerBg: "#fef3ce",
-        tileBg: "#ffffff",
-        tileMutedBg: "rgba(254, 243, 206, 0.4)",
-        tileBorder: "rgba(245, 158, 11, 0.35)",
-        accentColor: "#d97706",
-        textPrimary: "#78350f",
-        sparkleColor: "#f59e0b",
-        todayGlow: "rgba(217, 119, 6, 0.25)",
-        scrollThumb: "rgba(245, 158, 11, 0.35)",
-        weekdays: [
-          { bg: "#fef3c7", text: "#92400e" },
-          { bg: "#ffedd5", text: "#9a3412" },
-          { bg: "#fef08a", text: "#854d0e" },
-          { bg: "#dcfce7", text: "#166534" },
-          { bg: "#fef3c7", text: "#92400e" },
-          { bg: "#fed7aa", text: "#9a3412" },
-          { bg: "#f3e8ff", text: "#6b21a8" }
-        ],
-        pillBase: "bg-amber-50 border-amber-300 text-amber-950",
-        weddingPill: "bg-orange-50 border-orange-400 text-orange-950",
-        kaylaPill: "bg-yellow-50 border-yellow-400 text-yellow-950",
-        skySvg: `
-          <rect width="1200" height="160" fill="#fffbeb" opacity="0.6"/>
-          <path d="M0,125 Q400,105 800,120 T1200,115 L1200,160 L0,160 Z" fill="#fef3c7" opacity="0.6"/>
-          <circle cx="580" cy="75" r="70" fill="#fde68a" opacity="0.35" filter="blur(14px)"/>
-        `,
-        artLeft: `
-          <div class="relative w-36 h-28 flex items-end">
-            <svg viewBox="0 0 130 100" class="w-full h-full drop-shadow-sm">
-              <path d="M45,95 Q55,60 62,45" fill="none" stroke="#15803d" stroke-width="4"/>
-              <circle cx="65" cy="45" r="28" fill="#f59e0b"/>
-              <circle cx="65" cy="45" r="23" fill="#fbbf24"/>
-              <circle cx="65" cy="45" r="14" fill="#451a03"/>
-              <ellipse cx="88" cy="35" rx="5" ry="4" fill="#facc15"/>
-              <line x1="86" y1="31" x2="86" y2="39" stroke="#000000" stroke-width="1.5"/>
-            </svg>
-          </div>
-        `,
-        artRight: `
-          <div class="relative w-32 h-28 flex items-end">
-            <svg viewBox="0 0 120 100" class="w-full h-full drop-shadow-sm">
-              <line x1="85" y1="95" x2="70" y2="35" stroke="#d97706" stroke-width="2"/>
-              <circle cx="45" cy="65" r="22" fill="#f87171"/>
-              <circle cx="45" cy="65" r="19" fill="#fb923c"/>
-              <path d="M45,45 Q55,35 62,42 Q50,48 45,45 Z" fill="#16a34a"/>
-            </svg>
-          </div>
-        `
-      },
-
-      // 8: SEPTEMBER - Vintage Books & Spiced Cider Mug
-      {
-        monthName: "September",
-        bodyBg: "#fbf6ef",
-        sidebarBg: "#f4ede0",
-        bannerBg: "#f6e8d2",
-        tileBg: "#ffffff",
-        tileMutedBg: "rgba(246, 232, 210, 0.4)",
-        tileBorder: "rgba(217, 119, 6, 0.35)",
-        accentColor: "#b45309",
-        textPrimary: "#451a03",
-        sparkleColor: "#d97706",
-        todayGlow: "rgba(180, 83, 9, 0.25)",
-        scrollThumb: "rgba(180, 83, 9, 0.35)",
-        weekdays: [
-          { bg: "#fed7aa", text: "#9a3412" },
-          { bg: "#fef3c7", text: "#854d0e" },
-          { bg: "#ffedd5", text: "#9a3412" },
-          { bg: "#dcfce7", text: "#166534" },
-          { bg: "#fef08a", text: "#854d0e" },
-          { bg: "#fee2e2", text: "#991b1b" },
-          { bg: "#ede9fe", text: "#5b21b6" }
-        ],
-        pillBase: "bg-amber-50 border-amber-300 text-amber-950",
-        weddingPill: "bg-red-50 border-red-400 text-red-950",
-        kaylaPill: "bg-orange-50 border-orange-400 text-orange-950",
-        skySvg: `
-          <rect width="1200" height="160" fill="#fef6ed" opacity="0.6"/>
-          <path d="M0,125 Q400,105 800,120 T1200,115 L1200,160 L0,160 Z" fill="#fceadc" opacity="0.7"/>
-          <circle cx="580" cy="75" r="65" fill="#fcd34d" opacity="0.3" filter="blur(12px)"/>
-        `,
-        artLeft: `
-          <div class="relative w-36 h-28 flex items-end">
-            <svg viewBox="0 0 130 100" class="w-full h-full drop-shadow-sm">
-              <rect x="25" y="75" width="75" height="18" rx="3" fill="#78350f"/>
-              <rect x="32" y="60" width="62" height="16" rx="3" fill="#1e3a8a"/>
-              <rect x="36" y="47" width="52" height="14" rx="3" fill="#991b1b"/>
-              <circle cx="62" cy="38" r="10" fill="#dc2626"/>
-              <ellipse cx="66" cy="24" rx="3" ry="1.5" fill="#15803d"/>
-            </svg>
-          </div>
-        `,
-        artRight: `
-          <div class="relative w-32 h-28 flex items-end">
-            <svg viewBox="0 0 120 100" class="w-full h-full drop-shadow-sm">
-              <rect x="35" y="45" width="46" height="45" rx="6" fill="#ea580c"/>
-              <path d="M81,52 C94,52 94,78 81,78" fill="none" stroke="#ea580c" stroke-width="5"/>
-              <line x1="68" y1="52" x2="82" y2="28" stroke="#78350f" stroke-width="4" stroke-linecap="round"/>
-              <path d="M48,40 Q44,28 50,18" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round"/>
-            </svg>
-          </div>
-        `
-      },
-
-      // 9: OCTOBER - Cozy Halloween (Jack-o'-lantern, Cat & Ghost)
-      {
-        monthName: "October",
-        bodyBg: "#fbf6ec",
-        sidebarBg: "#f6ede0",
-        bannerBg: "#faead6",
-        tileBg: "#ffffff",
-        tileMutedBg: "rgba(250, 234, 214, 0.45)",
-        tileBorder: "rgba(217, 119, 6, 0.35)",
-        accentColor: "#ea580c",
-        textPrimary: "#29150b",
-        sparkleColor: "#f59e0b",
-        todayGlow: "rgba(234, 88, 12, 0.35)",
-        scrollThumb: "rgba(234, 88, 12, 0.35)",
-        weekdays: [
-          { bg: "#f5b895", text: "#542713" },
-          { bg: "#eec2aa", text: "#542713" },
-          { bg: "#f6cca9", text: "#542713" },
-          { bg: "#cbe3cb", text: "#204926" },
-          { bg: "#edd5ba", text: "#56381e" },
-          { bg: "#fcd4b4", text: "#542713" },
-          { bg: "#d8cde3", text: "#412856" }
-        ],
-        pillBase: "bg-orange-50 border-orange-300 text-orange-950",
-        weddingPill: "bg-amber-50 border-amber-400 text-amber-950",
-        kaylaPill: "bg-purple-50 border-purple-400 text-purple-950",
-        skySvg: `
-          <rect width="1200" height="160" fill="#fdfaf3" opacity="0.6"/>
-          <path d="M-10,0 L85,0 C75,35 48,55 40,85 C36,105 50,135 15,160 L-10,160 Z" fill="#3b2318" opacity="0.95"/>
-          <path d="M45,65 Q95,48 125,60 Q95,73 50,77 Z" fill="#3b2318"/>
-          <circle cx="580" cy="75" r="70" fill="#fef08a" opacity="0.35" filter="blur(10px)"/>
-          <circle cx="580" cy="75" r="62" fill="#fef3c7" opacity="0.85"/>
-        `,
-        artLeft: `
-          <div class="relative w-44 h-28 flex items-end space-x-1.5">
-            <div class="w-24 h-28 relative">
-              <svg viewBox="0 0 100 120" class="w-full h-full drop-shadow-md">
-                <ellipse cx="50" cy="86" rx="36" ry="26" fill="#ea580c"/>
-                <ellipse cx="50" cy="86" rx="25" ry="26" fill="#f97316"/>
-                <ellipse cx="50" cy="86" rx="13" ry="25" fill="#fb923c"/>
-                <polygon points="38,82 44,82 41,75" fill="#29140a"/>
-                <polygon points="56,82 62,82 59,75" fill="#29140a"/>
-                <polygon points="48,86 52,86 50,83" fill="#29140a"/>
-                <path d="M38,92 Q50,101 62,92 Q50,96 38,92 Z" fill="#29140a"/>
-                <ellipse cx="50" cy="67" rx="42" ry="9" fill="#292333"/>
-                <path d="M32,66 Q45,20 63,15 Q54,38 68,65 Z" fill="#292333"/>
-                <path d="M33,65 C42,62 58,62 67,65 L66,61 C57,58 41,58 34,61 Z" fill="#d97706"/>
-              </svg>
+        renderBanner: (m, y) => `
+          <svg class="absolute inset-0 w-full h-full" viewBox="0 0 1200 160" fill="none" preserveAspectRatio="none">
+            <rect width="100%" height="100%" fill="#edf5fa"/>
+            <path d="M0 160 Q300 100 600 135 Q900 105 1200 160 Z" fill="#d9e9f2"/>
+            <g transform="translate(110, 20)"><polygon points="40,15 15,65 65,65" fill="#1e3a5f"/><polygon points="40,45 5,105 75,105" fill="#2d4f7c"/><rect x="34" y="105" width="12" height="18" fill="#3e2723"/></g>
+            <g transform="translate(1010, 25)"><polygon points="35,18 12,65 58,65" fill="#1e3a5f"/><polygon points="35,48 5,100 65,100" fill="#2d4f7c"/><rect x="30" y="100" width="10" height="16" fill="#3e2723"/></g>
+            <circle cx="320" cy="40" r="2.5" fill="#94a3b8"/><circle cx="850" cy="50" r="3" fill="#94a3b8"/><circle cx="500" cy="25" r="2" fill="#94a3b8"/>
+          </svg>
+          <div class="relative z-10 flex flex-col items-center justify-center text-center w-full">
+            <div class="flex items-center space-x-4">
+              <button onclick="navigateMonth(-1)" class="p-1 text-[#0c4a6e]/60 hover:text-[#0c4a6e] font-bold text-lg transition">◀</button>
+              <h1 class="text-6xl sm:text-7xl md:text-8xl text-[#0c4a6e] font-bold tracking-tight drop-shadow-sm" style="font-family: 'Mountains of Christmas', cursive;">${m}</h1>
+              <button onclick="navigateMonth(1)" class="p-1 text-[#0c4a6e]/60 hover:text-[#0c4a6e] font-bold text-lg transition">▶</button>
             </div>
-            <div class="w-16 h-20 -ml-4">
-              <svg viewBox="0 0 70 80" class="w-full h-full drop-shadow-md">
-                <ellipse cx="35" cy="55" rx="20" ry="18" fill="#231f2d"/>
-                <path d="M50,62 Q68,60 62,38 Q58,36 58,44" fill="none" stroke="#231f2d" stroke-width="4.5" stroke-linecap="round"/>
-                <circle cx="35" cy="35" r="14" fill="#231f2d"/>
-                <polygon points="23,28 27,14 33,26" fill="#231f2d"/>
-                <polygon points="37,26 43,14 47,28" fill="#231f2d"/>
-                <ellipse cx="30" cy="35" rx="3" ry="4" fill="#facc15"/>
-                <ellipse cx="40" cy="35" rx="3" ry="4" fill="#facc15"/>
-              </svg>
-            </div>
-          </div>
-        `,
-        artRight: `
-          <div class="relative w-36 h-28 flex items-end space-x-1.5">
-            <div class="w-14 h-22">
-              <svg viewBox="0 0 60 80" class="w-full h-full drop-shadow-md">
-                <path d="M12,45 C12,16 48,16 48,45 C48,68 42,65 38,72 C34,65 30,69 26,72 C22,65 18,68 14,72 C12,65 12,55 12,45 Z" fill="#ffffff" stroke="#362f28" stroke-width="2"/>
-                <ellipse cx="26" cy="35" rx="2.5" ry="4" fill="#292333"/>
-                <ellipse cx="36" cy="35" rx="2.5" ry="4" fill="#292333"/>
-                <circle cx="31" cy="46" r="4.5" fill="#f97316" opacity="0.9"/>
-              </svg>
-            </div>
-            <div class="w-20 h-28">
-              <svg viewBox="0 0 90 120" class="w-full h-full">
-                <polygon points="10,65 25,32 40,65" fill="#2a2336"/>
-                <polygon points="40,55 60,12 80,55" fill="#2a2336"/>
-                <rect x="15" y="65" width="25" height="50" fill="#2a2336"/>
-                <rect x="40" y="55" width="40" height="60" fill="#2a2336"/>
-                <circle cx="60" cy="40" r="5.5" fill="#fde047"/>
-              </svg>
-            </div>
-          </div>
-        `
+            <p class="text-sm sm:text-base tracking-[0.25em] text-[#0369a1] font-bold uppercase mt-1" style="font-family: 'Cinzel', serif;">${y}</p>
+          </div>`
       },
 
-      // 10: NOVEMBER - Harvest Cornucopia & Pumpkin Pie
-      {
-        monthName: "November",
-        bodyBg: "#faf5ef",
-        sidebarBg: "#f2ece3",
-        bannerBg: "#f6e8d8",
-        tileBg: "#ffffff",
-        tileMutedBg: "rgba(246, 232, 216, 0.4)",
-        tileBorder: "rgba(217, 119, 6, 0.35)",
-        accentColor: "#b45309",
-        textPrimary: "#451a03",
-        sparkleColor: "#d97706",
-        todayGlow: "rgba(180, 83, 9, 0.25)",
-        scrollThumb: "rgba(180, 83, 9, 0.35)",
-        weekdays: [
-          { bg: "#fed7aa", text: "#9a3412" },
-          { bg: "#fde047", text: "#854d0e" },
-          { bg: "#fecdd3", text: "#9f1239" },
-          { bg: "#fed7aa", text: "#9a3412" },
-          { bg: "#e2e8f0", text: "#334155" },
-          { bg: "#fef08a", text: "#854d0e" },
-          { bg: "#dcfce7", text: "#166534" }
+      1: {
+        name: "February",
+        fonts: {
+          title: "'Playfair Display', serif",
+          accent: "'Great Vibes', cursive",
+          body: "'Source Sans 3', sans-serif"
+        },
+        palette: {
+          screenBackdrop: "#1c0d12",
+          paperBg: "#fff9fa",
+          sidebarBg: "#fcf0f2",
+          boardBorder: "#4a1926",
+          gridBorder: "#52212d",
+          themeInk: "#380d17",
+          cellBg: "#ffffff",
+          cellMutedBg: "rgba(247, 228, 233, 0.45)",
+          cellTodayBg: "#ffe4e6",
+          todayAccent: "#e11d48",
+          dayNumColor: "#4c0519"
+        },
+        weekdayColors: [
+          { name: "SUN", bg: "#fda4af", text: "#881337" },
+          { name: "MON", bg: "#fecdd3", text: "#9f1239" },
+          { name: "TUE", bg: "#fce7f3", text: "#831843" },
+          { name: "WED", bg: "#fed7aa", text: "#7c2d12" },
+          { name: "THU", bg: "#fecdd3", text: "#9f1239" },
+          { name: "FRI", bg: "#f43f5e", text: "#ffffff" },
+          { name: "SAT", bg: "#fecdd3", text: "#9f1239" }
         ],
-        pillBase: "bg-amber-50 border-amber-300 text-amber-950",
-        weddingPill: "bg-orange-50 border-orange-400 text-orange-950",
-        kaylaPill: "bg-rose-50 border-rose-400 text-rose-950",
-        skySvg: `
-          <rect width="1200" height="160" fill="#fbf5ee" opacity="0.6"/>
-          <path d="M0,125 Q400,105 800,120 T1200,115 L1200,160 L0,160 Z" fill="#f5e9dc" opacity="0.7"/>
-          <circle cx="580" cy="75" r="65" fill="#fed7aa" opacity="0.35" filter="blur(12px)"/>
-        `,
-        artLeft: `
-          <div class="relative w-36 h-28 flex items-end">
-            <svg viewBox="0 0 130 100" class="w-full h-full drop-shadow-sm">
-              <ellipse cx="65" cy="82" rx="35" ry="12" fill="#78350f"/>
-              <ellipse cx="50" cy="65" rx="14" ry="20" fill="#15803d"/>
-              <ellipse cx="78" cy="68" rx="16" ry="14" fill="#eab308"/>
-              <circle cx="65" cy="72" r="14" fill="#ea580c"/>
-            </svg>
-          </div>
-        `,
-        artRight: `
-          <div class="relative w-32 h-28 flex items-end">
-            <svg viewBox="0 0 120 100" class="w-full h-full drop-shadow-sm">
-              <polygon points="25,75 85,45 95,85" fill="#d97706"/>
-              <polygon points="30,73 83,47 90,80" fill="#ea580c"/>
-              <circle cx="60" cy="60" r="8" fill="#ffffff"/>
-              <path d="M90,30 Q95,15 105,20 Q110,35 90,30 Z" fill="#b91c1c"/>
-            </svg>
-          </div>
-        `
+        renderBanner: (m, y) => `
+          <svg class="absolute inset-0 w-full h-full" viewBox="0 0 1200 160" fill="none" preserveAspectRatio="none">
+            <rect width="100%" height="100%" fill="#fff1f2"/>
+            <path d="M140 50 C140 35 155 20 170 35 C185 20 200 35 200 50 C200 80 170 95 170 105 C170 95 140 80 140 50 Z" fill="#fda4af" opacity="0.7"/>
+            <path d="M1020 45 C1020 32 1032 20 1045 32 C1058 20 1070 32 1070 45 C1070 70 1045 85 1045 92 C1045 85 1020 70 1020 45 Z" fill="#fda4af" opacity="0.6"/>
+          </svg>
+          <div class="relative z-10 flex flex-col items-center justify-center text-center w-full">
+            <div class="flex items-center space-x-4">
+              <button onclick="navigateMonth(-1)" class="p-1 text-[#881337]/60 hover:text-[#881337] font-bold text-lg transition">◀</button>
+              <h1 class="text-5xl sm:text-6xl md:text-7xl text-[#881337] font-bold tracking-tight italic" style="font-family: 'Playfair Display', serif;">${m}</h1>
+              <button onclick="navigateMonth(1)" class="p-1 text-[#881337]/60 hover:text-[#881337] font-bold text-lg transition">▶</button>
+            </div>
+            <p class="text-xl sm:text-2xl font-bold tracking-widest text-[#be123c] mt-0.5" style="font-family: 'Great Vibes', cursive;">${y}</p>
+          </div>`
       },
 
-      // 11: DECEMBER - Winter Garland, Gingerbread & Lantern
-      {
-        monthName: "December",
-        bodyBg: "#f6f8f6",
-        sidebarBg: "#ebf2eb",
-        bannerBg: "#ddeedd",
-        tileBg: "#ffffff",
-        tileMutedBg: "rgba(221, 238, 221, 0.4)",
-        tileBorder: "rgba(34, 197, 94, 0.35)",
-        accentColor: "#15803d",
-        textPrimary: "#14532d",
-        sparkleColor: "#dc2626",
-        todayGlow: "rgba(21, 128, 61, 0.25)",
-        scrollThumb: "rgba(22, 101, 52, 0.35)",
-        weekdays: [
-          { bg: "#fee2e2", text: "#991b1b" },
-          { bg: "#dcfce7", text: "#166534" },
-          { bg: "#fef3c7", text: "#854d0e" },
-          { bg: "#fee2e2", text: "#991b1b" },
-          { bg: "#dcfce7", text: "#166534" },
-          { bg: "#e0e7ff", text: "#3730a3" },
-          { bg: "#f1f5f9", text: "#334155" }
+      2: {
+        name: "March",
+        fonts: {
+          title: "'Caveat', cursive",
+          accent: "'Patrick Hand', cursive",
+          body: "'Patrick Hand', cursive, sans-serif"
+        },
+        palette: {
+          screenBackdrop: "#0b1c11",
+          paperBg: "#f7fcf8",
+          sidebarBg: "#eff8f1",
+          boardBorder: "#143a21",
+          gridBorder: "#184527",
+          themeInk: "#0e2917",
+          cellBg: "#ffffff",
+          cellMutedBg: "rgba(225, 242, 229, 0.45)",
+          cellTodayBg: "#dcfce7",
+          todayAccent: "#16a34a",
+          dayNumColor: "#14532d"
+        },
+        weekdayColors: [
+          { name: "SUN", bg: "#86efac", text: "#14532d" },
+          { name: "MON", bg: "#bbf7d0", text: "#166534" },
+          { name: "TUE", bg: "#dcfce7", text: "#14532d" },
+          { name: "WED", bg: "#bbf7d0", text: "#166534" },
+          { name: "THU", bg: "#dcfce7", text: "#14532d" },
+          { name: "FRI", bg: "#22c55e", text: "#ffffff" },
+          { name: "SAT", bg: "#86efac", text: "#14532d" }
         ],
-        pillBase: "bg-emerald-50 border-emerald-300 text-emerald-950",
-        weddingPill: "bg-red-50 border-red-400 text-red-950",
-        kaylaPill: "bg-teal-50 border-teal-400 text-teal-950",
-        skySvg: `
-          <rect width="1200" height="160" fill="#f2f7f2" opacity="0.6"/>
-          <path d="M0,125 Q400,105 800,120 T1200,115 L1200,160 L0,160 Z" fill="#e2ede2" opacity="0.7"/>
-          <circle cx="580" cy="75" r="65" fill="#fecaca" opacity="0.25" filter="blur(12px)"/>
-        `,
-        artLeft: `
-          <div class="relative w-36 h-28 flex items-end">
-            <svg viewBox="0 0 130 100" class="w-full h-full drop-shadow-sm">
-              <path d="M10,40 Q60,65 110,45" fill="none" stroke="#166534" stroke-width="6" stroke-linecap="round"/>
-              <circle cx="45" cy="55" r="12" fill="#ea580c"/>
-              <circle cx="85" cy="45" r="6" fill="#b45309"/>
-              <rect x="81" y="51" width="8" height="14" rx="2" fill="#b45309"/>
-            </svg>
-          </div>
-        `,
-        artRight: `
-          <div class="relative w-32 h-28 flex items-end">
-            <svg viewBox="0 0 120 100" class="w-full h-full drop-shadow-sm">
-              <rect x="45" y="42" width="32" height="48" rx="4" fill="#fef3c7" stroke="#1e293b" stroke-width="2"/>
-              <rect x="56" y="58" width="10" height="25" fill="#dc2626"/>
-              <circle cx="61" cy="52" r="5" fill="#fde047" opacity="0.9"/>
-              <circle cx="28" cy="75" r="14" fill="#dc2626"/>
-            </svg>
-          </div>
-        `
+        renderBanner: (m, y) => `
+          <svg class="absolute inset-0 w-full h-full" viewBox="0 0 1200 160" fill="none" preserveAspectRatio="none">
+            <rect width="100%" height="100%" fill="#f0fdf4"/>
+            <path d="M-20 160 Q300 115 600 140 Q900 120 1220 160 Z" fill="#dcfce7"/>
+            <g transform="translate(150, 45)"><circle cx="20" cy="20" r="11" fill="#4ade80"/><circle cx="36" cy="20" r="11" fill="#4ade80"/><circle cx="28" cy="32" r="11" fill="#4ade80"/><line x1="28" y1="32" x2="28" y2="65" stroke="#15803d" stroke-width="3"/></g>
+            <g transform="translate(1000, 40)"><circle cx="18" cy="18" r="9" fill="#4ade80"/><circle cx="32" cy="18" r="9" fill="#4ade80"/><circle cx="25" cy="28" r="9" fill="#4ade80"/><line x1="25" y1="28" x2="25" y2="58" stroke="#15803d" stroke-width="2.5"/></g>
+          </svg>
+          <div class="relative z-10 flex flex-col items-center justify-center text-center w-full">
+            <div class="flex items-center space-x-4">
+              <button onclick="navigateMonth(-1)" class="p-1 text-[#14532d]/60 hover:text-[#14532d] font-bold text-lg transition">◀</button>
+              <h1 class="text-6xl sm:text-7xl md:text-8xl text-[#14532d] font-bold tracking-tight" style="font-family: 'Caveat', cursive;">${m}</h1>
+              <button onclick="navigateMonth(1)" class="p-1 text-[#14532d]/60 hover:text-[#14532d] font-bold text-lg transition">▶</button>
+            </div>
+            <div class="text-xl sm:text-2xl font-bold tracking-widest text-[#15803d] mt-0.5" style="font-family: 'Patrick Hand', cursive;">✦ ${y} ✦</div>
+          </div>`
+      },
+
+      3: {
+        name: "April",
+        fonts: {
+          title: "'Playfair Display', serif",
+          accent: "'Comfortaa', cursive",
+          body: "'Source Sans 3', sans-serif"
+        },
+        palette: {
+          screenBackdrop: "#111827",
+          paperBg: "#f8fafc",
+          sidebarBg: "#f1f5f9",
+          boardBorder: "#1e293b",
+          gridBorder: "#334155",
+          themeInk: "#0f172a",
+          cellBg: "#ffffff",
+          cellMutedBg: "rgba(226, 232, 240, 0.45)",
+          cellTodayBg: "#e0f2fe",
+          todayAccent: "#0284c7",
+          dayNumColor: "#0f172a"
+        },
+        weekdayColors: [
+          { name: "SUN", bg: "#7dd3fc", text: "#0369a1" },
+          { name: "MON", bg: "#bae6fd", text: "#0284c7" },
+          { name: "TUE", bg: "#e2e8f0", text: "#334155" },
+          { name: "WED", bg: "#bae6fd", text: "#0284c7" },
+          { name: "THU", bg: "#e2e8f0", text: "#334155" },
+          { name: "FRI", bg: "#fed7aa", text: "#7c2d12" },
+          { name: "SAT", bg: "#cbd5e1", text: "#1e293b" }
+        ],
+        renderBanner: (m, y) => `
+          <svg class="absolute inset-0 w-full h-full" viewBox="0 0 1200 160" fill="none" preserveAspectRatio="none">
+            <rect width="100%" height="100%" fill="#f1f5f9"/>
+            <path d="M120 40 Q150 15 180 38 Q205 20 225 40 Q240 55 225 72 L135 72 Q110 60 120 40 Z" fill="#cbd5e1"/>
+            <line x1="150" y1="85" x2="142" y2="105" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"/>
+            <line x1="175" y1="90" x2="167" y2="110" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"/>
+            <line x1="200" y1="85" x2="192" y2="105" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"/>
+            <path d="M990 40 Q1015 18 1038 38 Q1055 25 1070 40 Q1085 55 1070 70 L1000 70 Q980 60 990 40 Z" fill="#cbd5e1"/>
+            <line x1="1015" y1="85" x2="1008" y2="102" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"/>
+            <line x1="1040" y1="85" x2="1033" y2="102" stroke="#38bdf8" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <div class="relative z-10 flex flex-col items-center justify-center text-center w-full">
+            <div class="flex items-center space-x-4">
+              <button onclick="navigateMonth(-1)" class="p-1 text-[#0f172a]/60 hover:text-[#0f172a] font-bold text-lg transition">◀</button>
+              <h1 class="text-5xl sm:text-6xl md:text-7xl text-[#0f172a] font-bold tracking-tight" style="font-family: 'Playfair Display', serif;">${m}</h1>
+              <button onclick="navigateMonth(1)" class="p-1 text-[#0f172a]/60 hover:text-[#0f172a] font-bold text-lg transition">▶</button>
+            </div>
+            <p class="text-xs sm:text-sm tracking-[0.25em] uppercase text-[#0284c7] font-bold mt-1" style="font-family: 'Comfortaa', cursive;">${y}</p>
+          </div>`
+      },
+
+      4: {
+        name: "May",
+        fonts: {
+          title: "'Playfair Display', serif",
+          accent: "'Comfortaa', cursive",
+          body: "'Source Sans 3', sans-serif"
+        },
+        palette: {
+          screenBackdrop: "#111b15",
+          paperBg: "#f6f8f5",
+          sidebarBg: "#edf3ee",
+          boardBorder: "#203a2c",
+          gridBorder: "#274736",
+          themeInk: "#1a3526",
+          cellBg: "#ffffff",
+          cellMutedBg: "rgba(227, 237, 230, 0.45)",
+          cellTodayBg: "#f0fdf4",
+          todayAccent: "#16a34a",
+          dayNumColor: "#143823"
+        },
+        weekdayColors: [
+          { name: "SUN", bg: "#fbcfe8", text: "#831843" },
+          { name: "MON", bg: "#dcfce7", text: "#14532d" },
+          { name: "TUE", bg: "#e2e8f0", text: "#334155" },
+          { name: "WED", bg: "#d1fae5", text: "#065f46" },
+          { name: "THU", bg: "#e2e8f0", text: "#334155" },
+          { name: "FRI", bg: "#fef08a", text: "#713f12" },
+          { name: "SAT", bg: "#e0e7ff", text: "#3730a3" }
+        ],
+        renderBanner: (m, y) => `
+          <svg class="absolute inset-0 w-full h-full" viewBox="0 0 1200 160" fill="none" preserveAspectRatio="none">
+            <rect width="100%" height="100%" fill="#f4f8f4"/>
+            <path d="M-20 60 Q200 110 400 50 Q600 0 800 50 Q1000 110 1220 60" stroke="#22543d" stroke-width="2.5" fill="none"/>
+            <g transform="translate(130, 40)"><circle cx="15" cy="25" r="11" fill="#a7f3d0" stroke="#1b4332" stroke-width="1.5"/><circle cx="50" cy="32" r="13" fill="#fbcfe8" stroke="#831843" stroke-width="1.5"/><circle cx="50" cy="32" r="4" fill="#fde047"/></g>
+            <g transform="translate(970, 40)"><circle cx="15" cy="32" r="13" fill="#fbcfe8" stroke="#831843" stroke-width="1.5"/><circle cx="40" cy="18" r="10" fill="#a7f3d0" stroke="#1b4332" stroke-width="1.5"/></g>
+          </svg>
+          <div class="relative z-10 flex flex-col items-center justify-center text-center w-full">
+            <div class="flex items-center space-x-4">
+              <button onclick="navigateMonth(-1)" class="p-1 text-[#1a4329]/60 hover:text-[#1a4329] font-bold text-lg transition">◀</button>
+              <h1 class="text-5xl sm:text-6xl md:text-7xl text-[#1a4329] font-bold tracking-tight italic" style="font-family: 'Playfair Display', serif;">${m}</h1>
+              <button onclick="navigateMonth(1)" class="p-1 text-[#1a4329]/60 hover:text-[#1a4329] font-bold text-lg transition">▶</button>
+            </div>
+            <p class="text-xs sm:text-sm tracking-[0.25em] uppercase text-[#2d6a4f] font-bold mt-1" style="font-family: 'Comfortaa', cursive;">${y}</p>
+          </div>`
+      },
+
+      5: {
+        name: "June",
+        fonts: {
+          title: "'Pacifico', cursive",
+          accent: "'Patrick Hand', cursive",
+          body: "'Source Sans 3', sans-serif"
+        },
+        palette: {
+          screenBackdrop: "#1c1809",
+          paperBg: "#fffef7",
+          sidebarBg: "#fef9e7",
+          boardBorder: "#3d3209",
+          gridBorder: "#4a3c0a",
+          themeInk: "#292104",
+          cellBg: "#ffffff",
+          cellMutedBg: "rgba(254, 243, 199, 0.35)",
+          cellTodayBg: "#fef3c7",
+          todayAccent: "#f59e0b",
+          dayNumColor: "#451a03"
+        },
+        weekdayColors: [
+          { name: "SUN", bg: "#fde047", text: "#713f12" },
+          { name: "MON", bg: "#fef08a", text: "#713f12" },
+          { name: "TUE", bg: "#fed7aa", text: "#7c2d12" },
+          { name: "WED", bg: "#fef08a", text: "#713f12" },
+          { name: "THU", bg: "#fed7aa", text: "#7c2d12" },
+          { name: "FRI", bg: "#fde047", text: "#713f12" },
+          { name: "SAT", bg: "#fef08a", text: "#713f12" }
+        ],
+        renderBanner: (m, y) => `
+          <svg class="absolute inset-0 w-full h-full" viewBox="0 0 1200 160" fill="none" preserveAspectRatio="none">
+            <rect width="100%" height="100%" fill="#fffde6"/>
+            <circle cx="600" cy="80" r="90" fill="#fef08a" opacity="0.6"/>
+            <circle cx="160" cy="55" r="32" fill="#facc15" opacity="0.8"/>
+            <circle cx="1040" cy="55" r="32" fill="#facc15" opacity="0.8"/>
+          </svg>
+          <div class="relative z-10 flex flex-col items-center justify-center text-center w-full">
+            <div class="flex items-center space-x-4">
+              <button onclick="navigateMonth(-1)" class="p-1 text-[#713f12]/60 hover:text-[#713f12] font-bold text-lg transition">◀</button>
+              <h1 class="text-5xl sm:text-6xl md:text-7xl text-[#713f12] font-normal drop-shadow-sm" style="font-family: 'Pacifico', cursive;">${m}</h1>
+              <button onclick="navigateMonth(1)" class="p-1 text-[#713f12]/60 hover:text-[#713f12] font-bold text-lg transition">▶</button>
+            </div>
+            <div class="text-xl sm:text-2xl font-bold tracking-widest text-[#b45309] mt-0.5" style="font-family: 'Patrick Hand', cursive;">✦ ${y} ✦</div>
+          </div>`
+      },
+
+      6: {
+        name: "July",
+        fonts: {
+          title: "'Cinzel', serif",
+          accent: "'Source Sans 3', sans-serif",
+          body: "'Source Sans 3', sans-serif"
+        },
+        palette: {
+          screenBackdrop: "#0a0e1a",
+          paperBg: "#f8fafc",
+          sidebarBg: "#f1f5f9",
+          boardBorder: "#1e293b",
+          gridBorder: "#27354a",
+          themeInk: "#0f172a",
+          cellBg: "#ffffff",
+          cellMutedBg: "rgba(226, 232, 240, 0.45)",
+          cellTodayBg: "#e0e7ff",
+          todayAccent: "#4338ca",
+          dayNumColor: "#1e1b4b"
+        },
+        weekdayColors: [
+          { name: "SUN", bg: "#fca5a5", text: "#7f1d1d" },
+          { name: "MON", bg: "#e2e8f0", text: "#334155" },
+          { name: "TUE", bg: "#e2e8f0", text: "#334155" },
+          { name: "WED", bg: "#e2e8f0", text: "#334155" },
+          { name: "THU", bg: "#93c5fd", text: "#1e3a8a" },
+          { name: "FRI", bg: "#e2e8f0", text: "#334155" },
+          { name: "SAT", bg: "#cbd5e1", text: "#1e293b" }
+        ],
+        renderBanner: (m, y) => `
+          <svg class="absolute inset-0 w-full h-full" viewBox="0 0 1200 160" fill="none" preserveAspectRatio="none">
+            <rect width="100%" height="100%" fill="#f1f5f9"/>
+            <g transform="translate(170, 50)"><circle cx="0" cy="0" r="2.5" fill="#ef4444"/><line x1="0" y1="0" x2="-16" y2="-16" stroke="#ef4444" stroke-width="1.8"/><line x1="0" y1="0" x2="16" y2="-16" stroke="#3b82f6" stroke-width="1.8"/><line x1="0" y1="0" x2="0" y2="20" stroke="#eab308" stroke-width="1.8"/></g>
+            <g transform="translate(1010, 45)"><circle cx="0" cy="0" r="2.5" fill="#3b82f6"/><line x1="0" y1="0" x2="-14" y2="-14" stroke="#3b82f6" stroke-width="1.8"/><line x1="0" y1="0" x2="14" y2="-14" stroke="#ef4444" stroke-width="1.8"/><line x1="0" y1="0" x2="0" y2="18" stroke="#eab308" stroke-width="1.8"/></g>
+          </svg>
+          <div class="relative z-10 flex flex-col items-center justify-center text-center w-full">
+            <div class="flex items-center space-x-4">
+              <button onclick="navigateMonth(-1)" class="p-1 text-[#1e1b4b]/60 hover:text-[#1e1b4b] font-bold text-lg transition">◀</button>
+              <h1 class="text-5xl sm:text-6xl md:text-7xl text-[#1e1b4b] font-bold tracking-wider" style="font-family: 'Cinzel', serif;">${m}</h1>
+              <button onclick="navigateMonth(1)" class="p-1 text-[#1e1b4b]/60 hover:text-[#1e1b4b] font-bold text-lg transition">▶</button>
+            </div>
+            <p class="text-sm sm:text-base tracking-[0.3em] uppercase text-[#4338ca] font-bold mt-1">${y}</p>
+          </div>`
+      },
+
+      7: {
+        name: "August",
+        fonts: {
+          title: "'Playfair Display', serif",
+          accent: "'Cinzel', serif",
+          body: "'Source Sans 3', sans-serif"
+        },
+        palette: {
+          screenBackdrop: "#1c1409",
+          paperBg: "#fffdf5",
+          sidebarBg: "#faf3e6",
+          boardBorder: "#452d10",
+          gridBorder: "#523714",
+          themeInk: "#38230b",
+          cellBg: "#ffffff",
+          cellMutedBg: "rgba(250, 237, 212, 0.45)",
+          cellTodayBg: "#fef3c7",
+          todayAccent: "#d97706",
+          dayNumColor: "#451a03"
+        },
+        weekdayColors: [
+          { name: "SUN", bg: "#fbbf24", text: "#78350f" },
+          { name: "MON", bg: "#fed7aa", text: "#7c2d12" },
+          { name: "TUE", bg: "#fef08a", text: "#713f12" },
+          { name: "WED", bg: "#fed7aa", text: "#7c2d12" },
+          { name: "THU", bg: "#fef08a", text: "#713f12" },
+          { name: "FRI", bg: "#fbbf24", text: "#78350f" },
+          { name: "SAT", bg: "#fed7aa", text: "#7c2d12" }
+        ],
+        renderBanner: (m, y) => `
+          <svg class="absolute inset-0 w-full h-full" viewBox="0 0 1200 160" fill="none" preserveAspectRatio="none">
+            <rect width="100%" height="100%" fill="#fffbeb"/>
+            <g transform="translate(160, 40)"><circle cx="28" cy="28" r="22" fill="#f59e0b"/><circle cx="28" cy="28" r="12" fill="#78350f"/><line x1="28" y1="50" x2="28" y2="95" stroke="#65a30d" stroke-width="3"/></g>
+            <g transform="translate(1000, 45)"><circle cx="24" cy="24" r="19" fill="#f59e0b"/><circle cx="24" cy="24" r="10" fill="#78350f"/><line x1="24" y1="43" x2="24" y2="85" stroke="#65a30d" stroke-width="3"/></g>
+          </svg>
+          <div class="relative z-10 flex flex-col items-center justify-center text-center w-full">
+            <div class="flex items-center space-x-4">
+              <button onclick="navigateMonth(-1)" class="p-1 text-[#451a03]/60 hover:text-[#451a03] font-bold text-lg transition">◀</button>
+              <h1 class="text-5xl sm:text-6xl md:text-7xl text-[#451a03] font-bold tracking-tight italic" style="font-family: 'Playfair Display', serif;">${m}</h1>
+              <button onclick="navigateMonth(1)" class="p-1 text-[#451a03]/60 hover:text-[#451a03] font-bold text-lg transition">▶</button>
+            </div>
+            <p class="text-xs sm:text-sm tracking-[0.25em] uppercase text-[#b45309] font-bold mt-1" style="font-family: 'Cinzel', serif;">${y}</p>
+          </div>`
+      },
+
+      8: {
+        name: "September",
+        fonts: {
+          title: "'Caveat', cursive",
+          accent: "'Patrick Hand', cursive",
+          body: "'Patrick Hand', cursive, sans-serif"
+        },
+        palette: {
+          screenBackdrop: "#1c110e",
+          paperBg: "#fffbf5",
+          sidebarBg: "#faf0e6",
+          boardBorder: "#3d2216",
+          gridBorder: "#4a2a1c",
+          themeInk: "#2b170e",
+          cellBg: "#ffffff",
+          cellMutedBg: "rgba(247, 231, 218, 0.45)",
+          cellTodayBg: "#ffedd5",
+          todayAccent: "#ea580c",
+          dayNumColor: "#431407"
+        },
+        weekdayColors: [
+          { name: "SUN", bg: "#fca5a5", text: "#7f1d1d" },
+          { name: "MON", bg: "#fed7aa", text: "#7c2d12" },
+          { name: "TUE", bg: "#fef08a", text: "#713f12" },
+          { name: "WED", bg: "#bbf7d0", text: "#14532d" },
+          { name: "THU", bg: "#fed7aa", text: "#7c2d12" },
+          { name: "FRI", bg: "#ef4444", text: "#ffffff" },
+          { name: "SAT", bg: "#fed7aa", text: "#7c2d12" }
+        ],
+        renderBanner: (m, y) => `
+          <svg class="absolute inset-0 w-full h-full" viewBox="0 0 1200 160" fill="none" preserveAspectRatio="none">
+            <rect width="100%" height="100%" fill="#fff7ed"/>
+            <g transform="translate(150, 48)"><circle cx="26" cy="30" r="19" fill="#dc2626"/><rect x="24.5" y="8" width="3" height="8" fill="#78350f"/></g>
+            <g transform="translate(1010, 50)"><circle cx="22" cy="26" r="17" fill="#ea580c"/><rect x="21" y="7" width="2.5" height="7" fill="#78350f"/></g>
+          </svg>
+          <div class="relative z-10 flex flex-col items-center justify-center text-center w-full">
+            <div class="flex items-center space-x-4">
+              <button onclick="navigateMonth(-1)" class="p-1 text-[#431407]/60 hover:text-[#431407] font-bold text-lg transition">◀</button>
+              <h1 class="text-6xl sm:text-7xl md:text-8xl text-[#431407] font-bold tracking-tight" style="font-family: 'Caveat', cursive;">${m}</h1>
+              <button onclick="navigateMonth(1)" class="p-1 text-[#431407]/60 hover:text-[#431407] font-bold text-lg transition">▶</button>
+            </div>
+            <div class="text-xl sm:text-2xl font-bold tracking-widest text-[#c2410c] mt-0.5" style="font-family: 'Patrick Hand', cursive;">✦ ${y} ✦</div>
+          </div>`
+      },
+
+      9: {
+        name: "October",
+        // Distinct Hand-Drawn Retro & Witchy Font
+        fonts: {
+          title: "'Caveat', cursive",
+          accent: "'Patrick Hand', cursive",
+          body: "'Patrick Hand', cursive, sans-serif"
+        },
+        palette: {
+          screenBackdrop: "#16120e",
+          paperBg: "#fffcf4",
+          sidebarBg: "#faf4e8",
+          boardBorder: "#271b12",
+          gridBorder: "#271b12",
+          themeInk: "#261a11",
+          cellBg: "#ffffff",
+          cellMutedBg: "rgba(247, 240, 226, 0.45)",
+          cellTodayBg: "#fff7ed",
+          todayAccent: "#ea580c",
+          dayNumColor: "#1f150e"
+        },
+        // Personality-packed themed weekday strip matching the older version
+        weekdayColors: [
+          { name: "SUN", bg: "#fca679", text: "#6b240c" },
+          { name: "MON", bg: "#d8cce4", text: "#3b2259" },
+          { name: "TUE", bg: "#f7b988", text: "#78350f" },
+          { name: "WED", bg: "#bee3c8", text: "#1e3a2b" },
+          { name: "THU", bg: "#e0cdf7", text: "#432b68" },
+          { name: "FRI", bg: "#fed7aa", text: "#7c2d12" },
+          { name: "SAT", bg: "#c5d2c1", text: "#2a3e2a" }
+        ],
+        // Full Retro Storybook Artwork: Witch Hat Pumpkin, Cat, Ghost & Haunted House
+        renderBanner: (m, y) => `
+          <svg class="absolute inset-0 w-full h-full" viewBox="0 0 1200 160" fill="none" preserveAspectRatio="none">
+            <defs>
+              <radialGradient id="octMoonGlow" cx="50%" cy="40%" r="55%">
+                <stop offset="0%" stop-color="#fff8db" stop-opacity="0.95"/>
+                <stop offset="60%" stop-color="#ffe699" stop-opacity="0.4"/>
+                <stop offset="100%" stop-color="#fffcf4" stop-opacity="0"/>
+              </radialGradient>
+              <linearGradient id="spookyTree" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#3d2314"/>
+                <stop offset="100%" stop-color="#24150c"/>
+              </linearGradient>
+            </defs>
+
+            <rect width="100%" height="100%" fill="#fffbf2"/>
+
+            <!-- Glowing Moon -->
+            <circle cx="600" cy="75" r="95" fill="url(#octMoonGlow)"/>
+
+            <!-- Hanging Lantern Tree -->
+            <path d="M-15 0 L65 0 C45 35 75 55 125 58 C90 68 45 85 28 125 C15 85 -5 45 -15 0 Z" fill="url(#spookyTree)"/>
+            <line x1="75" y1="50" x2="75" y2="82" stroke="#221711" stroke-width="2"/>
+            <rect x="63" y="82" width="24" height="32" rx="3" fill="#2d1c13" stroke="#e08a1e" stroke-width="1.8"/>
+            <rect x="67" y="88" width="16" height="20" rx="1.5" fill="#ffea75" opacity="0.95"/>
+            <circle cx="75" cy="98" r="4" fill="#f97316"/>
+
+            <!-- Jack-o'-lantern in Witch Hat -->
+            <g transform="translate(125, 42)">
+              <path d="M55 55 L28 -12 Q40 -20 64 -8 L84 55 Z" fill="#2d2238" stroke="#1c1424" stroke-width="2.5"/>
+              <ellipse cx="55" cy="57" rx="44" ry="11" fill="#261b30" stroke="#1c1424" stroke-width="2.5"/>
+              <ellipse cx="54" cy="92" rx="36" ry="30" fill="#f97316" stroke="#221711" stroke-width="2.8"/>
+              <polygon points="41,80 48,80 44,74" fill="#221711"/>
+              <polygon points="61,80 68,80 64,74" fill="#221711"/>
+              <path d="M38 96 Q54 110 70 96 Q54 104 38 96 Z" fill="#221711"/>
+            </g>
+
+            <!-- Black Cat with Golden Eyes -->
+            <g transform="translate(225, 70)">
+              <ellipse cx="36" cy="65" rx="28" ry="20" fill="#241e2b" stroke="#15101a" stroke-width="2.5"/>
+              <circle cx="33" cy="35" r="20" fill="#241e2b" stroke="#15101a" stroke-width="2.5"/>
+              <polygon points="17,25 12,6 26,17" fill="#241e2b" stroke="#15101a" stroke-width="2"/>
+              <polygon points="40,17 54,6 49,25" fill="#241e2b" stroke="#15101a" stroke-width="2"/>
+              <circle cx="27" cy="34" r="3.5" fill="#fbbf24"/>
+              <circle cx="42" cy="34" r="3.5" fill="#fbbf24"/>
+            </g>
+
+            <!-- Sheet Ghost with Pumpkin Blush -->
+            <g transform="translate(775, 45)">
+              <path d="M35 32 C35 10 75 10 75 32 C75 68 82 88 68 92 C58 96 54 86 46 92 C38 96 30 84 26 92 C18 84 35 64 35 32 Z" fill="#ffffff" stroke="#221711" stroke-width="2.5"/>
+              <circle cx="44" cy="38" r="2.8" fill="#1e1b4b"/>
+              <circle cx="60" cy="38" r="2.8" fill="#1e1b4b"/>
+              <ellipse cx="52" cy="62" rx="11" ry="9" fill="#f97316" stroke="#221711" stroke-width="1.8"/>
+            </g>
+
+            <!-- Haunted House Silhouette -->
+            <g transform="translate(970, 15)">
+              <path d="M40 145 L40 70 L68 38 L96 70 L96 145 Z" fill="#2d2238" stroke="#15101a" stroke-width="2.5"/>
+              <path d="M15 145 L15 88 L40 68 L40 145 Z" fill="#241b2e" stroke="#15101a" stroke-width="2.5"/>
+              <polygon points="68,10 56,42 80,42" fill="#1e1426" stroke="#15101a" stroke-width="2"/>
+              <rect x="60" y="55" width="16" height="20" rx="8" fill="#fde047" stroke="#15101a" stroke-width="1.8"/>
+            </g>
+          </svg>
+
+          <!-- Center Month & Discreet Chevrons -->
+          <div class="relative z-10 flex flex-col items-center justify-center text-center w-full">
+            <div class="flex items-center space-x-4">
+              <button onclick="navigateMonth(-1)" class="p-1 text-[#1a120c]/60 hover:text-[#1a120c] font-bold text-xl transition">◀</button>
+              <h1 class="text-6xl sm:text-7xl md:text-8xl lg:text-9xl tracking-tight text-[#1a120c] font-bold select-none" style="font-family: 'Caveat', cursive; line-height: 0.9;">
+                ${m}
+              </h1>
+              <button onclick="navigateMonth(1)" class="p-1 text-[#1a120c]/60 hover:text-[#1a120c] font-bold text-xl transition">▶</button>
+            </div>
+            <div class="text-xl sm:text-2xl font-bold tracking-widest text-[#7c2d12] mt-1 flex items-center gap-2 select-none" style="font-family: 'Patrick Hand', cursive;">
+              <span class="text-amber-500">✦</span>
+              <span>${y}</span>
+              <span class="text-amber-500">✦</span>
+            </div>
+          </div>`
+      },
+
+      10: {
+        name: "November",
+        fonts: {
+          title: "'Playfair Display', serif",
+          accent: "'Cinzel', serif",
+          body: "'Source Sans 3', sans-serif"
+        },
+        palette: {
+          screenBackdrop: "#1c1511",
+          paperBg: "#faf5ed",
+          sidebarBg: "#f4ebe0",
+          boardBorder: "#422817",
+          gridBorder: "#533420",
+          themeInk: "#382215",
+          cellBg: "#fcfaf6",
+          cellMutedBg: "rgba(235, 222, 207, 0.45)",
+          cellTodayBg: "#fef3c7",
+          todayAccent: "#b45309",
+          dayNumColor: "#382215"
+        },
+        weekdayColors: [
+          { name: "SUN", bg: "#d97706", text: "#ffffff" },
+          { name: "MON", bg: "#e2c499", text: "#451a03" },
+          { name: "TUE", bg: "#eed9be", text: "#451a03" },
+          { name: "WED", bg: "#d59b62", text: "#ffffff" },
+          { name: "THU", bg: "#991b1b", text: "#ffffff" },
+          { name: "FRI", bg: "#e2c499", text: "#451a03" },
+          { name: "SAT", bg: "#eed9be", text: "#451a03" }
+        ],
+        renderBanner: (m, y) => `
+          <svg class="absolute inset-0 w-full h-full" viewBox="0 0 1200 160" fill="none" preserveAspectRatio="none">
+            <rect width="100%" height="100%" fill="#fbf6ee"/>
+            <g transform="translate(130, 45)"><ellipse cx="45" cy="75" rx="34" ry="26" fill="#d97706" stroke="#451a03" stroke-width="2.5"/><ellipse cx="85" cy="85" rx="26" ry="19" fill="#65a30d" stroke="#451a03" stroke-width="2.5"/></g>
+            <g transform="translate(980, 50)"><ellipse cx="75" cy="60" rx="45" ry="30" fill="#b45309" stroke="#451a03" stroke-width="2.5"/><ellipse cx="75" cy="56" rx="38" ry="24" fill="#d97706"/></g>
+          </svg>
+          <div class="relative z-10 flex flex-col items-center justify-center text-center w-full">
+            <div class="flex items-center space-x-4">
+              <button onclick="navigateMonth(-1)" class="p-1 text-[#422212]/60 hover:text-[#422212] font-bold text-lg transition">◀</button>
+              <h1 class="text-5xl sm:text-6xl md:text-7xl tracking-tight text-[#422212] font-bold italic" style="font-family: 'Playfair Display', serif;">${m}</h1>
+              <button onclick="navigateMonth(1)" class="p-1 text-[#422212]/60 hover:text-[#422212] font-bold text-lg transition">▶</button>
+            </div>
+            <p class="text-xs sm:text-sm tracking-[0.3em] uppercase text-[#9a3412] font-bold mt-1" style="font-family: 'Cinzel', serif;">${y}</p>
+          </div>`
+      },
+
+      11: {
+        name: "December",
+        fonts: {
+          title: "'Mountains of Christmas', cursive",
+          accent: "'Cinzel', serif",
+          body: "'Source Sans 3', sans-serif"
+        },
+        palette: {
+          screenBackdrop: "#0a131a",
+          paperBg: "#f6fafc",
+          sidebarBg: "#edf5f8",
+          boardBorder: "#132d3d",
+          gridBorder: "#1a384b",
+          themeInk: "#0c2331",
+          cellBg: "#ffffff",
+          cellMutedBg: "rgba(224, 237, 245, 0.45)",
+          cellTodayBg: "#e0f2fe",
+          todayAccent: "#0284c7",
+          dayNumColor: "#082f49"
+        },
+        weekdayColors: [
+          { name: "SUN", bg: "#b91c1c", text: "#ffffff" },
+          { name: "MON", bg: "#dbeafe", text: "#1e3a8a" },
+          { name: "TUE", bg: "#e2e8f0", text: "#334155" },
+          { name: "WED", bg: "#dcfce7", text: "#166534" },
+          { name: "THU", bg: "#e2e8f0", text: "#334155" },
+          { name: "FRI", bg: "#15803d", text: "#ffffff" },
+          { name: "SAT", bg: "#fef08a", text: "#713f12" }
+        ],
+        renderBanner: (m, y) => `
+          <svg class="absolute inset-0 w-full h-full" viewBox="0 0 1200 160" fill="none" preserveAspectRatio="none">
+            <rect width="100%" height="100%" fill="#edf7fc"/>
+            <path d="M-50 160 Q200 90 500 135 Q800 160 1250 115 L1250 160 Z" fill="#d8ebf6"/>
+            <g transform="translate(130, 25)"><polygon points="45,15 15,60 75,60" fill="#14532d"/><polygon points="45,45 8,90 82,90" fill="#166534"/><polygon points="45,75 0,125 90,125" fill="#15803d"/><rect x="38" y="125" width="15" height="18" fill="#78350f"/></g>
+            <g transform="translate(1010, 30)"><polygon points="45,22 18,65 72,65" fill="#14532d"/><polygon points="45,52 12,100 78,100" fill="#15803d"/><rect x="39" y="100" width="12" height="22" fill="#78350f"/></g>
+          </svg>
+          <div class="relative z-10 flex flex-col items-center justify-center text-center w-full">
+            <div class="flex items-center space-x-4">
+              <button onclick="navigateMonth(-1)" class="p-1 text-[#0c4a6e]/60 hover:text-[#0c4a6e] font-bold text-lg transition">◀</button>
+              <h1 class="text-6xl sm:text-7xl md:text-8xl text-[#0c4a6e] font-bold tracking-tight drop-shadow-sm" style="font-family: 'Mountains of Christmas', cursive;">${m}</h1>
+              <button onclick="navigateMonth(1)" class="p-1 text-[#0c4a6e]/60 hover:text-[#0c4a6e] font-bold text-lg transition">▶</button>
+            </div>
+            <p class="text-sm sm:text-base tracking-[0.25em] text-[#0369a1] font-bold uppercase mt-1" style="font-family: 'Cinzel', serif;">${y}</p>
+          </div>`
       }
-    ];
+    };
 
     /* =====================================================================
-       MOCK EVENTS FALLBACK (October 2026)
+       APP STATE & MULTI-CALENDAR MAPPING
        ===================================================================== */
-    const FALLBACK_EVENTS = [
-      { summary: "Soccer", start: "2026-10-01T20:10:00", allDay: false, calendarTitle: "mvgrosskreuz" },
-      { summary: "Chest Tube TED ...", start: "2026-10-01T15:00:00", allDay: false, calendarTitle: "mvgrosskreuz" },
-      { summary: "Autumn's birthday", start: "2026-10-02", allDay: true, calendarTitle: "Kayla" },
-      { summary: "Finalize Time Card", start: "2026-10-03", allDay: true, calendarTitle: "mvgrosskreuz" },
-      { summary: "Work", start: "2026-10-03", allDay: true, calendarTitle: "mvgrosskreuz" },
-      { summary: "11 months to go", start: "2026-10-03", allDay: true, calendarTitle: "Grosskreuz Wedding" },
-      { summary: "Work", start: "2026-10-04", allDay: true, calendarTitle: "mvgrosskreuz" },
-      { summary: "Little Nice's birthday", start: "2026-10-05", allDay: true, calendarTitle: "Kayla" },
-      { summary: "Therapy", start: "2026-10-05T10:00:00", allDay: false, calendarTitle: "mvgrosskreuz" },
-      { summary: "Carroll", start: "2026-10-05T11:00:00", allDay: false, calendarTitle: "mvgrosskreuz" },
-      { summary: "Preferences Open", start: "2026-10-06", allDay: true, calendarTitle: "mvgrosskreuz" },
-      { summary: "Carroll", start: "2026-10-07T08:00:00", allDay: false, calendarTitle: "mvgrosskreuz" },
-      { summary: "Emily 07-19", start: "2026-10-08", allDay: true, calendarTitle: "Kayla" },
-      { summary: "Meeting w/ Karen", start: "2026-10-08", allDay: true, calendarTitle: "mvgrosskreuz" },
-      { summary: "Paid", start: "2026-10-09", allDay: true, calendarTitle: "mvgrosskreuz" },
-      { summary: "Mom does batt st...", start: "2026-10-12T07:30:00", allDay: false, calendarTitle: "mvgrosskreuz" },
-      { summary: "Carroll", start: "2026-10-12T11:00:00", allDay: false, calendarTitle: "mvgrosskreuz" },
-      { summary: "Work", start: "2026-10-13", allDay: true, calendarTitle: "mvgrosskreuz" },
-      { summary: "Carroll", start: "2026-10-14T08:00:00", allDay: false, calendarTitle: "mvgrosskreuz" },
-      { summary: "Kinley's birthday", start: "2026-10-15", allDay: true, calendarTitle: "Kayla" },
-      { summary: "Work", start: "2026-10-15", allDay: true, calendarTitle: "mvgrosskreuz" },
-      { summary: "Tele Meeting", start: "2026-10-15T13:00:00", allDay: false, calendarTitle: "mvgrosskreuz" },
-      { summary: "Bonfire @ Tonie's", start: "2026-10-16T19:00:00", allDay: false, calendarTitle: "mvgrosskreuz" },
-      { summary: "Finalize Time Card", start: "2026-10-17", allDay: true, calendarTitle: "mvgrosskreuz" },
-      { summary: "CCRN Exam", start: "2026-10-17T12:15:00", allDay: false, calendarTitle: "mvgrosskreuz" },
-      { summary: "Fall Break", start: "2026-10-19", allDay: true, calendarTitle: "mvgrosskreuz" },
-      { summary: "Dr. Pervez", start: "2026-10-20T13:30:00", allDay: false, calendarTitle: "mvgrosskreuz" },
-      { summary: "Plan floral arrangements", start: "2026-10-21", allDay: true, calendarTitle: "Grosskreuz Wedding" },
-      { summary: "Carroll", start: "2026-10-21", allDay: true, calendarTitle: "mvgrosskreuz" },
-      { summary: "Brainstorm ideas for wedding party gifts", start: "2026-10-21", allDay: true, calendarTitle: "Grosskreuz Wedding" },
-      { summary: "Work", start: "2026-10-22", allDay: true, calendarTitle: "mvgrosskreuz" },
-      { summary: "Therapy", start: "2026-10-23T10:00:00", allDay: false, calendarTitle: "mvgrosskreuz" },
-      { summary: "Paid", start: "2026-10-23", allDay: true, calendarTitle: "mvgrosskreuz" },
-      { summary: "Work", start: "2026-10-24", allDay: true, calendarTitle: "mvgrosskreuz" },
-      { summary: "Dress Reveal 🥰", start: "2026-10-25", allDay: true, calendarTitle: "Grosskreuz Wedding" },
-      { summary: "Melanie E Visit", start: "2026-10-26", allDay: true, calendarTitle: "Kayla" },
-      { summary: "Carroll", start: "2026-10-26T11:00:00", allDay: false, calendarTitle: "mvgrosskreuz" },
-      { summary: "Carroll", start: "2026-10-28T08:00:00", allDay: false, calendarTitle: "mvgrosskreuz" },
-      { summary: "Work", start: "2026-10-29", allDay: true, calendarTitle: "mvgrosskreuz" },
-      { summary: "Work", start: "2026-10-30", allDay: true, calendarTitle: "mvgrosskreuz" },
-      { summary: "Finalize Time Card", start: "2026-10-31", allDay: true, calendarTitle: "mvgrosskreuz" }
+    const monthNames = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
     ];
 
-    /* =====================================================================
-       APP STATE
-       ===================================================================== */
-    let currentNavDate = new Date();
-    let allCalendarEvents = [...FALLBACK_EVENTS];
-    let isFetching = false;
+    const state = {
+      displayedYear: 2026,
+      displayedMonth: 9, // October default
+      events: []
+    };
 
-    // Apply the active monthly theme styling
-    function applyMonthlyTheme(themeIndex) {
-      const theme = MONTH_THEMES[themeIndex];
-      const root = document.getElementById("calendar-root");
-      const body = document.getElementById("calendar-body");
-      const banner = document.getElementById("banner-section");
-      const sidebar = document.getElementById("agenda-sidebar");
-
-      // Custom CSS properties
-      document.documentElement.style.setProperty('--theme-scroll', theme.scrollThumb);
-      document.documentElement.style.setProperty('--theme-accent', theme.accentColor);
-      document.documentElement.style.setProperty('--theme-today-glow', theme.todayGlow);
-
-      // Background tints
-      body.style.backgroundColor = theme.bodyBg;
-      root.style.backgroundColor = theme.bodyBg;
-      banner.style.backgroundColor = theme.bannerBg;
-      banner.style.borderColor = theme.tileBorder;
-      sidebar.style.backgroundColor = theme.sidebarBg;
-
-      // Banner text & icons
-      const monthTitle = document.getElementById("month-title");
-      monthTitle.textContent = theme.monthName;
-      monthTitle.style.color = theme.textPrimary;
-
-      const yearTitle = document.getElementById("year-title");
-      yearTitle.textContent = currentNavDate.getFullYear();
-      yearTitle.style.color = theme.accentColor;
-
-      document.getElementById("banner-sparkle-1").style.color = theme.sparkleColor;
-      document.getElementById("banner-sparkle-2").style.color = theme.sparkleColor;
-
-      // Injected SVGs
-      document.getElementById("banner-sky-svg").innerHTML = theme.skySvg;
-      document.getElementById("art-left-container").innerHTML = theme.artLeft;
-      document.getElementById("art-right-container").innerHTML = theme.artRight;
-
-      // Weekday Pill Ribbons
-      const days = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
-      days.forEach((d, idx) => {
-        const el = document.getElementById(`wk-${d}`);
-        if (el) {
-          el.style.backgroundColor = theme.weekdays[idx].bg;
-          el.style.color = theme.weekdays[idx].text;
-        }
-      });
-
-      // Sidebar header & badge
-      document.getElementById("agenda-heading").style.color = theme.textPrimary;
-      const badge = document.getElementById("agenda-badge");
-      badge.style.backgroundColor = theme.weekdays[0].bg;
-      badge.style.borderColor = theme.weekdays[0].text;
-      badge.style.color = theme.weekdays[0].text;
-    }
-
-    // Determine event tag styling
-    function getEventClass(calTitle = "", monthTheme) {
-      const lower = (calTitle || "").toLowerCase();
+    function getEventTagClass(title = "") {
+      const lower = (title || "").toLowerCase();
       if (lower.includes("wedding") || lower.includes("grosskreuz wedding")) {
-        return monthTheme.weddingPill;
+        return { chip: "cal-theme-wedding", card: "agenda-card-wedding" };
       }
       if (lower.includes("kayla")) {
-        return monthTheme.kaylaPill;
+        return { chip: "cal-theme-kayla", card: "agenda-card-kayla" };
       }
-      return monthTheme.pillBase;
+      if (lower.includes("mvgrosskreuz") || lower.includes("mvg")) {
+        return { chip: "cal-theme-mvg", card: "agenda-card-mvg" };
+      }
+      return { chip: "cal-theme-default", card: "agenda-card-default" };
+    }
+
+    function applyTheme(mIndex) {
+      const theme = THEMES[mIndex] || THEMES[9];
+      const root = document.documentElement;
+
+      root.style.setProperty("--screen-backdrop", theme.palette.screenBackdrop);
+      root.style.setProperty("--paper-bg", theme.palette.paperBg);
+      root.style.setProperty("--sidebar-bg", theme.palette.sidebarBg);
+      root.style.setProperty("--board-border", theme.palette.boardBorder);
+      root.style.setProperty("--grid-border", theme.palette.gridBorder);
+      root.style.setProperty("--theme-ink", theme.palette.themeInk);
+      root.style.setProperty("--cell-bg", theme.palette.cellBg);
+      root.style.setProperty("--cell-muted-bg", theme.palette.cellMutedBg);
+      root.style.setProperty("--cell-today-bg", theme.palette.cellTodayBg);
+      root.style.setProperty("--today-accent", theme.palette.todayAccent);
+      root.style.setProperty("--day-num-color", theme.palette.dayNumColor);
+
+      root.style.setProperty("--font-title", theme.fonts.title);
+      root.style.setProperty("--font-accent", theme.fonts.accent);
+      root.style.setProperty("--font-body", theme.fonts.body);
+
+      // Render Personality Weekday Pill Strips
+      const weekdayRow = document.getElementById("weekday-row");
+      weekdayRow.innerHTML = theme.weekdayColors.map(c => `
+        <div class="weekday-pill" style="background-color: ${c.bg}; color: ${c.text};">
+          ${c.name}
+        </div>
+      `).join("");
     }
 
     /* =====================================================================
-       ORGANIC ROUNDED DAY TILES GRID BUILDER
+       CALENDAR GRID & BANNER RENDERER
        ===================================================================== */
     function renderCalendar() {
-      const year = currentNavDate.getFullYear();
-      const month = currentNavDate.getMonth();
-      const theme = MONTH_THEMES[month];
+      const year = state.displayedYear;
+      const month = state.displayedMonth;
+      const monthName = monthNames[month];
+      const theme = THEMES[month] || THEMES[9];
 
-      // Update theme visual tokens
-      applyMonthlyTheme(month);
+      applyTheme(month);
 
-      const grid = document.getElementById("calendar-grid");
-      grid.innerHTML = "";
+      // Render Illustrated Banner
+      document.getElementById("banner-container").innerHTML = theme.renderBanner(monthName, year);
 
-      const firstDayOfMonth = new Date(year, month, 1);
-      const startDayOfWeek = firstDayOfMonth.getDay(); // 0 = Sun
-      const daysInMonth = new Date(year, month + 1, 0).getDate();
-      const daysInPrevMonth = new Date(year, month, 0).getDate();
+      const firstDayOfMonth = new Date(year, month, 1).getDay();
+      const daysInCurrentMonth = new Date(year, month + 1, 0).getDate();
+      const daysInPriorMonth = new Date(year, month, 0).getDate();
 
       // Today in America/Chicago
       const nowChicago = new Date(new Intl.DateTimeFormat("en-US", { timeZone: "America/Chicago" }).format(new Date()));
-      const todayYear = nowChicago.getFullYear();
-      const todayMonth = nowChicago.getMonth();
-      const todayDate = nowChicago.getDate();
+      const isActualCurrentMonth = (nowChicago.getFullYear() === year && nowChicago.getMonth() === month);
+      const todayDateNumber = nowChicago.getDate();
 
-      // Dynamically select 5 or 6 row distribution
-      let totalCells = 35;
-      if (startDayOfWeek + daysInMonth > 35) {
-        totalCells = 42;
-        grid.style.gridTemplateRows = "repeat(6, minmax(0, 1fr))";
-      } else {
-        grid.style.gridTemplateRows = "repeat(5, minmax(0, 1fr))";
-      }
+      const daysGrid = document.getElementById("days-grid");
+      daysGrid.innerHTML = "";
 
-      for (let i = 0; i < totalCells; i++) {
+      // Dynamic 5 or 6 row distribution
+      const totalCellsNeeded = firstDayOfMonth + daysInCurrentMonth;
+      const totalGridCells = totalCellsNeeded > 35 ? 42 : 35;
+      daysGrid.style.gridTemplateRows = totalGridCells === 42 ? "repeat(6, minmax(0, 1fr))" : "repeat(5, minmax(0, 1fr))";
+
+      // 1. Trailing days from previous month
+      for (let i = firstDayOfMonth - 1; i >= 0; i--) {
+        const num = daysInPriorMonth - i;
         const cell = document.createElement("div");
-        cell.className = "day-tile p-1.5 md:p-2 flex flex-col justify-start overflow-hidden border shadow-xs min-h-0";
-
-        let dayNumber = 0;
-        let isCurrentMonth = true;
-        let cellYear = year;
-        let cellMonth = month;
-
-        if (i < startDayOfWeek) {
-          // Filler from previous month
-          dayNumber = daysInPrevMonth - (startDayOfWeek - 1 - i);
-          isCurrentMonth = false;
-          cellMonth = month - 1;
-          cell.style.backgroundColor = theme.tileMutedBg;
-          cell.style.borderColor = "transparent";
-          cell.style.opacity = "0.5";
-        } else if (i >= startDayOfWeek + daysInMonth) {
-          // Filler from next month
-          dayNumber = i - (startDayOfWeek + daysInMonth) + 1;
-          isCurrentMonth = false;
-          cellMonth = month + 1;
-          cell.style.backgroundColor = theme.tileMutedBg;
-          cell.style.borderColor = "transparent";
-          cell.style.opacity = "0.5";
-        } else {
-          // Active month day
-          dayNumber = i - startDayOfWeek + 1;
-          cell.style.backgroundColor = theme.tileBg;
-          cell.style.borderColor = theme.tileBorder;
-        }
-
-        const isToday = (cellYear === todayYear && cellMonth === todayMonth && dayNumber === todayDate);
-
-        // Lively Rounded Highlight for Today
-        if (isToday) {
-          cell.classList.add("day-tile-today");
-          cell.style.backgroundColor = "#ffffff";
-          cell.style.borderColor = theme.accentColor;
-        }
-
-        // Header with day number
-        const numHeader = document.createElement("div");
-        numHeader.className = "flex items-center justify-between mb-1 shrink-0 px-0.5";
-
-        const numBadge = document.createElement("span");
-        if (isToday) {
-          numBadge.className = "text-xs md:text-sm font-bold w-6 h-6 rounded-full flex items-center justify-center text-white shadow-xs";
-          numBadge.style.backgroundColor = theme.accentColor;
-        } else {
-          numBadge.className = "text-xs md:text-sm font-semibold leading-none";
-          numBadge.style.color = isCurrentMonth ? theme.textPrimary : "rgba(0,0,0,0.4)";
-        }
-        numBadge.textContent = dayNumber;
-        numHeader.appendChild(numBadge);
-
-        cell.appendChild(numHeader);
-
-        // Event tags container
-        const eventBox = document.createElement("div");
-        eventBox.className = "space-y-1 overflow-y-auto custom-scroll flex-1 pr-0.5";
-
-        const dateISO = `${cellYear}-${String(cellMonth + 1).padStart(2, "0")}-${String(dayNumber).padStart(2, "0")}`;
-
-        const matchingEvents = allCalendarEvents.filter(ev => {
-          if (!ev.start) return false;
-          return ev.start.startsWith(dateISO);
-        });
-
-        matchingEvents.forEach(ev => {
-          const pillClass = getEventClass(ev.calendarTitle, theme);
-          const evPill = document.createElement("div");
-          evPill.className = `text-[10px] sm:text-xs leading-tight px-2 py-0.5 rounded-lg border shadow-xs font-medium truncate transition-transform hover:scale-[1.01] ${pillClass}`;
-
-          let timeLabel = "";
-          if (!ev.allDay && ev.start.includes("T")) {
-            const timeStr = ev.start.split("T")[1];
-            const [hh, mm] = timeStr.split(":");
-            const d = new Date(2000, 0, 1, parseInt(hh, 10), parseInt(mm, 10));
-            timeLabel = d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true }) + " ";
-          }
-
-          evPill.textContent = `${timeLabel}${ev.summary || "(No Title)"}`;
-          evPill.title = `${ev.summary || "(No Title)"} • ${ev.calendarTitle || "General"}`;
-          eventBox.appendChild(evPill);
-        });
-
-        cell.appendChild(eventBox);
-        grid.appendChild(cell);
+        cell.className = "day-tile muted-tile p-1 md:p-1.5 flex flex-col justify-start overflow-hidden";
+        cell.innerHTML = `<span class="day-number-badge mb-1">${num}</span>`;
+        daysGrid.appendChild(cell);
       }
 
-      renderSidebarAgenda(theme);
+      // 2. Active month days
+      for (let day = 1; day <= daysInCurrentMonth; day++) {
+        const cell = document.createElement("div");
+        const isToday = isActualCurrentMonth && (day === todayDateNumber);
+        cell.className = `day-tile p-1.5 flex flex-col justify-start overflow-hidden shadow-xs min-h-0 ${isToday ? 'today-tile' : ''}`;
+
+        const mStr = String(month + 1).padStart(2, '0');
+        const dStr = String(day).padStart(2, '0');
+        const dateKey = `${year}-${mStr}-${dStr}`;
+
+        const matchingEvents = state.events.filter(e => e.date === dateKey);
+
+        const chipsHtml = matchingEvents.slice(0, 4).map(e => {
+          const tags = getEventTagClass(e.calendarTitle);
+          return `
+            <div class="text-[10px] sm:text-xs leading-tight px-1.5 py-0.5 rounded shadow-2xs font-semibold truncate transition-transform hover:scale-[1.01] ${tags.chip}" title="${escapeHTML(e.summary)} (${escapeHTML(e.time)} - ${escapeHTML(e.calendarTitle)})">
+              <span>${e.time !== "All Day" ? escapeHTML(e.time) + " " : ""}${escapeHTML(e.summary)}</span>
+            </div>
+          `;
+        }).join("");
+
+        cell.innerHTML = `
+          <div class="flex items-center justify-between mb-0.5 shrink-0 px-0.5">
+            <span class="day-number-badge">${day}</span>
+          </div>
+          <div class="space-y-1 overflow-y-auto flex-1 pr-0.5">
+            ${chipsHtml}
+          </div>
+        `;
+        daysGrid.appendChild(cell);
+      }
+
+      // 3. Leading days for next month
+      const trailingDaysNeeded = totalGridCells - totalCellsNeeded;
+      for (let day = 1; day <= trailingDaysNeeded; day++) {
+        const cell = document.createElement("div");
+        cell.className = "day-tile muted-tile p-1 md:p-1.5 flex flex-col justify-start overflow-hidden";
+        cell.innerHTML = `<span class="day-number-badge mb-1">${day}</span>`;
+        daysGrid.appendChild(cell);
+      }
+
+      renderAgenda();
     }
 
     /* =====================================================================
-       AGENDA SIDEBAR (Organically Rounded Paper Cards)
+       AGENDA SIDEBAR
        ===================================================================== */
-    function renderSidebarAgenda(theme) {
-      const list = document.getElementById("agenda-list");
-      list.innerHTML = "";
+    function renderAgenda() {
+      const agendaList = document.getElementById("agenda-list");
+      agendaList.innerHTML = "";
 
       const now = new Date();
-      const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      now.setHours(0, 0, 0, 0);
 
-      const upcoming = allCalendarEvents
-        .filter(ev => {
-          if (!ev.start) return false;
-          const evDate = new Date(ev.start);
-          return !isNaN(evDate) && evDate >= todayStart;
+      const upcoming = state.events
+        .filter(e => {
+          if (!e.date) return false;
+          const [ey, em, ed] = e.date.split("-").map(Number);
+          return new Date(ey, em - 1, ed) >= now;
         })
-        .sort((a, b) => new Date(a.start) - new Date(b.start))
-        .slice(0, 30);
+        .sort((a, b) => a.date.localeCompare(b.date))
+        .slice(0, 25);
 
-      document.getElementById("agenda-badge").textContent = upcoming.length;
+      document.getElementById("agenda-count-badge").textContent = upcoming.length;
 
       if (upcoming.length === 0) {
-        list.innerHTML = `
-          <div class="text-center py-16 opacity-50 text-xs font-medium">
-            No upcoming events in the next 30 days.
+        agendaList.innerHTML = `
+          <div class="p-6 text-center text-xs opacity-60 font-semibold" style="font-family: var(--font-accent);">
+            No upcoming events found.
           </div>
         `;
         return;
       }
 
-      upcoming.forEach(ev => {
-        const evDate = new Date(ev.start);
-        const pillClass = getEventClass(ev.calendarTitle, theme);
+      upcoming.forEach(e => {
+        const [ey, em, ed] = e.date.split("-").map(Number);
+        const dObj = new Date(ey, em - 1, ed);
+        const dateFormatted = dObj.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" }).toUpperCase();
+        const isToday = (dObj.getTime() === now.getTime());
+        const tags = getEventTagClass(e.calendarTitle);
 
         const card = document.createElement("div");
-        card.className = `p-3 rounded-2xl border bg-white/95 shadow-xs transition hover:shadow-md hover:scale-[1.01] ${pillClass}`;
-
-        const dateStr = evDate.toLocaleDateString("en-US", {
-          weekday: "short",
-          month: "short",
-          day: "numeric"
-        }).toUpperCase();
-
-        let timeStr = "All Day";
-        if (!ev.allDay && ev.start.includes("T")) {
-          timeStr = evDate.toLocaleTimeString("en-US", {
-            hour: "numeric",
-            minute: "2-digit",
-            hour12: true
-          });
+        card.className = `p-3 rounded-xl border border-black/10 bg-white/90 shadow-xs transition hover:shadow-md hover:scale-[1.01] ${tags.card}`;
+        card.style.borderLeftWidth = "4.5px";
+        if (isToday) {
+          card.style.backgroundColor = "var(--cell-today-bg)";
         }
 
         card.innerHTML = `
-          <div class="flex items-center justify-between text-[10px] font-bold tracking-wider mb-1 opacity-80">
-            <span>${escapeHTML(dateStr)}</span>
-            <span class="font-mono text-[9px] font-bold">${escapeHTML(timeStr)}</span>
+          <div class="flex items-center justify-between text-[10px] font-bold tracking-wider mb-1 opacity-80" style="font-family: var(--font-accent);">
+            <span>${isToday ? 'TODAY • ' : ''}${escapeHTML(dateFormatted)}</span>
+            <span class="font-mono text-[9px] font-bold">${escapeHTML(e.time)}</span>
           </div>
-          <div class="text-xs sm:text-sm font-semibold leading-snug">
-            ${escapeHTML(ev.summary || "(No Title)")}
+          <div class="text-xs sm:text-sm font-bold leading-snug text-[var(--theme-ink)]">
+            ${escapeHTML(e.summary)}
           </div>
-          <div class="text-[9px] opacity-60 mt-1 uppercase tracking-wider font-semibold">
-            ${escapeHTML(ev.calendarTitle || "General")}
+          <div class="text-[9px] opacity-65 mt-1 uppercase tracking-wider font-semibold" style="font-family: var(--font-accent);">
+            ${escapeHTML(e.calendarTitle)}
           </div>
         `;
 
-        list.appendChild(card);
+        agendaList.appendChild(card);
       });
     }
 
@@ -1252,115 +1078,154 @@
     }
 
     /* =====================================================================
-       SILENT GCAL WORKER SYNC
+       SILENT GCAL SYNC ENGINE (Worker Proxy)
        ===================================================================== */
-    async function fetchCalendarEvents() {
-      if (isFetching) return;
-      isFetching = true;
-
+    async function syncGoogleCalendar() {
       const syncDot = document.getElementById("sync-dot");
       const syncSvg = document.getElementById("sync-svg-icon");
-      const statusLabel = document.getElementById("calendar-proxy-status");
+      const statusLabel = document.getElementById("sync-status-label");
 
-      if (syncDot) syncDot.className = "w-1.5 h-1.5 rounded-full bg-amber-400 inline-block ml-1 animate-ping";
+      if (syncDot) syncDot.className = "inline-block w-2 h-2 rounded-full bg-amber-400 animate-ping";
       if (syncSvg) syncSvg.classList.add("spin-icon");
-      if (statusLabel) statusLabel.textContent = "Syncing...";
+      if (statusLabel) statusLabel.querySelector("span:last-child").textContent = "Syncing...";
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 12000);
 
       try {
-        const res = await fetch("https://calendar-proxy.mvgrosskreuz.workers.dev", {
-          cache: "no-store"
+        const res = await fetch(PROXY_URL, { signal: controller.signal, cache: "no-store" });
+        clearTimeout(timeoutId);
+
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+        const rawEvents = await res.json();
+
+        state.events = rawEvents.map(e => {
+          if (e.date && !e.start) {
+            return {
+              summary: e.summary || "(No Title)",
+              date: e.date,
+              time: e.time || "All Day",
+              allDay: e.time === "All Day",
+              calendarTitle: e.calendarTitle || "General"
+            };
+          }
+
+          if (e.allDay || (e.start && e.start.length === 10)) {
+            return {
+              summary: e.summary || "(No Title)",
+              date: e.start,
+              time: "All Day",
+              allDay: true,
+              calendarTitle: e.calendarTitle || "General"
+            };
+          }
+
+          const d = new Date(e.start);
+          const dateParts = new Intl.DateTimeFormat("en-US", {
+            timeZone: "America/Chicago",
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit"
+          }).formatToParts(d);
+
+          const y = dateParts.find(p => p.type === "year").value;
+          const m = dateParts.find(p => p.type === "month").value;
+          const day = dateParts.find(p => p.type === "day").value;
+
+          const timeStr = new Intl.DateTimeFormat("en-US", {
+            timeZone: "America/Chicago",
+            hour: "numeric",
+            minute: "2-digit",
+            hour12: true
+          }).format(d);
+
+          return {
+            summary: e.summary || "(No Title)",
+            date: `${y}-${m}-${day}`,
+            time: timeStr,
+            allDay: false,
+            calendarTitle: e.calendarTitle || "General"
+          };
         });
 
-        if (!res.ok) {
-          throw new Error(`HTTP ${res.status}`);
-        }
-
-        const data = await res.json();
-        if (Array.isArray(data) && data.length > 0) {
-          allCalendarEvents = data;
-        }
-
-        if (syncDot) syncDot.className = "w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block ml-1";
-        if (statusLabel) statusLabel.textContent = `Synced (${allCalendarEvents.length})`;
+        if (syncDot) syncDot.className = "inline-block w-2 h-2 rounded-full bg-emerald-500";
+        if (statusLabel) statusLabel.querySelector("span:last-child").textContent = `Synced (${state.events.length})`;
       } catch (err) {
+        clearTimeout(timeoutId);
         console.warn("Proxy sync error:", err);
-        if (syncDot) syncDot.className = "w-1.5 h-1.5 rounded-full bg-rose-500 inline-block ml-1";
-        if (statusLabel) statusLabel.textContent = "Offline (Cached)";
+        if (syncDot) syncDot.className = "inline-block w-2 h-2 rounded-full bg-rose-500";
+        if (statusLabel) statusLabel.querySelector("span:last-child").textContent = "Cached";
       } finally {
-        isFetching = false;
         if (syncSvg) syncSvg.classList.remove("spin-icon");
         renderCalendar();
       }
     }
 
     /* =====================================================================
-       LIVE CLOCK (America/Chicago)
+       LIVE CLOCK & CONTROLS
        ===================================================================== */
-    function updateClock() {
+    function updateWallClock() {
       const now = new Date();
-      const timeStr = now.toLocaleTimeString("en-US", {
+      const timeStr = new Intl.DateTimeFormat("en-US", {
         timeZone: "America/Chicago",
         hour: "numeric",
         minute: "2-digit",
         second: "2-digit",
         hour12: true
-      });
-      const el = document.getElementById("live-time-display");
-      if (el) el.textContent = timeStr;
+      }).format(now);
+      document.getElementById("wall-clock").textContent = timeStr;
     }
-    setInterval(updateClock, 1000);
-    updateClock();
 
-    /* =====================================================================
-       FULLSCREEN TOGGLE
-       ===================================================================== */
+    function navigateMonth(delta) {
+      state.displayedMonth += delta;
+      if (state.displayedMonth < 0) {
+        state.displayedMonth = 11;
+        state.displayedYear--;
+      } else if (state.displayedMonth > 11) {
+        state.displayedMonth = 0;
+        state.displayedYear++;
+      }
+      renderCalendar();
+    }
+
     function toggleFullScreen() {
       if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(err => {
-          console.warn("Fullscreen toggle error:", err);
-        });
+        document.documentElement.requestFullscreen().catch(() => {});
       } else {
         if (document.exitFullscreen) document.exitFullscreen();
       }
     }
 
-    /* =====================================================================
-       KEYBOARD & INITIALIZATION
-       ===================================================================== */
     window.addEventListener("DOMContentLoaded", () => {
-      document.getElementById("btn-prev-month").addEventListener("click", () => {
-        currentNavDate.setMonth(currentNavDate.getMonth() - 1);
-        renderCalendar();
-      });
+      const now = new Date();
+      state.displayedMonth = now.getMonth();
+      state.displayedYear = now.getFullYear();
 
-      document.getElementById("btn-next-month").addEventListener("click", () => {
-        currentNavDate.setMonth(currentNavDate.getMonth() + 1);
-        renderCalendar();
-      });
-
-      document.getElementById("btn-sync-quick").addEventListener("click", fetchCalendarEvents);
+      document.getElementById("btn-sync-quick").addEventListener("click", syncGoogleCalendar);
       document.getElementById("btn-fs-quick").addEventListener("click", toggleFullScreen);
 
       window.addEventListener("keydown", (e) => {
-        if (e.key === "ArrowLeft") {
-          currentNavDate.setMonth(currentNavDate.getMonth() - 1);
-          renderCalendar();
-        } else if (e.key === "ArrowRight") {
-          currentNavDate.setMonth(currentNavDate.getMonth() + 1);
-          renderCalendar();
-        } else if (e.key.toLowerCase() === "t") {
-          currentNavDate = new Date();
+        if (e.key === "ArrowLeft") navigateMonth(-1);
+        else if (e.key === "ArrowRight") navigateMonth(1);
+        else if (e.key.toLowerCase() === "t") {
+          const today = new Date();
+          state.displayedMonth = today.getMonth();
+          state.displayedYear = today.getFullYear();
           renderCalendar();
         } else if (e.key.toLowerCase() === "r") {
-          fetchCalendarEvents();
+          syncGoogleCalendar();
         } else if (e.key.toLowerCase() === "f") {
           toggleFullScreen();
         }
       });
 
+      setInterval(updateWallClock, 1000);
+      updateWallClock();
+
       renderCalendar();
-      fetchCalendarEvents();
-      setInterval(fetchCalendarEvents, 5 * 60 * 1000);
+      syncGoogleCalendar();
+      setInterval(syncGoogleCalendar, 5 * 60 * 1000); // 5-minute background auto-sync
     });
   </script>
 </body>
