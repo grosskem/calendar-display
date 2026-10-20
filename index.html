@@ -6,10 +6,10 @@
   <title>Wall Calendar Display</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Fonts: Patrick Hand & Caveat for hand-crafted warmth, Outfit & Inter for crisp wall display legibility -->
+  <!-- Google Fonts: Patrick Hand, Caveat, Playfair Display & Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Outfit:wght@400;500;600;700;800&family=Patrick+Hand&family=Playfair+Display:ital,wght@1,600;1,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Patrick+Hand&family=Playfair+Display:ital,wght@1,600;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
   <style>
     * {
@@ -24,7 +24,7 @@
       width: 100vw;
       height: 100vh;
       overflow: hidden;
-      font-family: 'Outfit', sans-serif;
+      font-family: 'Plus Jakarta Sans', sans-serif;
       user-select: none;
       -webkit-user-select: none;
     }
@@ -32,27 +32,34 @@
     .font-hand {
       font-family: 'Patrick Hand', 'Caveat', cursive;
     }
+    .font-caveat {
+      font-family: 'Caveat', cursive;
+    }
     .font-cursive {
       font-family: 'Playfair Display', Georgia, serif;
       font-style: italic;
     }
 
-    /* Ultra-clean custom scrollbar for right-hand agenda */
+    /* Subtle parchment grain */
+    .paper-texture {
+      background-image: radial-gradient(rgba(45, 25, 10, 0.025) 1px, transparent 0);
+      background-size: 20px 20px;
+    }
+
+    /* Custom smooth scrollbar for agenda and cell overflowing events */
     .custom-scroll::-webkit-scrollbar {
-      width: 5px;
+      width: 4px;
+      height: 4px;
     }
     .custom-scroll::-webkit-scrollbar-track {
       background: transparent;
     }
     .custom-scroll::-webkit-scrollbar-thumb {
-      background: var(--theme-scroll-thumb, rgba(140, 75, 30, 0.25));
+      background: var(--theme-scroll, rgba(160, 80, 30, 0.25));
       border-radius: 9999px;
     }
-    .custom-scroll::-webkit-scrollbar-thumb:hover {
-      background: var(--theme-scroll-thumb, rgba(140, 75, 30, 0.45));
-    }
 
-    /* Fullscreen absolute bleed & zero border constraints */
+    /* Fullscreen reset constraints */
     :fullscreen, :-webkit-full-screen, :-moz-full-screen, :-ms-fullscreen {
       margin: 0 !important;
       padding: 0 !important;
@@ -61,98 +68,98 @@
       overflow: hidden !important;
     }
 
-    /* Subtle paper texture effect */
-    .paper-texture {
-      background-image: radial-gradient(rgba(0, 0, 0, 0.02) 1px, transparent 0);
-      background-size: 24px 24px;
+    /* Organic Day Tile Styling (Soft rounded card aesthetic) */
+    .day-tile {
+      border-radius: 14px;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
     }
 
-    @keyframes spin {
+    /* Distinct highlight for Today's Card */
+    .day-tile-today {
+      border-radius: 16px;
+      box-shadow: 0 4px 14px -2px var(--theme-today-glow, rgba(234, 88, 12, 0.25)),
+                  inset 0 0 0 2px var(--theme-accent, #ea580c);
+    }
+
+    @keyframes spin-slow {
       from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
     }
-    .spin-fast {
-      animation: spin 0.8s linear infinite;
+    .spin-icon {
+      animation: spin-slow 0.8s linear infinite;
     }
   </style>
 </head>
 <body id="calendar-body" class="w-full h-full text-stone-800 paper-texture transition-colors duration-500">
 
-  <!-- Edge-to-Edge Container (100vw x 100vh) -->
+  <!-- Full-Bleed 100vw x 100vh Canvas with Zero External Margins -->
   <div id="calendar-root" class="w-full h-full flex flex-row overflow-hidden">
 
-    <!-- LEFT 75%: Illustrated Art Banner + Weekday Strip + Dynamic Calendar Grid -->
-    <main class="flex-1 flex flex-col h-full min-w-0 border-r border-black/10 overflow-hidden relative">
+    <!-- LEFT 75%: Monthly Banner + Weekday Pills + Organic Day Tiles Grid -->
+    <main class="flex-1 flex flex-col h-full min-w-0 border-r border-black/10 overflow-hidden relative p-2.5 sm:p-3.5 space-y-2">
 
-      <!-- MONTHLY ILLUSTRATED ART BANNER -->
-      <section id="banner-section" class="relative h-36 md:h-40 lg:h-44 w-full flex items-center justify-between px-6 lg:px-10 shrink-0 overflow-hidden select-none border-b transition-colors duration-500">
+      <!-- THEMED STORYBOOK ILLUSTRATED BANNER -->
+      <section id="banner-section" class="relative h-32 md:h-36 lg:h-40 w-full rounded-2xl flex items-center justify-between px-6 lg:px-10 shrink-0 overflow-hidden select-none border shadow-sm transition-colors duration-500">
         
-        <!-- Layer 1: Ambient SVG Sky / Scenery Canvas -->
-        <svg id="banner-sky-svg" class="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none" viewBox="0 0 1200 180">
-          <!-- Dynamically swapped sky gradient, moon, stars, or seasonal clouds -->
+        <!-- SVG Backdrop / Sky canvas -->
+        <svg id="banner-sky-svg" class="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none" viewBox="0 0 1200 160">
         </svg>
 
-        <!-- Layer 2: Left Themed Hand-Drawn Characters & Elements -->
+        <!-- Left Thematic Storybook Element -->
         <div id="art-left-container" class="relative z-10 flex items-end self-end mb-1 pointer-events-none">
-          <!-- Injected detailed seasonal SVG illustration -->
         </div>
 
-        <!-- Layer 3: Center Month & Year Header with Hand-Drawn Charm & Discreet Controls -->
+        <!-- Center Month / Year Navigation & Discreet Header -->
         <div class="relative z-20 flex flex-col items-center justify-center text-center">
           <div class="flex items-center space-x-3">
-            <!-- Discreet Previous Month button (Keyboard Left Arrow also works) -->
-            <button id="btn-prev-month" title="Previous Month (Left Arrow)" class="p-1 rounded-full text-black/40 hover:text-black/80 hover:bg-black/5 active:scale-90 transition">
+            <button id="btn-prev-month" title="Previous Month (←)" class="p-1 rounded-full text-black/40 hover:text-black/80 hover:bg-black/5 active:scale-90 transition">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
             </button>
 
-            <!-- Month Title -->
             <h1 id="month-title" class="font-cursive text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-stone-900 drop-shadow-sm select-none">
               October
             </h1>
 
-            <!-- Discreet Next Month button (Keyboard Right Arrow also works) -->
-            <button id="btn-next-month" title="Next Month (Right Arrow)" class="p-1 rounded-full text-black/40 hover:text-black/80 hover:bg-black/5 active:scale-90 transition">
+            <button id="btn-next-month" title="Next Month (→)" class="p-1 rounded-full text-black/40 hover:text-black/80 hover:bg-black/5 active:scale-90 transition">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/></svg>
             </button>
           </div>
 
-          <!-- Year subtitle & seasonal sparkles -->
-          <div class="flex items-center space-x-2.5 mt-0.5">
+          <div class="flex items-center space-x-2 mt-0.5">
             <span id="banner-sparkle-1" class="text-xs transition-colors duration-300">✦</span>
-            <span id="year-title" class="font-bold tracking-widest text-xs md:text-sm uppercase opacity-80">2026</span>
+            <span id="year-title" class="font-bold tracking-widest text-xs md:text-sm uppercase opacity-75">2026</span>
             <span id="banner-sparkle-2" class="text-xs transition-colors duration-300">✦</span>
-            <!-- Silent Refresh Status Indicator -->
-            <span id="sync-dot" title="Sync Status" class="w-1.5 h-1.5 rounded-full bg-emerald-500/80 inline-block ml-1"></span>
+            <span id="sync-dot" title="GCal Status" class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block ml-1"></span>
           </div>
         </div>
 
-        <!-- Layer 4: Right Themed Hand-Drawn Elements -->
+        <!-- Right Thematic Storybook Element -->
         <div id="art-right-container" class="relative z-10 flex items-end self-end mb-1 pointer-events-none">
-          <!-- Injected detailed seasonal SVG illustration -->
         </div>
 
       </section>
 
-      <!-- WEEKDAY HEADER STRIP (7 Themed Pastel Ribbons) -->
-      <div id="weekday-bar" class="grid grid-cols-7 border-b text-center font-bold text-[11px] md:text-xs select-none shrink-0 tracking-wider transition-colors duration-500">
-        <div id="wk-sun" class="py-1.5 border-r border-black/10 transition-colors">SUN</div>
-        <div id="wk-mon" class="py-1.5 border-r border-black/10 transition-colors">MON</div>
-        <div id="wk-tue" class="py-1.5 border-r border-black/10 transition-colors">TUE</div>
-        <div id="wk-wed" class="py-1.5 border-r border-black/10 transition-colors">WED</div>
-        <div id="wk-thu" class="py-1.5 border-r border-black/10 transition-colors">THU</div>
-        <div id="wk-fri" class="py-1.5 border-r border-black/10 transition-colors">FRI</div>
-        <div id="wk-sat" class="py-1.5 transition-colors">SAT</div>
+      <!-- WEEKDAY HEADER PILLS (7 Soft Rounded Ribbons) -->
+      <div id="weekday-bar" class="grid grid-cols-7 gap-2 text-center font-bold text-[11px] md:text-xs select-none shrink-0 tracking-wider">
+        <div id="wk-sun" class="py-1.5 rounded-xl shadow-xs transition-colors">SUN</div>
+        <div id="wk-mon" class="py-1.5 rounded-xl shadow-xs transition-colors">MON</div>
+        <div id="wk-tue" class="py-1.5 rounded-xl shadow-xs transition-colors">TUE</div>
+        <div id="wk-wed" class="py-1.5 rounded-xl shadow-xs transition-colors">WED</div>
+        <div id="wk-thu" class="py-1.5 rounded-xl shadow-xs transition-colors">THU</div>
+        <div id="wk-fri" class="py-1.5 rounded-xl shadow-xs transition-colors">FRI</div>
+        <div id="wk-sat" class="py-1.5 rounded-xl shadow-xs transition-colors">SAT</div>
       </div>
 
-      <!-- CALENDAR MONTH GRID (Fills Remaining Screen Height Proportionately) -->
-      <div id="calendar-grid" class="grid grid-cols-7 flex-1 w-full divide-x divide-y divide-black/10 min-h-0 overflow-hidden bg-transparent">
-        <!-- 35 or 42 cells rendered dynamically -->
+      <!-- CALENDAR GRID: ORGANIC ROUNDED TILES (Dynamic 5 or 6 row layout) -->
+      <div id="calendar-grid" class="grid grid-cols-7 gap-2 flex-1 w-full min-h-0 overflow-hidden">
+        <!-- Generates 35 or 42 organic day cards -->
       </div>
 
     </main>
 
     <!-- RIGHT 25%: UPCOMING EVENTS AGENDA PANEL -->
-    <aside id="agenda-sidebar" class="w-80 sm:w-88 md:w-96 lg:w-[26rem] flex flex-col h-full shrink-0 select-none border-l border-black/10 transition-colors duration-500">
+    <aside id="agenda-sidebar" class="w-80 sm:w-88 md:w-96 lg:w-[26rem] flex flex-col h-full shrink-0 select-none border-l border-black/10 transition-colors duration-500 bg-white/40">
       
       <!-- Agenda Header -->
       <div class="px-5 py-4 border-b border-black/10 flex items-center justify-between shrink-0">
@@ -170,7 +177,7 @@
           <button id="btn-sync-quick" title="Sync with Google Calendar (Hotkey: R)" class="p-1.5 rounded-lg text-black/40 hover:text-black/80 hover:bg-black/5 active:scale-95 transition">
             <svg id="sync-svg-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
           </button>
-          <button id="btn-fs-quick" title="Toggle Fullscreen" class="p-1.5 rounded-lg text-black/40 hover:text-black/80 hover:bg-black/5 active:scale-95 transition">
+          <button id="btn-fs-quick" title="Toggle Fullscreen (Hotkey: F)" class="p-1.5 rounded-lg text-black/40 hover:text-black/80 hover:bg-black/5 active:scale-95 transition">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
           </button>
         </div>
@@ -178,13 +185,12 @@
 
       <!-- Agenda Scrollable Event Cards List -->
       <div id="agenda-list" class="flex-1 overflow-y-auto p-3.5 space-y-2.5 custom-scroll">
-        <!-- Rendered cards -->
       </div>
 
-      <!-- Subtle Footer with Live Time in America/Chicago -->
+      <!-- Live Clock & Status in America/Chicago -->
       <div class="px-4 py-2 border-t border-black/10 flex items-center justify-between text-[11px] opacity-70 shrink-0 font-medium font-mono">
         <span id="live-time-display">--:--:--</span>
-        <span id="calendar-proxy-status">Synced</span>
+        <span id="calendar-proxy-status">Ready</span>
       </div>
 
     </aside>
@@ -193,76 +199,68 @@
 
   <script>
     /* =====================================================================
-       12 SEASONAL THEMES: PALETTES, WEEKDAY RIBBONS, SVGs & CELL STYLING
+       12 SEASONAL THEMES: PALETTES, ROUNDED TILES & STORYBOOK SVGs
        ===================================================================== */
     const MONTH_THEMES = [
-      // 0: JANUARY - Snowy Winter Cabin & Pine
+      // 0: JANUARY - Frosty Winter Cabin & Pine
       {
         monthName: "January",
-        bodyBg: "#f4f7f9",
-        cardBg: "#f8fafc",
-        sidebarBg: "#f1f5f9",
-        borderColor: "rgba(148, 163, 184, 0.3)",
-        accentColor: "#0284c7", // Sky blue
+        bodyBg: "#f3f7fa",
+        sidebarBg: "#e9f0f5",
+        bannerBg: "#e1ecf4",
+        tileBg: "#ffffff",
+        tileMutedBg: "rgba(225, 236, 244, 0.45)",
+        tileBorder: "rgba(186, 215, 233, 0.7)",
+        accentColor: "#0284c7",
         textPrimary: "#1e293b",
         sparkleColor: "#38bdf8",
+        todayGlow: "rgba(2, 132, 199, 0.3)",
         scrollThumb: "rgba(56, 189, 248, 0.4)",
         weekdays: [
-          { bg: "#dbeafe", text: "#1e40af" }, // Sun
-          { bg: "#e0f2fe", text: "#0369a1" }, // Mon
-          { bg: "#e2e8f0", text: "#334155" }, // Tue
-          { bg: "#ccfbf1", text: "#0f766e" }, // Wed
-          { bg: "#e0e7ff", text: "#3730a3" }, // Thu
-          { bg: "#bae6fd", text: "#0284c7" }, // Fri
-          { bg: "#cbd5e1", text: "#1e293b" }  // Sat
+          { bg: "#dbeafe", text: "#1e40af" },
+          { bg: "#e0f2fe", text: "#0369a1" },
+          { bg: "#e2e8f0", text: "#334155" },
+          { bg: "#ccfbf1", text: "#0f766e" },
+          { bg: "#e0e7ff", text: "#3730a3" },
+          { bg: "#bae6fd", text: "#0284c7" },
+          { bg: "#cbd5e1", text: "#1e293b" }
         ],
-        pillBase: "bg-sky-50 border-sky-400 text-sky-950",
-        weddingPill: "bg-indigo-50 border-indigo-500 text-indigo-950",
-        kaylaPill: "bg-cyan-50 border-cyan-500 text-cyan-950",
+        pillBase: "bg-sky-50 border-sky-300 text-sky-950",
+        weddingPill: "bg-indigo-50 border-indigo-400 text-indigo-950",
+        kaylaPill: "bg-cyan-50 border-cyan-400 text-cyan-950",
         skySvg: `
-          <rect width="1200" height="180" fill="#eaf2f8" opacity="0.6"/>
-          <path d="M0,130 Q300,90 600,120 T1200,110 L1200,180 L0,180 Z" fill="#d9e7f2" opacity="0.7"/>
+          <rect width="1200" height="160" fill="#eaf2f8" opacity="0.6"/>
+          <path d="M0,120 Q300,90 600,110 T1200,100 L1200,160 L0,160 Z" fill="#d9e7f2" opacity="0.7"/>
           <circle cx="200" cy="30" r="2.5" fill="#bae6fd"/><circle cx="550" cy="40" r="3" fill="#bae6fd"/><circle cx="900" cy="25" r="2" fill="#bae6fd"/>
-          <circle cx="600" cy="90" r="70" fill="#bae6fd" opacity="0.15" filter="blur(10px)"/>
+          <circle cx="600" cy="80" r="60" fill="#bae6fd" opacity="0.2" filter="blur(10px)"/>
         `,
         artLeft: `
           <div class="relative w-36 h-28 flex items-end">
-            <!-- Snow Cabin -->
             <svg viewBox="0 0 140 100" class="w-full h-full drop-shadow-sm">
-              <!-- Pine behind -->
               <polygon points="25,50 35,25 45,50" fill="#335c67"/>
               <polygon points="22,65 35,40 48,65" fill="#2d525c"/>
-              <!-- Cabin Body -->
-              <rect x="45" y="45" width="60" height="45" fill="#78350f" rx="3"/>
-              <!-- Roof -->
+              <rect x="45" y="45" width="60" height="45" fill="#78350f" rx="4"/>
               <polygon points="38,45 75,18 112,45" fill="#451a03"/>
-              <!-- Snow on roof -->
               <path d="M36,45 Q75,15 114,45 C110,48 100,43 90,47 C80,44 70,47 60,43 C50,46 40,43 36,45 Z" fill="#ffffff"/>
-              <!-- Chimney & Smoke curl -->
               <rect x="88" y="22" width="10" height="18" fill="#991b1b"/>
               <path d="M93,18 Q97,10 92,5 Q87,0 95,-6" fill="none" stroke="#94a3b8" stroke-width="2.5" stroke-linecap="round"/>
-              <!-- Warm lit window -->
-              <rect x="55" y="55" width="16" height="16" rx="2" fill="#fde047" stroke="#451a03" stroke-width="2"/>
+              <rect x="55" y="55" width="16" height="16" rx="3" fill="#fde047" stroke="#451a03" stroke-width="2"/>
               <line x1="63" y1="55" x2="63" y2="71" stroke="#451a03" stroke-width="1.5"/>
               <line x1="55" y1="63" x2="71" y2="63" stroke="#451a03" stroke-width="1.5"/>
-              <!-- Door -->
-              <rect x="80" y="58" width="16" height="32" rx="1.5" fill="#451a03"/>
+              <rect x="80" y="58" width="16" height="32" rx="2" fill="#451a03"/>
               <circle cx="84" cy="74" r="1.5" fill="#fde047"/>
             </svg>
           </div>
         `,
         artRight: `
           <div class="relative w-32 h-28 flex items-end">
-            <!-- Pine trees with heavy snow blankets & robin bird -->
             <svg viewBox="0 0 120 100" class="w-full h-full drop-shadow-sm">
               <polygon points="50,45 70,12 90,45" fill="#1e3a40"/>
               <polygon points="44,68 70,32 96,68" fill="#1b3338"/>
               <polygon points="38,92 70,52 102,92" fill="#15282c"/>
-              <!-- Snow caps on branches -->
               <path d="M52,44 Q70,36 88,44 Q70,39 52,44 Z" fill="#ffffff"/>
               <path d="M46,67 Q70,58 94,67 Q70,61 46,67 Z" fill="#ffffff"/>
               <path d="M40,91 Q70,80 100,91 Q70,83 40,91 Z" fill="#ffffff"/>
-              <!-- Red robin on stump -->
               <rect x="15" y="75" width="14" height="20" fill="#78350f" rx="2"/>
               <ellipse cx="22" cy="70" rx="7" ry="6" fill="#b91c1c"/>
               <circle cx="22" cy="67" r="4.5" fill="#7f1d1d"/>
@@ -273,16 +271,19 @@
         `
       },
 
-      // 1: FEBRUARY - Valentine Botanical Cottage & Floral Envelopes
+      // 1: FEBRUARY - Botanical Lovebirds & Wax Seal Envelope
       {
         monthName: "February",
-        bodyBg: "#fdf8f9",
-        cardBg: "#fffbfa",
-        sidebarBg: "#fbf3f5",
-        borderColor: "rgba(244, 114, 182, 0.25)",
-        accentColor: "#e11d48", // Rose Red
+        bodyBg: "#fef7f9",
+        sidebarBg: "#faedf2",
+        bannerBg: "#fce4ec",
+        tileBg: "#ffffff",
+        tileMutedBg: "rgba(252, 228, 236, 0.45)",
+        tileBorder: "rgba(244, 114, 182, 0.35)",
+        accentColor: "#e11d48",
         textPrimary: "#4c0519",
         sparkleColor: "#f43f5e",
+        todayGlow: "rgba(225, 29, 72, 0.25)",
         scrollThumb: "rgba(244, 63, 94, 0.35)",
         weekdays: [
           { bg: "#ffe4e6", text: "#9f1239" },
@@ -293,26 +294,21 @@
           { bg: "#fce7f3", text: "#831843" },
           { bg: "#ede9fe", text: "#5b21b6" }
         ],
-        pillBase: "bg-rose-50 border-rose-400 text-rose-950",
-        weddingPill: "bg-fuchsia-50 border-fuchsia-500 text-fuchsia-950",
-        kaylaPill: "bg-pink-50 border-pink-500 text-pink-950",
+        pillBase: "bg-rose-50 border-rose-300 text-rose-950",
+        weddingPill: "bg-fuchsia-50 border-fuchsia-400 text-fuchsia-950",
+        kaylaPill: "bg-pink-50 border-pink-400 text-pink-950",
         skySvg: `
-          <rect width="1200" height="180" fill="#fdf2f4" opacity="0.6"/>
-          <circle cx="500" cy="90" r="70" fill="#fbcfe8" opacity="0.3" filter="blur(12px)"/>
-          <path d="M0,150 Q400,130 800,145 T1200,140 L1200,180 L0,180 Z" fill="#fae8eb" opacity="0.8"/>
+          <rect width="1200" height="160" fill="#fdf2f4" opacity="0.6"/>
+          <circle cx="500" cy="80" r="65" fill="#fbcfe8" opacity="0.3" filter="blur(12px)"/>
+          <path d="M0,130 Q400,115 800,125 T1200,120 L1200,160 L0,160 Z" fill="#fae8eb" opacity="0.8"/>
         `,
         artLeft: `
           <div class="relative w-32 h-28 flex items-end">
-            <!-- Vintage love envelope with wax seal & rising heart flutter -->
             <svg viewBox="0 0 120 100" class="w-full h-full drop-shadow-sm">
-              <rect x="25" y="45" width="70" height="48" rx="4" fill="#fff1f2" stroke="#e11d48" stroke-width="2"/>
+              <rect x="25" y="45" width="70" height="48" rx="5" fill="#fff1f2" stroke="#e11d48" stroke-width="2"/>
               <polyline points="25,45 60,70 95,45" fill="none" stroke="#e11d48" stroke-width="2"/>
-              <polyline points="25,93 50,68" stroke="#f43f5e" stroke-width="1.5" stroke-dasharray="2,2"/>
-              <polyline points="95,93 70,68" stroke="#f43f5e" stroke-width="1.5" stroke-dasharray="2,2"/>
-              <!-- Red wax heart seal -->
               <circle cx="60" cy="70" r="9" fill="#be123c"/>
               <path d="M57,68 C57,65 60,65 60,68 C60,65 63,65 63,68 C63,71 60,73 60,74 C60,73 57,71 57,68 Z" fill="#ffffff"/>
-              <!-- Floating pastel hearts -->
               <path d="M35,28 C35,22 42,22 42,27 C42,22 49,22 49,27 C49,33 42,37 42,39 C42,37 35,33 35,28 Z" fill="#fb7185"/>
               <path d="M72,18 C72,13 77,13 77,17 C77,13 82,13 82,17 C82,22 77,25 77,27 C77,25 72,22 72,18 Z" fill="#fda4af"/>
             </svg>
@@ -320,40 +316,37 @@
         `,
         artRight: `
           <div class="relative w-32 h-28 flex items-end">
-            <!-- Lovebirds & floral botanical wreath -->
             <svg viewBox="0 0 120 100" class="w-full h-full drop-shadow-sm">
-              <!-- Wreath arc -->
               <path d="M20,60 Q60,10 100,60" fill="none" stroke="#059669" stroke-width="3" stroke-linecap="round"/>
               <circle cx="35" cy="40" r="4" fill="#fb7185"/>
               <circle cx="85" cy="40" r="4" fill="#f43f5e"/>
-              <circle cx="60" cy="25" r="4.5" fill="#fda4af"/>
-              <!-- Bird 1 Left -->
               <ellipse cx="45" cy="55" rx="10" ry="8" fill="#fda4af"/>
               <circle cx="51" cy="52" r="5" fill="#fb7185"/>
               <polygon points="56,52 61,54 56,56" fill="#f59e0b"/>
               <circle cx="52" cy="51" r="0.8" fill="#000000"/>
-              <!-- Bird 2 Right facing Left -->
               <ellipse cx="75" cy="55" rx="10" ry="8" fill="#c084fc"/>
               <circle cx="69" cy="52" r="5" fill="#a855f7"/>
               <polygon points="64,52 59,54 64,56" fill="#f59e0b"/>
               <circle cx="68" cy="51" r="0.8" fill="#000000"/>
-              <!-- Little heart between beaks -->
               <path d="M57,44 C57,41 60,41 60,43 C60,41 63,41 63,43 C63,47 60,49 60,50 C60,49 57,47 57,44 Z" fill="#e11d48"/>
             </svg>
           </div>
         `
       },
 
-      // 2: MARCH - Spring Awakening, Shamrocks & Terracotta Pot
+      // 2: MARCH - Spring Clovers, Daffodils & Toadstools
       {
         monthName: "March",
-        bodyBg: "#f7fbf7",
-        cardBg: "#fcfffb",
-        sidebarBg: "#f2f8f2",
-        borderColor: "rgba(34, 197, 94, 0.25)",
-        accentColor: "#15803d", // Emerald green
+        bodyBg: "#f6fbf6",
+        sidebarBg: "#edf5ed",
+        bannerBg: "#e1f3e1",
+        tileBg: "#ffffff",
+        tileMutedBg: "rgba(225, 243, 225, 0.4)",
+        tileBorder: "rgba(74, 222, 128, 0.35)",
+        accentColor: "#15803d",
         textPrimary: "#14532d",
         sparkleColor: "#16a34a",
+        todayGlow: "rgba(21, 128, 61, 0.25)",
         scrollThumb: "rgba(22, 163, 74, 0.35)",
         weekdays: [
           { bg: "#dcfce7", text: "#166534" },
@@ -364,66 +357,54 @@
           { bg: "#ffedd5", text: "#9a3412" },
           { bg: "#f3e8ff", text: "#6b21a8" }
         ],
-        pillBase: "bg-emerald-50 border-emerald-500 text-emerald-950",
-        weddingPill: "bg-teal-50 border-teal-500 text-teal-950",
-        kaylaPill: "bg-lime-50 border-lime-600 text-lime-950",
+        pillBase: "bg-emerald-50 border-emerald-400 text-emerald-950",
+        weddingPill: "bg-teal-50 border-teal-400 text-teal-950",
+        kaylaPill: "bg-lime-50 border-lime-500 text-lime-950",
         skySvg: `
-          <rect width="1200" height="180" fill="#f0fdf4" opacity="0.6"/>
-          <path d="M0,140 Q500,110 900,135 T1200,130 L1200,180 L0,180 Z" fill="#dcfce7" opacity="0.7"/>
-          <circle cx="580" cy="90" r="70" fill="#fef08a" opacity="0.25" filter="blur(12px)"/>
+          <rect width="1200" height="160" fill="#f0fdf4" opacity="0.6"/>
+          <path d="M0,125 Q500,100 900,120 T1200,115 L1200,160 L0,160 Z" fill="#dcfce7" opacity="0.7"/>
+          <circle cx="580" cy="75" r="65" fill="#fef08a" opacity="0.3" filter="blur(12px)"/>
         `,
         artLeft: `
           <div class="relative w-36 h-28 flex items-end">
-            <!-- Terracotta pot sprouting fresh clover & daffodils -->
             <svg viewBox="0 0 130 100" class="w-full h-full drop-shadow-sm">
               <polygon points="40,55 90,55 83,95 47,95" fill="#c2410c"/>
               <rect x="36" y="50" width="58" height="8" rx="2" fill="#ea580c"/>
-              <!-- Green stems -->
               <path d="M50,50 Q45,25 35,20" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round"/>
               <path d="M65,50 Q65,20 68,10" fill="none" stroke="#15803d" stroke-width="3" stroke-linecap="round"/>
-              <path d="M78,50 Q85,30 92,22" fill="none" stroke="#16a34a" stroke-width="2.5" stroke-linecap="round"/>
-              <!-- Yellow daffodil trumpet -->
               <circle cx="68" cy="10" r="10" fill="#facc15"/>
               <circle cx="68" cy="10" r="5" fill="#eab308"/>
-              <!-- Shamrocks / 4-leaf clover -->
               <circle cx="32" cy="18" r="4" fill="#22c55e"/><circle cx="38" cy="18" r="4" fill="#22c55e"/>
               <circle cx="35" cy="14" r="4" fill="#16a34a"/><circle cx="35" cy="22" r="4" fill="#15803d"/>
-              <circle cx="92" cy="20" r="4" fill="#22c55e"/><circle cx="97" cy="20" r="4" fill="#22c55e"/>
-              <circle cx="95" cy="16" r="4" fill="#16a34a"/>
             </svg>
           </div>
         `,
         artRight: `
           <div class="relative w-32 h-28 flex items-end">
-            <!-- Whimsical toadstool mushrooms with dew drops -->
             <svg viewBox="0 0 120 100" class="w-full h-full drop-shadow-sm">
-              <!-- Big mushroom stem -->
               <path d="M50,55 C50,85 45,95 45,95 L75,95 C75,95 70,85 70,55 Z" fill="#fef3c7"/>
-              <!-- Red cap -->
               <path d="M30,55 C30,25 90,25 90,55 Z" fill="#dc2626"/>
-              <!-- White spots -->
-              <circle cx="45" cy="42" r="4" fill="#ffffff"/>
-              <circle cx="60" cy="35" r="5" fill="#ffffff"/>
-              <circle cx="75" cy="44" r="3.5" fill="#ffffff"/>
-              <!-- Baby mushroom -->
+              <circle cx="45" cy="42" r="4" fill="#ffffff"/><circle cx="60" cy="35" r="5" fill="#ffffff"/><circle cx="75" cy="44" r="3.5" fill="#ffffff"/>
               <path d="M22,70 C22,90 20,95 20,95 L34,95 C34,95 32,90 32,70 Z" fill="#fef3c7"/>
               <path d="M14,70 C14,55 42,55 42,70 Z" fill="#f87171"/>
-              <circle cx="28" cy="62" r="2.5" fill="#ffffff"/>
             </svg>
           </div>
         `
       },
 
-      // 3: APRIL - Spring Rain Showers & Floral Rain Boots
+      // 3: APRIL - Rain Showers, Yellow Umbrella & Spring Boots
       {
         monthName: "April",
-        bodyBg: "#f6fafd",
-        cardBg: "#fbfdff",
-        sidebarBg: "#f0f6fa",
-        borderColor: "rgba(56, 189, 248, 0.25)",
+        bodyBg: "#f5f9fc",
+        sidebarBg: "#ebf2f8",
+        bannerBg: "#dceaf4",
+        tileBg: "#ffffff",
+        tileMutedBg: "rgba(220, 234, 244, 0.4)",
+        tileBorder: "rgba(125, 211, 252, 0.4)",
         accentColor: "#0284c7",
         textPrimary: "#0c4a6e",
         sparkleColor: "#38bdf8",
+        todayGlow: "rgba(2, 132, 199, 0.25)",
         scrollThumb: "rgba(56, 189, 248, 0.35)",
         weekdays: [
           { bg: "#e0f2fe", text: "#0369a1" },
@@ -434,62 +415,51 @@
           { bg: "#dcfce7", text: "#15803d" },
           { bg: "#fef3c7", text: "#b45309" }
         ],
-        pillBase: "bg-sky-50 border-sky-400 text-sky-950",
-        weddingPill: "bg-violet-50 border-violet-500 text-violet-950",
-        kaylaPill: "bg-blue-50 border-blue-500 text-blue-950",
+        pillBase: "bg-sky-50 border-sky-300 text-sky-950",
+        weddingPill: "bg-violet-50 border-violet-400 text-violet-950",
+        kaylaPill: "bg-blue-50 border-blue-400 text-blue-950",
         skySvg: `
-          <rect width="1200" height="180" fill="#f0f7fc" opacity="0.6"/>
-          <path d="M0,145 Q400,120 800,140 T1200,135 L1200,180 L0,180 Z" fill="#e0effa" opacity="0.7"/>
-          <!-- Delicate raindrops -->
+          <rect width="1200" height="160" fill="#f0f7fc" opacity="0.6"/>
+          <path d="M0,130 Q400,110 800,125 T1200,120 L1200,160 L0,160 Z" fill="#e0effa" opacity="0.7"/>
           <line x1="300" y1="20" x2="295" y2="35" stroke="#7dd3fc" stroke-width="1.5" stroke-dasharray="2,3"/>
           <line x1="650" y1="30" x2="645" y2="45" stroke="#7dd3fc" stroke-width="1.5" stroke-dasharray="2,3"/>
-          <line x1="950" y1="15" x2="945" y2="30" stroke="#7dd3fc" stroke-width="1.5" stroke-dasharray="2,3"/>
         `,
         artLeft: `
           <div class="relative w-36 h-28 flex items-end">
-            <!-- Vintage umbrella with raindrops -->
             <svg viewBox="0 0 130 100" class="w-full h-full drop-shadow-sm">
-              <!-- Umbrella Canopy -->
               <path d="M20,60 C20,18 105,18 105,60 C92,54 82,58 72,55 C62,58 52,54 42,56 C32,54 26,58 20,60 Z" fill="#facc15" stroke="#ca8a04" stroke-width="2"/>
-              <!-- Umbrella Handle -->
               <line x1="63" y1="20" x2="63" y2="82" stroke="#78350f" stroke-width="3" stroke-linecap="round"/>
               <path d="M63,82 C63,92 50,92 50,84" fill="none" stroke="#78350f" stroke-width="3" stroke-linecap="round"/>
-              <polygon points="61,16 65,16 63,10" fill="#78350f"/>
-              <!-- Raindrop splashes -->
               <ellipse cx="28" cy="72" rx="2" ry="4" fill="#38bdf8"/>
-              <ellipse cx="98" cy="74" rx="2" ry="4" fill="#38bdf8"/>
             </svg>
           </div>
         `,
         artRight: `
           <div class="relative w-32 h-28 flex items-end">
-            <!-- Yellow rain boots filled with daisies & tulips -->
             <svg viewBox="0 0 120 100" class="w-full h-full drop-shadow-sm">
-              <!-- Flowers bursting out -->
               <line x1="45" y1="50" x2="35" y2="25" stroke="#16a34a" stroke-width="2"/>
               <circle cx="35" cy="25" r="7" fill="#fb7185"/>
-              <line x1="60" y1="50" x2="70" y2="20" stroke="#16a34a" stroke-width="2"/>
               <circle cx="70" cy="20" r="7" fill="#f43f5e"/>
-              <circle cx="70" cy="20" r="3" fill="#fef08a"/>
-              <!-- Left Boot -->
               <path d="M35,45 L50,45 L50,75 L62,82 C64,88 56,92 48,92 L32,92 C28,92 28,82 32,80 L35,75 Z" fill="#facc15" stroke="#ca8a04" stroke-width="1.5"/>
-              <!-- Right Boot -->
               <path d="M55,45 L70,45 L70,75 L82,82 C84,88 76,92 68,92 L52,92 C48,92 48,82 52,80 L55,75 Z" fill="#eab308" stroke="#a16207" stroke-width="1.5"/>
             </svg>
           </div>
         `
       },
 
-      // 4: MAY - Lush Cottage Garden & Mason Jar Bouquet
+      // 4: MAY - Peonies in Mason Jar & Garden Bees
       {
         monthName: "May",
-        bodyBg: "#fbf8f5",
-        cardBg: "#fffdfa",
-        sidebarBg: "#f6f2ee",
-        borderColor: "rgba(234, 88, 12, 0.2)",
+        bodyBg: "#faf6f2",
+        sidebarBg: "#f2ece4",
+        bannerBg: "#fbebe0",
+        tileBg: "#ffffff",
+        tileMutedBg: "rgba(251, 235, 224, 0.4)",
+        tileBorder: "rgba(251, 146, 60, 0.35)",
         accentColor: "#ea580c",
         textPrimary: "#431407",
         sparkleColor: "#f97316",
+        todayGlow: "rgba(234, 88, 12, 0.25)",
         scrollThumb: "rgba(249, 115, 22, 0.35)",
         weekdays: [
           { bg: "#ffedd5", text: "#9a3412" },
@@ -500,65 +470,54 @@
           { bg: "#e0e7ff", text: "#3730a3" },
           { bg: "#fae8ff", text: "#86198f" }
         ],
-        pillBase: "bg-orange-50 border-orange-400 text-orange-950",
-        weddingPill: "bg-rose-50 border-rose-500 text-rose-950",
-        kaylaPill: "bg-amber-50 border-amber-500 text-amber-950",
+        pillBase: "bg-orange-50 border-orange-300 text-orange-950",
+        weddingPill: "bg-rose-50 border-rose-400 text-rose-950",
+        kaylaPill: "bg-amber-50 border-amber-400 text-amber-950",
         skySvg: `
-          <rect width="1200" height="180" fill="#fcf6f0" opacity="0.6"/>
-          <path d="M0,140 Q400,115 800,135 T1200,130 L1200,180 L0,180 Z" fill="#faeee3" opacity="0.8"/>
-          <circle cx="550" cy="80" r="70" fill="#ffedd5" opacity="0.4" filter="blur(12px)"/>
+          <rect width="1200" height="160" fill="#fcf6f0" opacity="0.6"/>
+          <path d="M0,125 Q400,105 800,120 T1200,115 L1200,160 L0,160 Z" fill="#faeee3" opacity="0.8"/>
+          <circle cx="550" cy="75" r="65" fill="#ffedd5" opacity="0.4" filter="blur(12px)"/>
         `,
         artLeft: `
           <div class="relative w-36 h-28 flex items-end">
-            <!-- Vintage embossed mason jar filled with peonies -->
             <svg viewBox="0 0 130 100" class="w-full h-full drop-shadow-sm">
-              <!-- Glass Jar -->
               <rect x="42" y="45" width="46" height="50" rx="6" fill="#e0f2fe" opacity="0.75" stroke="#0284c7" stroke-width="1.5"/>
               <rect x="46" y="40" width="38" height="6" rx="2" fill="#bae6fd" stroke="#0284c7" stroke-width="1.5"/>
-              <!-- Water level -->
-              <rect x="44" y="60" width="42" height="32" rx="4" fill="#38bdf8" opacity="0.25"/>
-              <!-- Stems inside jar -->
               <line x1="52" y1="42" x2="56" y2="85" stroke="#15803d" stroke-width="2"/>
               <line x1="65" y1="42" x2="65" y2="85" stroke="#16a34a" stroke-width="2.5"/>
-              <line x1="78" y1="42" x2="72" y2="85" stroke="#15803d" stroke-width="2"/>
-              <!-- Big Fluffy Peonies -->
-              <circle cx="50" cy="28" r="14" fill="#f43f5e"/><circle cx="50" cy="28" r="9" fill="#fb7185"/><circle cx="50" cy="28" r="4" fill="#ffe4e6"/>
-              <circle cx="75" cy="22" r="16" fill="#f472b6"/><circle cx="75" cy="22" r="10" fill="#fbcfe8"/><circle cx="75" cy="22" r="5" fill="#ffffff"/>
+              <circle cx="50" cy="28" r="14" fill="#f43f5e"/><circle cx="50" cy="28" r="8" fill="#fb7185"/>
+              <circle cx="75" cy="22" r="16" fill="#f472b6"/><circle cx="75" cy="22" r="9" fill="#fbcfe8"/>
             </svg>
           </div>
         `,
         artRight: `
           <div class="relative w-32 h-28 flex items-end">
-            <!-- Garden watering can & busy honeybees -->
             <svg viewBox="0 0 120 100" class="w-full h-full drop-shadow-sm">
-              <!-- Watering Can Body -->
-              <rect x="25" y="48" width="45" height="42" rx="4" fill="#047857"/>
-              <!-- Spout & Rose -->
+              <rect x="25" y="48" width="45" height="42" rx="5" fill="#047857"/>
               <line x1="70" y1="65" x2="98" y2="40" stroke="#047857" stroke-width="5" stroke-linecap="round"/>
               <polygon points="96,35 106,30 102,48 94,44" fill="#065f46"/>
-              <!-- Handle -->
               <path d="M25,55 C10,55 10,85 25,85" fill="none" stroke="#047857" stroke-width="4"/>
-              <!-- Honeybee with dashed flight trail -->
-              <path d="M45,25 Q70,5 90,18" fill="none" stroke="#92400e" stroke-width="1.5" stroke-dasharray="2,2"/>
               <ellipse cx="90" cy="18" rx="6" ry="4.5" fill="#facc15"/>
               <line x1="88" y1="14" x2="88" y2="22" stroke="#000000" stroke-width="1.5"/>
-              <line x1="91" y1="14" x2="91" y2="22" stroke="#000000" stroke-width="1.5"/>
               <ellipse cx="88" cy="12" rx="3" ry="5" fill="#e0f2fe" opacity="0.8"/>
             </svg>
           </div>
         `
       },
 
-      // 5: JUNE - Sunny Summer Meadow, Strawberries & Dragonflies
+      // 5: JUNE - Smiling Summer Sun & Wild Strawberries
       {
         monthName: "June",
-        bodyBg: "#fcfbf4",
-        cardBg: "#fffff9",
-        sidebarBg: "#f7f6ec",
-        borderColor: "rgba(234, 179, 8, 0.25)",
+        bodyBg: "#fbfaf2",
+        sidebarBg: "#f4f2e4",
+        bannerBg: "#fef6d8",
+        tileBg: "#ffffff",
+        tileMutedBg: "rgba(254, 246, 216, 0.4)",
+        tileBorder: "rgba(250, 204, 21, 0.4)",
         accentColor: "#ca8a04",
         textPrimary: "#713f12",
         sparkleColor: "#eab308",
+        todayGlow: "rgba(202, 138, 4, 0.25)",
         scrollThumb: "rgba(234, 179, 8, 0.35)",
         weekdays: [
           { bg: "#fef08a", text: "#854d0e" },
@@ -569,49 +528,35 @@
           { bg: "#fbcfe8", text: "#9d174d" },
           { bg: "#e9d5ff", text: "#6b21a8" }
         ],
-        pillBase: "bg-amber-50 border-amber-400 text-amber-950",
-        weddingPill: "bg-rose-50 border-rose-500 text-rose-950",
-        kaylaPill: "bg-yellow-50 border-yellow-500 text-yellow-950",
+        pillBase: "bg-amber-50 border-amber-300 text-amber-950",
+        weddingPill: "bg-rose-50 border-rose-400 text-rose-950",
+        kaylaPill: "bg-yellow-50 border-yellow-400 text-yellow-950",
         skySvg: `
-          <rect width="1200" height="180" fill="#fefce8" opacity="0.6"/>
-          <path d="M0,140 Q400,120 800,135 T1200,130 L1200,180 L0,180 Z" fill="#fef9c3" opacity="0.7"/>
-          <circle cx="600" cy="80" r="75" fill="#fde047" opacity="0.35" filter="blur(14px)"/>
+          <rect width="1200" height="160" fill="#fefce8" opacity="0.6"/>
+          <path d="M0,125 Q400,105 800,120 T1200,115 L1200,160 L0,160 Z" fill="#fef9c3" opacity="0.7"/>
+          <circle cx="600" cy="75" r="70" fill="#fde047" opacity="0.35" filter="blur(14px)"/>
         `,
         artLeft: `
           <div class="relative w-36 h-28 flex items-end">
-            <!-- Giant smiling summer sun with spiraling rays -->
             <svg viewBox="0 0 130 100" class="w-full h-full drop-shadow-sm">
               <circle cx="65" cy="55" r="26" fill="#f59e0b"/>
               <circle cx="65" cy="55" r="23" fill="#facc15"/>
-              <!-- Sun Face -->
               <ellipse cx="57" cy="52" rx="2" ry="2.5" fill="#78350f"/>
               <ellipse cx="73" cy="52" rx="2" ry="2.5" fill="#78350f"/>
               <path d="M60,60 Q65,66 70,60" fill="none" stroke="#78350f" stroke-width="2" stroke-linecap="round"/>
-              <circle cx="53" cy="56" r="3" fill="#f87171" opacity="0.6"/>
-              <circle cx="77" cy="56" r="3" fill="#f87171" opacity="0.6"/>
-              <!-- Rays -->
               <line x1="65" y1="20" x2="65" y2="10" stroke="#f59e0b" stroke-width="3" stroke-linecap="round"/>
               <line x1="65" y1="90" x2="65" y2="100" stroke="#f59e0b" stroke-width="3" stroke-linecap="round"/>
               <line x1="30" y1="55" x2="20" y2="55" stroke="#f59e0b" stroke-width="3" stroke-linecap="round"/>
               <line x1="100" y1="55" x2="110" y2="55" stroke="#f59e0b" stroke-width="3" stroke-linecap="round"/>
-              <line x1="40" y1="30" x2="32" y2="22" stroke="#f59e0b" stroke-width="3" stroke-linecap="round"/>
-              <line x1="90" y1="80" x2="98" y2="88" stroke="#f59e0b" stroke-width="3" stroke-linecap="round"/>
             </svg>
           </div>
         `,
         artRight: `
           <div class="relative w-32 h-28 flex items-end">
-            <!-- Strawberry vines with ripe red berries & dragonfly -->
             <svg viewBox="0 0 120 100" class="w-full h-full drop-shadow-sm">
               <path d="M20,95 Q50,60 100,85" fill="none" stroke="#16a34a" stroke-width="3"/>
-              <!-- Strawberry 1 -->
               <path d="M42,75 C42,92 58,92 58,75 C58,70 42,70 42,75 Z" fill="#dc2626"/>
               <polygon points="46,70 50,64 54,70" fill="#15803d"/>
-              <circle cx="47" cy="78" r="0.8" fill="#fde047"/><circle cx="53" cy="82" r="0.8" fill="#fde047"/>
-              <!-- Strawberry 2 -->
-              <path d="M72,80 C72,95 86,95 86,80 C86,75 72,75 72,80 Z" fill="#ef4444"/>
-              <polygon points="76,76 79,70 82,76" fill="#15803d"/>
-              <!-- Dragonfly -->
               <ellipse cx="60" cy="30" rx="3" ry="12" fill="#0284c7"/>
               <ellipse cx="50" cy="27" rx="9" ry="2.5" fill="#bae6fd" opacity="0.8"/>
               <ellipse cx="70" cy="27" rx="9" ry="2.5" fill="#bae6fd" opacity="0.8"/>
@@ -620,16 +565,19 @@
         `
       },
 
-      // 6: JULY - Summer Camp, Campfire & Mountain Night
+      // 6: JULY - Campfire, Roasted Marshmallows & Brass Lantern
       {
         monthName: "July",
-        bodyBg: "#f8f9fa",
-        cardBg: "#fcfdfe",
-        sidebarBg: "#f1f3f6",
-        borderColor: "rgba(225, 29, 72, 0.2)",
+        bodyBg: "#f6f8fa",
+        sidebarBg: "#ebf0f5",
+        bannerBg: "#dde8f2",
+        tileBg: "#ffffff",
+        tileMutedBg: "rgba(221, 232, 242, 0.4)",
+        tileBorder: "rgba(244, 63, 94, 0.3)",
         accentColor: "#b91c1c",
         textPrimary: "#1e293b",
         sparkleColor: "#f59e0b",
+        todayGlow: "rgba(185, 28, 28, 0.25)",
         scrollThumb: "rgba(225, 29, 72, 0.35)",
         weekdays: [
           { bg: "#fee2e2", text: "#991b1b" },
@@ -640,28 +588,23 @@
           { bg: "#fef3c7", text: "#854d0e" },
           { bg: "#dbeafe", text: "#1e40af" }
         ],
-        pillBase: "bg-red-50 border-red-400 text-red-950",
-        weddingPill: "bg-blue-50 border-blue-500 text-blue-950",
-        kaylaPill: "bg-orange-50 border-orange-500 text-orange-950",
+        pillBase: "bg-red-50 border-red-300 text-red-950",
+        weddingPill: "bg-blue-50 border-blue-400 text-blue-950",
+        kaylaPill: "bg-orange-50 border-orange-400 text-orange-950",
         skySvg: `
-          <rect width="1200" height="180" fill="#f0f4f8" opacity="0.6"/>
-          <path d="M0,135 Q400,105 800,125 T1200,120 L1200,180 L0,180 Z" fill="#e2e8f0" opacity="0.7"/>
-          <circle cx="600" cy="80" r="70" fill="#fed7aa" opacity="0.3" filter="blur(12px)"/>
+          <rect width="1200" height="160" fill="#f0f4f8" opacity="0.6"/>
+          <path d="M0,125 Q400,95 800,115 T1200,110 L1200,160 L0,160 Z" fill="#e2e8f0" opacity="0.7"/>
+          <circle cx="600" cy="75" r="65" fill="#fed7aa" opacity="0.3" filter="blur(12px)"/>
         `,
         artLeft: `
           <div class="relative w-36 h-28 flex items-end">
-            <!-- Cozy glowing campfire & roasted marshmallow -->
             <svg viewBox="0 0 130 100" class="w-full h-full drop-shadow-sm">
-              <!-- Wooden logs -->
               <ellipse cx="65" cy="85" rx="30" ry="8" fill="#451a03"/>
               <line x1="40" y1="88" x2="88" y2="78" stroke="#78350f" stroke-width="7" stroke-linecap="round"/>
               <line x1="42" y1="78" x2="90" y2="88" stroke="#542308" stroke-width="7" stroke-linecap="round"/>
-              <!-- Fire Glow -->
               <circle cx="65" cy="65" r="22" fill="#fb923c" opacity="0.4" filter="blur(6px)"/>
-              <!-- Flames -->
               <path d="M50,80 Q55,45 65,35 Q75,45 80,80 Q65,70 50,80 Z" fill="#ea580c"/>
               <path d="M56,80 Q62,55 65,48 Q70,55 74,80 Q65,74 56,80 Z" fill="#facc15"/>
-              <!-- Marshmallow stick -->
               <line x1="95" y1="35" x2="70" y2="60" stroke="#78350f" stroke-width="2"/>
               <rect x="66" y="56" width="8" height="6" rx="1.5" fill="#fef08a"/>
             </svg>
@@ -669,33 +612,29 @@
         `,
         artRight: `
           <div class="relative w-32 h-28 flex items-end">
-            <!-- Vintage brass lantern glowing with fireflies -->
             <svg viewBox="0 0 120 100" class="w-full h-full drop-shadow-sm">
-              <rect x="42" y="35" width="36" height="50" rx="4" fill="#fef3c7" stroke="#b45309" stroke-width="2"/>
+              <rect x="42" y="35" width="36" height="50" rx="5" fill="#fef3c7" stroke="#b45309" stroke-width="2"/>
               <polygon points="36,35 60,18 84,35" fill="#78350f"/>
-              <!-- Ring handle -->
               <circle cx="60" cy="14" r="6" fill="none" stroke="#78350f" stroke-width="2"/>
-              <!-- Lantern base -->
-              <rect x="36" y="85" width="48" height="8" rx="2" fill="#78350f"/>
-              <!-- Yellow warm light & firefly particles -->
               <circle cx="60" cy="60" r="10" fill="#fde047" opacity="0.8"/>
-              <circle cx="48" cy="48" r="2" fill="#facc15"/>
-              <circle cx="70" cy="68" r="2.5" fill="#facc15"/>
             </svg>
           </div>
         `
       },
 
-      // 7: AUGUST - Golden Late Summer, Sunflowers & Peaches
+      // 7: AUGUST - Sunflower Meadow & Golden Wheat
       {
         monthName: "August",
-        bodyBg: "#fefcf6",
-        cardBg: "#fffdf9",
-        sidebarBg: "#f9f6ed",
-        borderColor: "rgba(245, 158, 11, 0.25)",
+        bodyBg: "#fefcf4",
+        sidebarBg: "#f9f6e6",
+        bannerBg: "#fef3ce",
+        tileBg: "#ffffff",
+        tileMutedBg: "rgba(254, 243, 206, 0.4)",
+        tileBorder: "rgba(245, 158, 11, 0.35)",
         accentColor: "#d97706",
         textPrimary: "#78350f",
         sparkleColor: "#f59e0b",
+        todayGlow: "rgba(217, 119, 6, 0.25)",
         scrollThumb: "rgba(245, 158, 11, 0.35)",
         weekdays: [
           { bg: "#fef3c7", text: "#92400e" },
@@ -706,61 +645,51 @@
           { bg: "#fed7aa", text: "#9a3412" },
           { bg: "#f3e8ff", text: "#6b21a8" }
         ],
-        pillBase: "bg-amber-50 border-amber-400 text-amber-950",
-        weddingPill: "bg-orange-50 border-orange-500 text-orange-950",
-        kaylaPill: "bg-yellow-50 border-yellow-600 text-yellow-950",
+        pillBase: "bg-amber-50 border-amber-300 text-amber-950",
+        weddingPill: "bg-orange-50 border-orange-400 text-orange-950",
+        kaylaPill: "bg-yellow-50 border-yellow-400 text-yellow-950",
         skySvg: `
-          <rect width="1200" height="180" fill="#fffbeb" opacity="0.6"/>
-          <path d="M0,140 Q400,120 800,135 T1200,130 L1200,180 L0,180 Z" fill="#fef3c7" opacity="0.6"/>
-          <circle cx="580" cy="80" r="75" fill="#fde68a" opacity="0.35" filter="blur(14px)"/>
+          <rect width="1200" height="160" fill="#fffbeb" opacity="0.6"/>
+          <path d="M0,125 Q400,105 800,120 T1200,115 L1200,160 L0,160 Z" fill="#fef3c7" opacity="0.6"/>
+          <circle cx="580" cy="75" r="70" fill="#fde68a" opacity="0.35" filter="blur(14px)"/>
         `,
         artLeft: `
           <div class="relative w-36 h-28 flex items-end">
-            <!-- Giant textured sunflower & bumblebee -->
             <svg viewBox="0 0 130 100" class="w-full h-full drop-shadow-sm">
               <path d="M45,95 Q55,60 62,45" fill="none" stroke="#15803d" stroke-width="4"/>
-              <!-- Sunflower Petals -->
               <circle cx="65" cy="45" r="28" fill="#f59e0b"/>
               <circle cx="65" cy="45" r="23" fill="#fbbf24"/>
-              <!-- Center Seed disc -->
               <circle cx="65" cy="45" r="14" fill="#451a03"/>
-              <circle cx="65" cy="45" r="12" fill="#78350f"/>
-              <!-- Bee -->
               <ellipse cx="88" cy="35" rx="5" ry="4" fill="#facc15"/>
               <line x1="86" y1="31" x2="86" y2="39" stroke="#000000" stroke-width="1.5"/>
-              <ellipse cx="86" cy="28" rx="2.5" ry="4" fill="#e0f2fe" opacity="0.8"/>
             </svg>
           </div>
         `,
         artRight: `
           <div class="relative w-32 h-28 flex items-end">
-            <!-- Sliced ripe peach & wheat stalks -->
             <svg viewBox="0 0 120 100" class="w-full h-full drop-shadow-sm">
-              <!-- Wheat stalks -->
               <line x1="85" y1="95" x2="70" y2="35" stroke="#d97706" stroke-width="2"/>
-              <ellipse cx="69" cy="38" rx="3" ry="6" fill="#f59e0b"/>
-              <ellipse cx="73" cy="46" rx="3" ry="6" fill="#f59e0b"/>
-              <!-- Whole peach -->
               <circle cx="45" cy="65" r="22" fill="#f87171"/>
               <circle cx="45" cy="65" r="19" fill="#fb923c"/>
-              <path d="M45,45 Q48,58 45,75" fill="none" stroke="#ea580c" stroke-width="1.5"/>
-              <!-- Leaf -->
               <path d="M45,45 Q55,35 62,42 Q50,48 45,45 Z" fill="#16a34a"/>
             </svg>
           </div>
         `
       },
 
-      // 8: SEPTEMBER - Autumn Harvest, Cider Mug & Stack of Books
+      // 8: SEPTEMBER - Vintage Books & Spiced Cider Mug
       {
         monthName: "September",
-        bodyBg: "#faf6f0",
-        cardBg: "#fdfbfa",
-        sidebarBg: "#f4ede4",
-        borderColor: "rgba(180, 83, 9, 0.25)",
+        bodyBg: "#fbf6ef",
+        sidebarBg: "#f4ede0",
+        bannerBg: "#f6e8d2",
+        tileBg: "#ffffff",
+        tileMutedBg: "rgba(246, 232, 210, 0.4)",
+        tileBorder: "rgba(217, 119, 6, 0.35)",
         accentColor: "#b45309",
         textPrimary: "#451a03",
         sparkleColor: "#d97706",
+        todayGlow: "rgba(180, 83, 9, 0.25)",
         scrollThumb: "rgba(180, 83, 9, 0.35)",
         weekdays: [
           { bg: "#fed7aa", text: "#9a3412" },
@@ -771,62 +700,50 @@
           { bg: "#fee2e2", text: "#991b1b" },
           { bg: "#ede9fe", text: "#5b21b6" }
         ],
-        pillBase: "bg-amber-50 border-amber-500 text-amber-950",
-        weddingPill: "bg-red-50 border-red-500 text-red-950",
-        kaylaPill: "bg-orange-50 border-orange-500 text-orange-950",
+        pillBase: "bg-amber-50 border-amber-300 text-amber-950",
+        weddingPill: "bg-red-50 border-red-400 text-red-950",
+        kaylaPill: "bg-orange-50 border-orange-400 text-orange-950",
         skySvg: `
-          <rect width="1200" height="180" fill="#fef6ed" opacity="0.6"/>
-          <path d="M0,140 Q400,120 800,135 T1200,130 L1200,180 L0,180 Z" fill="#fceadc" opacity="0.7"/>
-          <circle cx="580" cy="80" r="70" fill="#fcd34d" opacity="0.3" filter="blur(12px)"/>
+          <rect width="1200" height="160" fill="#fef6ed" opacity="0.6"/>
+          <path d="M0,125 Q400,105 800,120 T1200,115 L1200,160 L0,160 Z" fill="#fceadc" opacity="0.7"/>
+          <circle cx="580" cy="75" r="65" fill="#fcd34d" opacity="0.3" filter="blur(12px)"/>
         `,
         artLeft: `
           <div class="relative w-36 h-28 flex items-end">
-            <!-- Stack of antique books & red apple with oak leaf -->
             <svg viewBox="0 0 130 100" class="w-full h-full drop-shadow-sm">
-              <!-- Bottom Book -->
-              <rect x="25" y="75" width="75" height="18" rx="2" fill="#78350f"/>
-              <rect x="28" y="77" width="70" height="14" rx="1.5" fill="#fef3c7"/>
-              <!-- Middle Book -->
-              <rect x="32" y="60" width="62" height="16" rx="2" fill="#1e3a8a"/>
-              <rect x="35" y="62" width="57" height="12" rx="1.5" fill="#fef3c7"/>
-              <!-- Top Book -->
-              <rect x="36" y="47" width="52" height="14" rx="2" fill="#991b1b"/>
-              <!-- Red Apple on top -->
+              <rect x="25" y="75" width="75" height="18" rx="3" fill="#78350f"/>
+              <rect x="32" y="60" width="62" height="16" rx="3" fill="#1e3a8a"/>
+              <rect x="36" y="47" width="52" height="14" rx="3" fill="#991b1b"/>
               <circle cx="62" cy="38" r="10" fill="#dc2626"/>
-              <path d="M62,28 Q65,22 62,18" fill="none" stroke="#78350f" stroke-width="2"/>
               <ellipse cx="66" cy="24" rx="3" ry="1.5" fill="#15803d"/>
             </svg>
           </div>
         `,
         artRight: `
           <div class="relative w-32 h-28 flex items-end">
-            <!-- Steaming mug of warm spiced cider & cinnamon stick -->
             <svg viewBox="0 0 120 100" class="w-full h-full drop-shadow-sm">
-              <!-- Mug Body -->
-              <rect x="35" y="45" width="46" height="45" rx="5" fill="#ea580c"/>
-              <rect x="39" y="48" width="38" height="8" rx="2" fill="#fef3c7"/>
-              <!-- Handle -->
+              <rect x="35" y="45" width="46" height="45" rx="6" fill="#ea580c"/>
               <path d="M81,52 C94,52 94,78 81,78" fill="none" stroke="#ea580c" stroke-width="5"/>
-              <!-- Cinnamon stick -->
               <line x1="68" y1="52" x2="82" y2="28" stroke="#78350f" stroke-width="4" stroke-linecap="round"/>
-              <!-- Steam curves -->
               <path d="M48,40 Q44,28 50,18" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round"/>
-              <path d="M60,38 Q65,25 58,15" fill="none" stroke="#d97706" stroke-width="2" stroke-linecap="round"/>
             </svg>
           </div>
         `
       },
 
-      // 9: OCTOBER - Cozy Spooky Halloween (User's Absolute Favorite)
+      // 9: OCTOBER - Cozy Halloween (Jack-o'-lantern, Cat & Ghost)
       {
         monthName: "October",
         bodyBg: "#fbf6ec",
-        cardBg: "#fcf8ee",
-        sidebarBg: "#f8f2e2",
-        borderColor: "rgba(180, 83, 9, 0.25)",
+        sidebarBg: "#f6ede0",
+        bannerBg: "#faead6",
+        tileBg: "#ffffff",
+        tileMutedBg: "rgba(250, 234, 214, 0.45)",
+        tileBorder: "rgba(217, 119, 6, 0.35)",
         accentColor: "#ea580c",
         textPrimary: "#29150b",
         sparkleColor: "#f59e0b",
+        todayGlow: "rgba(234, 88, 12, 0.35)",
         scrollThumb: "rgba(234, 88, 12, 0.35)",
         weekdays: [
           { bg: "#f5b895", text: "#542713" },
@@ -837,90 +754,61 @@
           { bg: "#fcd4b4", text: "#542713" },
           { bg: "#d8cde3", text: "#412856" }
         ],
-        pillBase: "bg-orange-50 border-orange-500 text-orange-950",
-        weddingPill: "bg-amber-50 border-amber-600 text-amber-950",
-        kaylaPill: "bg-purple-50 border-purple-500 text-purple-950",
+        pillBase: "bg-orange-50 border-orange-300 text-orange-950",
+        weddingPill: "bg-amber-50 border-amber-400 text-amber-950",
+        kaylaPill: "bg-purple-50 border-purple-400 text-purple-950",
         skySvg: `
-          <rect width="1200" height="180" fill="#fdfaf3" opacity="0.6"/>
-          <!-- Spooky gnarly tree branch left -->
-          <path d="M-10,0 L85,0 C75,35 48,55 40,85 C36,105 50,135 15,180 L-10,180 Z" fill="#3b2318" opacity="0.95"/>
-          <path d="M45,70 Q95,52 125,65 Q95,78 50,82 Z" fill="#3b2318"/>
-          <!-- Huge Glowing Full Moon -->
-          <circle cx="580" cy="80" r="75" fill="#fef08a" opacity="0.35" filter="blur(10px)"/>
-          <circle cx="580" cy="80" r="66" fill="#fef3c7" opacity="0.8"/>
+          <rect width="1200" height="160" fill="#fdfaf3" opacity="0.6"/>
+          <path d="M-10,0 L85,0 C75,35 48,55 40,85 C36,105 50,135 15,160 L-10,160 Z" fill="#3b2318" opacity="0.95"/>
+          <path d="M45,65 Q95,48 125,60 Q95,73 50,77 Z" fill="#3b2318"/>
+          <circle cx="580" cy="75" r="70" fill="#fef08a" opacity="0.35" filter="blur(10px)"/>
+          <circle cx="580" cy="75" r="62" fill="#fef3c7" opacity="0.85"/>
         `,
         artLeft: `
-          <div class="relative w-44 h-32 flex items-end space-x-2">
-            <!-- Hanging brass lantern -->
-            <div class="absolute -top-6 left-1">
-              <svg width="24" height="48" viewBox="0 0 24 48">
-                <line x1="12" y1="0" x2="12" y2="18" stroke="#3b2318" stroke-width="2"/>
-                <rect x="5" y="18" width="14" height="22" rx="2" fill="#583119" stroke="#3b2318" stroke-width="1.5"/>
-                <rect x="8" y="22" width="8" height="14" rx="1" fill="#fde047"/>
-              </svg>
-            </div>
-
-            <!-- Glowing Pumpkin in Crooked Witch Hat -->
+          <div class="relative w-44 h-28 flex items-end space-x-1.5">
             <div class="w-24 h-28 relative">
               <svg viewBox="0 0 100 120" class="w-full h-full drop-shadow-md">
-                <!-- Pumpkin ribs -->
                 <ellipse cx="50" cy="86" rx="36" ry="26" fill="#ea580c"/>
                 <ellipse cx="50" cy="86" rx="25" ry="26" fill="#f97316"/>
                 <ellipse cx="50" cy="86" rx="13" ry="25" fill="#fb923c"/>
-                <!-- Carved Face with inner glow -->
                 <polygon points="38,82 44,82 41,75" fill="#29140a"/>
                 <polygon points="56,82 62,82 59,75" fill="#29140a"/>
                 <polygon points="48,86 52,86 50,83" fill="#29140a"/>
                 <path d="M38,92 Q50,101 62,92 Q50,96 38,92 Z" fill="#29140a"/>
-                <!-- Witch Hat -->
                 <ellipse cx="50" cy="67" rx="42" ry="9" fill="#292333"/>
                 <path d="M32,66 Q45,20 63,15 Q54,38 68,65 Z" fill="#292333"/>
                 <path d="M33,65 C42,62 58,62 67,65 L66,61 C57,58 41,58 34,61 Z" fill="#d97706"/>
               </svg>
             </div>
-
-            <!-- Sleek Black Cat with Gold Eyes -->
             <div class="w-16 h-20 -ml-4">
               <svg viewBox="0 0 70 80" class="w-full h-full drop-shadow-md">
                 <ellipse cx="35" cy="55" rx="20" ry="18" fill="#231f2d"/>
-                <!-- Curled Tail -->
                 <path d="M50,62 Q68,60 62,38 Q58,36 58,44" fill="none" stroke="#231f2d" stroke-width="4.5" stroke-linecap="round"/>
-                <!-- Cat Head & Ears -->
                 <circle cx="35" cy="35" r="14" fill="#231f2d"/>
                 <polygon points="23,28 27,14 33,26" fill="#231f2d"/>
                 <polygon points="37,26 43,14 47,28" fill="#231f2d"/>
-                <!-- Big Gold Eyes -->
                 <ellipse cx="30" cy="35" rx="3" ry="4" fill="#facc15"/>
                 <ellipse cx="40" cy="35" rx="3" ry="4" fill="#facc15"/>
-                <circle cx="30" cy="35" r="1.2" fill="#09090b"/>
-                <circle cx="40" cy="35" r="1.2" fill="#09090b"/>
               </svg>
             </div>
           </div>
         `,
         artRight: `
-          <div class="relative w-36 h-32 flex items-end space-x-2">
-            <!-- Whimsical Sheet Ghost with Blush -->
+          <div class="relative w-36 h-28 flex items-end space-x-1.5">
             <div class="w-14 h-22">
               <svg viewBox="0 0 60 80" class="w-full h-full drop-shadow-md">
                 <path d="M12,45 C12,16 48,16 48,45 C48,68 42,65 38,72 C34,65 30,69 26,72 C22,65 18,68 14,72 C12,65 12,55 12,45 Z" fill="#ffffff" stroke="#362f28" stroke-width="2"/>
                 <ellipse cx="26" cy="35" rx="2.5" ry="4" fill="#292333"/>
                 <ellipse cx="36" cy="35" rx="2.5" ry="4" fill="#292333"/>
-                <!-- Cute Blush Spot -->
                 <circle cx="31" cy="46" r="4.5" fill="#f97316" opacity="0.9"/>
               </svg>
             </div>
-
-            <!-- Haunted Victorian Manor with lit turret window -->
             <div class="w-20 h-28">
               <svg viewBox="0 0 90 120" class="w-full h-full">
-                <!-- Steep Crooked Roofs -->
                 <polygon points="10,65 25,32 40,65" fill="#2a2336"/>
                 <polygon points="40,55 60,12 80,55" fill="#2a2336"/>
-                <!-- House Walls -->
                 <rect x="15" y="65" width="25" height="50" fill="#2a2336"/>
                 <rect x="40" y="55" width="40" height="60" fill="#2a2336"/>
-                <!-- Glowing round window -->
                 <circle cx="60" cy="40" r="5.5" fill="#fde047"/>
               </svg>
             </div>
@@ -928,16 +816,19 @@
         `
       },
 
-      // 10: NOVEMBER - Thanksgiving Harvest Basket & Maple Foliage
+      // 10: NOVEMBER - Harvest Cornucopia & Pumpkin Pie
       {
         monthName: "November",
-        bodyBg: "#faf6f0",
-        cardBg: "#fcf8f2",
-        sidebarBg: "#f5eee4",
-        borderColor: "rgba(180, 83, 9, 0.25)",
+        bodyBg: "#faf5ef",
+        sidebarBg: "#f2ece3",
+        bannerBg: "#f6e8d8",
+        tileBg: "#ffffff",
+        tileMutedBg: "rgba(246, 232, 216, 0.4)",
+        tileBorder: "rgba(217, 119, 6, 0.35)",
         accentColor: "#b45309",
         textPrimary: "#451a03",
         sparkleColor: "#d97706",
+        todayGlow: "rgba(180, 83, 9, 0.25)",
         scrollThumb: "rgba(180, 83, 9, 0.35)",
         weekdays: [
           { bg: "#fed7aa", text: "#9a3412" },
@@ -948,59 +839,49 @@
           { bg: "#fef08a", text: "#854d0e" },
           { bg: "#dcfce7", text: "#166534" }
         ],
-        pillBase: "bg-amber-50 border-amber-500 text-amber-950",
-        weddingPill: "bg-orange-50 border-orange-600 text-orange-950",
-        kaylaPill: "bg-rose-50 border-rose-500 text-rose-950",
+        pillBase: "bg-amber-50 border-amber-300 text-amber-950",
+        weddingPill: "bg-orange-50 border-orange-400 text-orange-950",
+        kaylaPill: "bg-rose-50 border-rose-400 text-rose-950",
         skySvg: `
-          <rect width="1200" height="180" fill="#fbf5ee" opacity="0.6"/>
-          <path d="M0,140 Q400,120 800,135 T1200,130 L1200,180 L0,180 Z" fill="#f5e9dc" opacity="0.7"/>
-          <circle cx="580" cy="80" r="70" fill="#fed7aa" opacity="0.35" filter="blur(12px)"/>
+          <rect width="1200" height="160" fill="#fbf5ee" opacity="0.6"/>
+          <path d="M0,125 Q400,105 800,120 T1200,115 L1200,160 L0,160 Z" fill="#f5e9dc" opacity="0.7"/>
+          <circle cx="580" cy="75" r="65" fill="#fed7aa" opacity="0.35" filter="blur(12px)"/>
         `,
         artLeft: `
           <div class="relative w-36 h-28 flex items-end">
-            <!-- Woven harvest cornucopia basket with gourds -->
             <svg viewBox="0 0 130 100" class="w-full h-full drop-shadow-sm">
-              <!-- Woven basket -->
               <ellipse cx="65" cy="82" rx="35" ry="12" fill="#78350f"/>
-              <path d="M30,82 C30,95 100,95 100,82 C100,68 30,68 30,82 Z" fill="#92400e" stroke="#542308" stroke-width="2"/>
-              <!-- Green & Yellow Squash -->
               <ellipse cx="50" cy="65" rx="14" ry="20" fill="#15803d"/>
               <ellipse cx="78" cy="68" rx="16" ry="14" fill="#eab308"/>
-              <!-- Mini Pumpkin -->
               <circle cx="65" cy="72" r="14" fill="#ea580c"/>
-              <polygon points="63,58 67,58 65,52" fill="#78350f"/>
             </svg>
           </div>
         `,
         artRight: `
           <div class="relative w-32 h-28 flex items-end">
-            <!-- Slice of pumpkin pie with whipped cream dollop & maple leaves -->
             <svg viewBox="0 0 120 100" class="w-full h-full drop-shadow-sm">
-              <!-- Pie crust -->
               <polygon points="25,75 85,45 95,85" fill="#d97706"/>
-              <polygon points="25,75 85,45 88,40 28,70" fill="#92400e"/>
-              <!-- Pumpkin filling -->
               <polygon points="30,73 83,47 90,80" fill="#ea580c"/>
-              <!-- Whipped Cream dollop -->
               <circle cx="60" cy="60" r="8" fill="#ffffff"/>
-              <circle cx="60" cy="56" r="5" fill="#fef3c7"/>
-              <!-- Falling maple leaf -->
               <path d="M90,30 Q95,15 105,20 Q110,35 90,30 Z" fill="#b91c1c"/>
             </svg>
           </div>
         `
       },
 
-      // 11: DECEMBER - Festive Holiday Cottage, Garland & Candle Lantern
+      // 11: DECEMBER - Winter Garland, Gingerbread & Lantern
       {
         monthName: "December",
-        bodyBg: "#f7f9f7",
-        cardBg: "#fbfdfb",
-        sidebarBg: "#f0f5f0",
-        borderColor: "rgba(22, 101, 52, 0.25)",
+        bodyBg: "#f6f8f6",
+        sidebarBg: "#ebf2eb",
+        bannerBg: "#ddeedd",
+        tileBg: "#ffffff",
+        tileMutedBg: "rgba(221, 238, 221, 0.4)",
+        tileBorder: "rgba(34, 197, 94, 0.35)",
         accentColor: "#15803d",
         textPrimary: "#14532d",
         sparkleColor: "#dc2626",
+        todayGlow: "rgba(21, 128, 61, 0.25)",
         scrollThumb: "rgba(22, 101, 52, 0.35)",
         weekdays: [
           { bg: "#fee2e2", text: "#991b1b" },
@@ -1011,49 +892,31 @@
           { bg: "#e0e7ff", text: "#3730a3" },
           { bg: "#f1f5f9", text: "#334155" }
         ],
-        pillBase: "bg-emerald-50 border-emerald-500 text-emerald-950",
-        weddingPill: "bg-red-50 border-red-500 text-red-950",
-        kaylaPill: "bg-teal-50 border-teal-500 text-teal-950",
+        pillBase: "bg-emerald-50 border-emerald-300 text-emerald-950",
+        weddingPill: "bg-red-50 border-red-400 text-red-950",
+        kaylaPill: "bg-teal-50 border-teal-400 text-teal-950",
         skySvg: `
-          <rect width="1200" height="180" fill="#f2f7f2" opacity="0.6"/>
-          <path d="M0,140 Q400,120 800,135 T1200,130 L1200,180 L0,180 Z" fill="#e2ede2" opacity="0.7"/>
-          <circle cx="580" cy="80" r="70" fill="#fecaca" opacity="0.25" filter="blur(12px)"/>
+          <rect width="1200" height="160" fill="#f2f7f2" opacity="0.6"/>
+          <path d="M0,125 Q400,105 800,120 T1200,115 L1200,160 L0,160 Z" fill="#e2ede2" opacity="0.7"/>
+          <circle cx="580" cy="75" r="65" fill="#fecaca" opacity="0.25" filter="blur(12px)"/>
         `,
         artLeft: `
           <div class="relative w-36 h-28 flex items-end">
-            <!-- Evergreen pine branch with dried orange slices & gingerbread man -->
             <svg viewBox="0 0 130 100" class="w-full h-full drop-shadow-sm">
-              <!-- Pine garland -->
               <path d="M10,40 Q60,65 110,45" fill="none" stroke="#166534" stroke-width="6" stroke-linecap="round"/>
-              <path d="M15,42 Q60,68 105,48" fill="none" stroke="#15803d" stroke-width="4" stroke-linecap="round"/>
-              <!-- Dried orange slice -->
               <circle cx="45" cy="55" r="12" fill="#ea580c"/>
-              <circle cx="45" cy="55" r="9" fill="#fde047"/>
-              <circle cx="45" cy="55" r="2" fill="#ea580c"/>
-              <!-- Gingerbread Man hanging -->
               <circle cx="85" cy="45" r="6" fill="#b45309"/>
               <rect x="81" y="51" width="8" height="14" rx="2" fill="#b45309"/>
-              <line x1="77" y1="55" x2="93" y2="55" stroke="#b45309" stroke-width="3" stroke-linecap="round"/>
-              <line x1="83" y1="65" x2="80" y2="76" stroke="#b45309" stroke-width="3" stroke-linecap="round"/>
-              <line x1="87" y1="65" x2="90" y2="76" stroke="#b45309" stroke-width="3" stroke-linecap="round"/>
-              <!-- Frosting buttons -->
-              <circle cx="85" cy="55" r="1" fill="#ffffff"/><circle cx="85" cy="60" r="1" fill="#ffffff"/>
             </svg>
           </div>
         `,
         artRight: `
           <div class="relative w-32 h-28 flex items-end">
-            <!-- Glowing holiday candle lantern & red bauble -->
             <svg viewBox="0 0 120 100" class="w-full h-full drop-shadow-sm">
-              <rect x="45" y="42" width="32" height="48" rx="3" fill="#fef3c7" stroke="#1e293b" stroke-width="2"/>
-              <polygon points="40,42 61,24 82,42" fill="#1e293b"/>
-              <circle cx="61" cy="20" r="5" fill="none" stroke="#1e293b" stroke-width="2"/>
-              <!-- Glowing candle inside -->
+              <rect x="45" y="42" width="32" height="48" rx="4" fill="#fef3c7" stroke="#1e293b" stroke-width="2"/>
               <rect x="56" y="58" width="10" height="25" fill="#dc2626"/>
               <circle cx="61" cy="52" r="5" fill="#fde047" opacity="0.9"/>
-              <!-- Red holiday glass bauble -->
               <circle cx="28" cy="75" r="14" fill="#dc2626"/>
-              <rect x="25" y="59" width="6" height="4" fill="#f59e0b"/>
             </svg>
           </div>
         `
@@ -1061,14 +924,60 @@
     ];
 
     /* =====================================================================
-       APP STATE & RUNTIME CONFIGURATION
+       MOCK EVENTS FALLBACK (October 2026)
        ===================================================================== */
-    // Default to the current system date in America/Chicago
+    const FALLBACK_EVENTS = [
+      { summary: "Soccer", start: "2026-10-01T20:10:00", allDay: false, calendarTitle: "mvgrosskreuz" },
+      { summary: "Chest Tube TED ...", start: "2026-10-01T15:00:00", allDay: false, calendarTitle: "mvgrosskreuz" },
+      { summary: "Autumn's birthday", start: "2026-10-02", allDay: true, calendarTitle: "Kayla" },
+      { summary: "Finalize Time Card", start: "2026-10-03", allDay: true, calendarTitle: "mvgrosskreuz" },
+      { summary: "Work", start: "2026-10-03", allDay: true, calendarTitle: "mvgrosskreuz" },
+      { summary: "11 months to go", start: "2026-10-03", allDay: true, calendarTitle: "Grosskreuz Wedding" },
+      { summary: "Work", start: "2026-10-04", allDay: true, calendarTitle: "mvgrosskreuz" },
+      { summary: "Little Nice's birthday", start: "2026-10-05", allDay: true, calendarTitle: "Kayla" },
+      { summary: "Therapy", start: "2026-10-05T10:00:00", allDay: false, calendarTitle: "mvgrosskreuz" },
+      { summary: "Carroll", start: "2026-10-05T11:00:00", allDay: false, calendarTitle: "mvgrosskreuz" },
+      { summary: "Preferences Open", start: "2026-10-06", allDay: true, calendarTitle: "mvgrosskreuz" },
+      { summary: "Carroll", start: "2026-10-07T08:00:00", allDay: false, calendarTitle: "mvgrosskreuz" },
+      { summary: "Emily 07-19", start: "2026-10-08", allDay: true, calendarTitle: "Kayla" },
+      { summary: "Meeting w/ Karen", start: "2026-10-08", allDay: true, calendarTitle: "mvgrosskreuz" },
+      { summary: "Paid", start: "2026-10-09", allDay: true, calendarTitle: "mvgrosskreuz" },
+      { summary: "Mom does batt st...", start: "2026-10-12T07:30:00", allDay: false, calendarTitle: "mvgrosskreuz" },
+      { summary: "Carroll", start: "2026-10-12T11:00:00", allDay: false, calendarTitle: "mvgrosskreuz" },
+      { summary: "Work", start: "2026-10-13", allDay: true, calendarTitle: "mvgrosskreuz" },
+      { summary: "Carroll", start: "2026-10-14T08:00:00", allDay: false, calendarTitle: "mvgrosskreuz" },
+      { summary: "Kinley's birthday", start: "2026-10-15", allDay: true, calendarTitle: "Kayla" },
+      { summary: "Work", start: "2026-10-15", allDay: true, calendarTitle: "mvgrosskreuz" },
+      { summary: "Tele Meeting", start: "2026-10-15T13:00:00", allDay: false, calendarTitle: "mvgrosskreuz" },
+      { summary: "Bonfire @ Tonie's", start: "2026-10-16T19:00:00", allDay: false, calendarTitle: "mvgrosskreuz" },
+      { summary: "Finalize Time Card", start: "2026-10-17", allDay: true, calendarTitle: "mvgrosskreuz" },
+      { summary: "CCRN Exam", start: "2026-10-17T12:15:00", allDay: false, calendarTitle: "mvgrosskreuz" },
+      { summary: "Fall Break", start: "2026-10-19", allDay: true, calendarTitle: "mvgrosskreuz" },
+      { summary: "Dr. Pervez", start: "2026-10-20T13:30:00", allDay: false, calendarTitle: "mvgrosskreuz" },
+      { summary: "Plan floral arrangements", start: "2026-10-21", allDay: true, calendarTitle: "Grosskreuz Wedding" },
+      { summary: "Carroll", start: "2026-10-21", allDay: true, calendarTitle: "mvgrosskreuz" },
+      { summary: "Brainstorm ideas for wedding party gifts", start: "2026-10-21", allDay: true, calendarTitle: "Grosskreuz Wedding" },
+      { summary: "Work", start: "2026-10-22", allDay: true, calendarTitle: "mvgrosskreuz" },
+      { summary: "Therapy", start: "2026-10-23T10:00:00", allDay: false, calendarTitle: "mvgrosskreuz" },
+      { summary: "Paid", start: "2026-10-23", allDay: true, calendarTitle: "mvgrosskreuz" },
+      { summary: "Work", start: "2026-10-24", allDay: true, calendarTitle: "mvgrosskreuz" },
+      { summary: "Dress Reveal 🥰", start: "2026-10-25", allDay: true, calendarTitle: "Grosskreuz Wedding" },
+      { summary: "Melanie E Visit", start: "2026-10-26", allDay: true, calendarTitle: "Kayla" },
+      { summary: "Carroll", start: "2026-10-26T11:00:00", allDay: false, calendarTitle: "mvgrosskreuz" },
+      { summary: "Carroll", start: "2026-10-28T08:00:00", allDay: false, calendarTitle: "mvgrosskreuz" },
+      { summary: "Work", start: "2026-10-29", allDay: true, calendarTitle: "mvgrosskreuz" },
+      { summary: "Work", start: "2026-10-30", allDay: true, calendarTitle: "mvgrosskreuz" },
+      { summary: "Finalize Time Card", start: "2026-10-31", allDay: true, calendarTitle: "mvgrosskreuz" }
+    ];
+
+    /* =====================================================================
+       APP STATE
+       ===================================================================== */
     let currentNavDate = new Date();
-    let allCalendarEvents = [];
+    let allCalendarEvents = [...FALLBACK_EVENTS];
     let isFetching = false;
 
-    // Apply the complete theme styles across the entire window
+    // Apply the active monthly theme styling
     function applyMonthlyTheme(themeIndex) {
       const theme = MONTH_THEMES[themeIndex];
       const root = document.getElementById("calendar-root");
@@ -1076,16 +985,19 @@
       const banner = document.getElementById("banner-section");
       const sidebar = document.getElementById("agenda-sidebar");
 
-      // Set global CSS variable for custom scrollbars
-      document.documentElement.style.setProperty('--theme-scroll-thumb', theme.scrollThumb);
+      // Custom CSS properties
+      document.documentElement.style.setProperty('--theme-scroll', theme.scrollThumb);
+      document.documentElement.style.setProperty('--theme-accent', theme.accentColor);
+      document.documentElement.style.setProperty('--theme-today-glow', theme.todayGlow);
 
-      // Backgrounds
+      // Background tints
       body.style.backgroundColor = theme.bodyBg;
       root.style.backgroundColor = theme.bodyBg;
-      banner.style.backgroundColor = theme.bodyBg;
+      banner.style.backgroundColor = theme.bannerBg;
+      banner.style.borderColor = theme.tileBorder;
       sidebar.style.backgroundColor = theme.sidebarBg;
 
-      // Header month text & sparkles
+      // Banner text & icons
       const monthTitle = document.getElementById("month-title");
       monthTitle.textContent = theme.monthName;
       monthTitle.style.color = theme.textPrimary;
@@ -1097,12 +1009,12 @@
       document.getElementById("banner-sparkle-1").style.color = theme.sparkleColor;
       document.getElementById("banner-sparkle-2").style.color = theme.sparkleColor;
 
-      // Inject the rich thematic SVGs
+      // Injected SVGs
       document.getElementById("banner-sky-svg").innerHTML = theme.skySvg;
       document.getElementById("art-left-container").innerHTML = theme.artLeft;
       document.getElementById("art-right-container").innerHTML = theme.artRight;
 
-      // Color Weekday Strips
+      // Weekday Pill Ribbons
       const days = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
       days.forEach((d, idx) => {
         const el = document.getElementById(`wk-${d}`);
@@ -1112,7 +1024,7 @@
         }
       });
 
-      // Sidebar header text & badge
+      // Sidebar header & badge
       document.getElementById("agenda-heading").style.color = theme.textPrimary;
       const badge = document.getElementById("agenda-badge");
       badge.style.backgroundColor = theme.weekdays[0].bg;
@@ -1120,9 +1032,7 @@
       badge.style.color = theme.weekdays[0].text;
     }
 
-    /* =====================================================================
-       CALENDAR EVENT THEME PICKER (MONTH-AWARE COLOR HARMONY)
-       ===================================================================== */
+    // Determine event tag styling
     function getEventClass(calTitle = "", monthTheme) {
       const lower = (calTitle || "").toLowerCase();
       if (lower.includes("wedding") || lower.includes("grosskreuz wedding")) {
@@ -1135,20 +1045,19 @@
     }
 
     /* =====================================================================
-       CALENDAR GRID BUILDER
+       ORGANIC ROUNDED DAY TILES GRID BUILDER
        ===================================================================== */
     function renderCalendar() {
       const year = currentNavDate.getFullYear();
       const month = currentNavDate.getMonth();
       const theme = MONTH_THEMES[month];
 
-      // Update theme visuals first
+      // Update theme visual tokens
       applyMonthlyTheme(month);
 
       const grid = document.getElementById("calendar-grid");
       grid.innerHTML = "";
 
-      // Month calculation math
       const firstDayOfMonth = new Date(year, month, 1);
       const startDayOfWeek = firstDayOfMonth.getDay(); // 0 = Sun
       const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -1160,7 +1069,7 @@
       const todayMonth = nowChicago.getMonth();
       const todayDate = nowChicago.getDate();
 
-      // Determine 5 or 6 row layout
+      // Dynamically select 5 or 6 row distribution
       let totalCells = 35;
       if (startDayOfWeek + daysInMonth > 35) {
         totalCells = 42;
@@ -1171,7 +1080,7 @@
 
       for (let i = 0; i < totalCells; i++) {
         const cell = document.createElement("div");
-        cell.className = "p-1.5 md:p-2 flex flex-col justify-start overflow-hidden relative min-h-0 transition-colors";
+        cell.className = "day-tile p-1.5 md:p-2 flex flex-col justify-start overflow-hidden border shadow-xs min-h-0";
 
         let dayNumber = 0;
         let isCurrentMonth = true;
@@ -1183,41 +1092,51 @@
           dayNumber = daysInPrevMonth - (startDayOfWeek - 1 - i);
           isCurrentMonth = false;
           cellMonth = month - 1;
-          cell.style.backgroundColor = "rgba(0, 0, 0, 0.025)";
-          cell.style.opacity = "0.45";
+          cell.style.backgroundColor = theme.tileMutedBg;
+          cell.style.borderColor = "transparent";
+          cell.style.opacity = "0.5";
         } else if (i >= startDayOfWeek + daysInMonth) {
           // Filler from next month
           dayNumber = i - (startDayOfWeek + daysInMonth) + 1;
           isCurrentMonth = false;
           cellMonth = month + 1;
-          cell.style.backgroundColor = "rgba(0, 0, 0, 0.025)";
-          cell.style.opacity = "0.45";
+          cell.style.backgroundColor = theme.tileMutedBg;
+          cell.style.borderColor = "transparent";
+          cell.style.opacity = "0.5";
         } else {
           // Active month day
           dayNumber = i - startDayOfWeek + 1;
-          cell.style.backgroundColor = "transparent";
+          cell.style.backgroundColor = theme.tileBg;
+          cell.style.borderColor = theme.tileBorder;
         }
 
         const isToday = (cellYear === todayYear && cellMonth === todayMonth && dayNumber === todayDate);
 
-        // Highlight Today with the month's signature accent color
+        // Lively Rounded Highlight for Today
         if (isToday) {
-          cell.style.boxShadow = `inset 0 0 0 2.5px ${theme.accentColor}`;
-          cell.style.backgroundColor = "rgba(255, 255, 255, 0.75)";
+          cell.classList.add("day-tile-today");
+          cell.style.backgroundColor = "#ffffff";
+          cell.style.borderColor = theme.accentColor;
         }
 
-        // Day Number Header inside cell
+        // Header with day number
         const numHeader = document.createElement("div");
-        numHeader.className = "flex items-center justify-between mb-1 shrink-0";
-        
-        const numSpan = document.createElement("span");
-        numSpan.className = `text-xs md:text-sm font-semibold leading-none ${isToday ? "font-bold" : ""}`;
-        numSpan.style.color = isToday ? theme.accentColor : theme.textPrimary;
-        numSpan.textContent = dayNumber;
-        numHeader.appendChild(numSpan);
+        numHeader.className = "flex items-center justify-between mb-1 shrink-0 px-0.5";
+
+        const numBadge = document.createElement("span");
+        if (isToday) {
+          numBadge.className = "text-xs md:text-sm font-bold w-6 h-6 rounded-full flex items-center justify-center text-white shadow-xs";
+          numBadge.style.backgroundColor = theme.accentColor;
+        } else {
+          numBadge.className = "text-xs md:text-sm font-semibold leading-none";
+          numBadge.style.color = isCurrentMonth ? theme.textPrimary : "rgba(0,0,0,0.4)";
+        }
+        numBadge.textContent = dayNumber;
+        numHeader.appendChild(numBadge);
+
         cell.appendChild(numHeader);
 
-        // Events list inside cell
+        // Event tags container
         const eventBox = document.createElement("div");
         eventBox.className = "space-y-1 overflow-y-auto custom-scroll flex-1 pr-0.5";
 
@@ -1231,7 +1150,7 @@
         matchingEvents.forEach(ev => {
           const pillClass = getEventClass(ev.calendarTitle, theme);
           const evPill = document.createElement("div");
-          evPill.className = `text-[10px] sm:text-xs leading-tight px-1.5 py-0.5 rounded border shadow-sm font-medium truncate transition-transform hover:scale-[1.01] ${pillClass}`;
+          evPill.className = `text-[10px] sm:text-xs leading-tight px-2 py-0.5 rounded-lg border shadow-xs font-medium truncate transition-transform hover:scale-[1.01] ${pillClass}`;
 
           let timeLabel = "";
           if (!ev.allDay && ev.start.includes("T")) {
@@ -1254,7 +1173,7 @@
     }
 
     /* =====================================================================
-       AGENDA SIDEBAR BUILDER
+       AGENDA SIDEBAR (Organically Rounded Paper Cards)
        ===================================================================== */
     function renderSidebarAgenda(theme) {
       const list = document.getElementById("agenda-list");
@@ -1263,7 +1182,6 @@
       const now = new Date();
       const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-      // Filter events from today onward up to 30 days
       const upcoming = allCalendarEvents
         .filter(ev => {
           if (!ev.start) return false;
@@ -1289,7 +1207,7 @@
         const pillClass = getEventClass(ev.calendarTitle, theme);
 
         const card = document.createElement("div");
-        card.className = `p-2.5 rounded-xl border bg-white/90 shadow-sm transition hover:shadow-md ${pillClass}`;
+        card.className = `p-3 rounded-2xl border bg-white/95 shadow-xs transition hover:shadow-md hover:scale-[1.01] ${pillClass}`;
 
         const dateStr = evDate.toLocaleDateString("en-US", {
           weekday: "short",
@@ -1334,7 +1252,7 @@
     }
 
     /* =====================================================================
-       SILENT BACKGROUND GCAL SYNC ENGINE
+       SILENT GCAL WORKER SYNC
        ===================================================================== */
     async function fetchCalendarEvents() {
       if (isFetching) return;
@@ -1345,7 +1263,7 @@
       const statusLabel = document.getElementById("calendar-proxy-status");
 
       if (syncDot) syncDot.className = "w-1.5 h-1.5 rounded-full bg-amber-400 inline-block ml-1 animate-ping";
-      if (syncSvg) syncSvg.classList.add("spin-fast");
+      if (syncSvg) syncSvg.classList.add("spin-icon");
       if (statusLabel) statusLabel.textContent = "Syncing...";
 
       try {
@@ -1358,17 +1276,19 @@
         }
 
         const data = await res.json();
-        allCalendarEvents = Array.isArray(data) ? data : [];
+        if (Array.isArray(data) && data.length > 0) {
+          allCalendarEvents = data;
+        }
 
         if (syncDot) syncDot.className = "w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block ml-1";
         if (statusLabel) statusLabel.textContent = `Synced (${allCalendarEvents.length})`;
       } catch (err) {
         console.warn("Proxy sync error:", err);
         if (syncDot) syncDot.className = "w-1.5 h-1.5 rounded-full bg-rose-500 inline-block ml-1";
-        if (statusLabel) statusLabel.textContent = "Sync Failed";
+        if (statusLabel) statusLabel.textContent = "Offline (Cached)";
       } finally {
         isFetching = false;
-        if (syncSvg) syncSvg.classList.remove("spin-fast");
+        if (syncSvg) syncSvg.classList.remove("spin-icon");
         renderCalendar();
       }
     }
@@ -1392,7 +1312,7 @@
     updateClock();
 
     /* =====================================================================
-       FULLSCREEN HELPER
+       FULLSCREEN TOGGLE
        ===================================================================== */
     function toggleFullScreen() {
       if (!document.fullscreenElement) {
@@ -1405,10 +1325,9 @@
     }
 
     /* =====================================================================
-       INITIALIZATION & INTERACTION
+       KEYBOARD & INITIALIZATION
        ===================================================================== */
     window.addEventListener("DOMContentLoaded", () => {
-      // Month Chevron buttons
       document.getElementById("btn-prev-month").addEventListener("click", () => {
         currentNavDate.setMonth(currentNavDate.getMonth() - 1);
         renderCalendar();
@@ -1419,11 +1338,9 @@
         renderCalendar();
       });
 
-      // Quick buttons
       document.getElementById("btn-sync-quick").addEventListener("click", fetchCalendarEvents);
       document.getElementById("btn-fs-quick").addEventListener("click", toggleFullScreen);
 
-      // Keyboard Controls for wall convenience
       window.addEventListener("keydown", (e) => {
         if (e.key === "ArrowLeft") {
           currentNavDate.setMonth(currentNavDate.getMonth() - 1);
@@ -1441,11 +1358,8 @@
         }
       });
 
-      // Initial render & sync
       renderCalendar();
       fetchCalendarEvents();
-
-      // Silent background sync every 5 minutes
       setInterval(fetchCalendarEvents, 5 * 60 * 1000);
     });
   </script>
