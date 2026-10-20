@@ -1,5 +1,5 @@
 export async function onRequestGet() {
-  const ICAL_URL = "https://calendar.google.com/calendar/ical/mvgrosskreuz%40gmail.com/public/basic.ics";
+  const ICAL_URL = "https://calendar.google.com/calendar/ical/mvgrosskreuz%40gmail.com/private-6967b2d9e8dded3b802e8e991539c06e/basic.ics";
 
   try {
     const res = await fetch(ICAL_URL, {
