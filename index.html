@@ -6,7 +6,7 @@
   <title>Themed Wall Calendar</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Patrick+Hand&family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Patrick+Hand&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg-canvas: #1a1614;
@@ -16,8 +16,8 @@
       --border-hard: #2b1d14;
       --text-main: #2b1d14;
       --text-muted: #7d7265;
-      --accent: #d97706;
-      --accent-light: #fef3c7;
+      --accent: #8b4513;
+      --accent-light: #f5ebe0;
       --font-display: 'Caveat', cursive;
       --font-body: 'Patrick Hand', cursive, sans-serif;
     }
@@ -202,7 +202,6 @@
     .agenda-text { font-size: 0.95rem; font-weight: bold; }
     .agenda-time { font-size: 0.8rem; color: var(--text-muted); }
 
-    /* Theme-specific palettes */
     .c-sun { background: #fed7aa; color: #7c2d12; }
     .c-mon { background: #dcd0e8; color: #2c1a4d; }
     .c-tue { background: #fbd38d; color: #744210; }
@@ -216,7 +215,7 @@
 
   <div class="top-bar">
     <div id="liveClock">--:-- --</div>
-    <div id="syncStatus">Syncing calendar...</div>
+    <div id="syncStatus">Initializing...</div>
   </div>
 
   <div class="calendar-frame">
@@ -230,7 +229,6 @@
         <div class="theme-art">👻 🏚️</div>
       </div>
 
-      <!-- Sunday-First Bar -->
       <div class="weekday-bar">
         <div class="c-sun">SUN</div>
         <div class="c-mon">MON</div>
@@ -251,12 +249,71 @@
   </div>
 
   <script>
+    // -----------------------------------------------------------
+    // Set your proxy URL here:
+    // If using the standalone Worker: "https://calendar-proxy.<subdomain>.workers.dev"
+    // If using Pages Functions: "/api/calendar"
+    // -----------------------------------------------------------
+    const PROXY_URL = "https://calendar-proxy.<your-subdomain>.workers.dev";
+
     function updateClock() {
       const now = new Date();
-      document.getElementById("liveClock").textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      document.getElementById("liveClock").textContent = now.toLocaleTimeString([], { 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        second: '2-digit' 
+      });
     }
     setInterval(updateClock, 1000);
     updateClock();
+
+    function renderBaseGrid() {
+      const now = new Date();
+      const yr = now.getFullYear();
+      const mo = now.getMonth();
+      const todayNum = now.getDate();
+
+      const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+      document.getElementById("monthName").textContent = months[mo];
+      document.getElementById("yearNumber").textContent = yr;
+
+      const firstDay = new Date(yr, mo, 1).getDay();
+      const daysCount = new Date(yr, mo + 1, 0).getDate();
+      const prevCount = new Date(yr, mo, 0).getDate();
+
+      const grid = document.getElementById("daysGrid");
+      grid.innerHTML = "";
+
+      // Prior month padding
+      for (let i = firstDay - 1; i >= 0; i--) {
+        const d = document.createElement("div");
+        d.className = "cell inactive";
+        d.innerHTML = `<span class="cell-num">${prevCount - i}</span>`;
+        grid.appendChild(d);
+      }
+
+      // Current month days
+      for (let day = 1; day <= daysCount; day++) {
+        const d = document.createElement("div");
+        const isToday = (day === todayNum);
+        d.className = `cell ${isToday ? 'today' : ''}`;
+        const mStr = String(mo + 1).padStart(2, '0');
+        const dStr = String(day).padStart(2, '0');
+        d.setAttribute("data-date", `${yr}-${mStr}-${dStr}`);
+        d.innerHTML = `<span class="cell-num">${day}</span><div class="cell-events"></div>`;
+        grid.appendChild(d);
+      }
+
+      // Trailing days padding
+      const totalSoFar = firstDay + daysCount;
+      const targetTotal = totalSoFar <= 35 ? 35 : 42;
+      for (let i = 1; i <= (targetTotal - totalSoFar); i++) {
+        const d = document.createElement("div");
+        d.className = "cell inactive";
+        d.innerHTML = `<span class="cell-num">${i}</span>`;
+        grid.appendChild(d);
+      }
+    }
 
     function parseICS(icsText) {
       const events = [];
@@ -270,8 +327,110 @@
           cur = {};
         } else if (line.startsWith("END:VEVENT")) {
           inEvent = false;
-          if (cur.dtstart && cur.summary) {
+          if (cur.date && cur.summary) {
             events.push(cur);
           }
         } else if (inEvent) {
-          if (line.startsWith("SUMMARY
+          if (line.startsWith("SUMMARY:")) {
+            cur.summary = line.substring(8).trim();
+          } else if (line.startsWith("DTSTART")) {
+            const parts = line.split(":");
+            const val = parts[1];
+            if (val && val.length === 8) {
+              cur.date = `${val.substring(0,4)}-${val.substring(4,6)}-${val.substring(6,8)}`;
+              cur.time = "All Day";
+            } else if (val) {
+              const yr = val.substring(0,4), mo = val.substring(4,6), dy = val.substring(6,8);
+              const hr = val.substring(9,11), mn = val.substring(11,13);
+              const dt = new Date(Date.UTC(yr, mo-1, dy, hr, mn));
+              const localY = dt.getFullYear();
+              const localM = String(dt.getMonth() + 1).padStart(2, '0');
+              const localD = String(dt.getDate()).padStart(2, '0');
+              cur.date = `${localY}-${localM}-${localD}`;
+              cur.time = dt.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+            }
+          }
+        }
+      }
+      return events;
+    }
+
+    async function syncCalendar() {
+      const statusEl = document.getElementById("syncStatus");
+      statusEl.textContent = "Fetching events...";
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+      try {
+        const res = await fetch(PROXY_URL, { signal: controller.signal });
+        clearTimeout(timeoutId);
+
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
+
+        const rawICS = await res.text();
+        const events = parseICS(rawICS);
+        statusEl.textContent = `Synced: ${events.length} events loaded`;
+
+        // Clear existing chips
+        document.querySelectorAll(".cell-events").forEach(el => el.innerHTML = "");
+
+        // Render chips into grid
+        events.forEach(e => {
+          const cell = document.querySelector(`.cell[data-date="${e.date}"] .cell-events`);
+          if (cell) {
+            const chip = document.createElement("div");
+            chip.className = "chip";
+            chip.title = e.summary;
+            chip.textContent = e.summary;
+            cell.appendChild(chip);
+          }
+        });
+
+        // Render Agenda
+        const agenda = document.getElementById("agendaFeed");
+        agenda.innerHTML = "";
+        const now = new Date();
+        const todayMid = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+        const upcoming = events
+          .filter(e => new Date(e.date + "T00:00:00") >= todayMid)
+          .sort((a,b) => a.date.localeCompare(b.date))
+          .slice(0, 9);
+
+        if (upcoming.length === 0) {
+          agenda.innerHTML = `<li class="agenda-item"><span class="agenda-time">No upcoming events</span></li>`;
+        } else {
+          upcoming.forEach(e => {
+            const li = document.createElement("li");
+            li.className = "agenda-item";
+            const dObj = new Date(e.date + "T00:00:00");
+            const formatted = dObj.toLocaleDateString("en-US", { weekday: 'short', month: 'short', day: 'numeric' });
+            li.innerHTML = `
+              <span class="agenda-date">${formatted}</span>
+              <span class="agenda-text">${e.summary}</span>
+              <span class="agenda-time">${e.time}</span>
+            `;
+            agenda.appendChild(li);
+          });
+        }
+      } catch (err) {
+        clearTimeout(timeoutId);
+        console.warn("Sync error:", err);
+        statusEl.textContent = `Sync failed (${err.message})`;
+      }
+    }
+
+    // 1. Immediately draw the base October grid and dates
+    renderBaseGrid();
+
+    // 2. Fetch and render Google Calendar events
+    syncCalendar();
+
+    // 3. Auto-sync every 15 minutes
+    setInterval(syncCalendar, 15 * 60 * 1000);
+  </script>
+</body>
+</html>
