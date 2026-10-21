@@ -285,99 +285,375 @@
     const THEMES = {
       0: {
         name: "January",
-        bannerImage: "banner_1.png",
+        bannerImage: "banner_1.jpg",
         fonts: { title: "'Mountains of Christmas', cursive", accent: "'Cinzel', serif", body: "'Source Sans 3', sans-serif" },
-        palette: { screenBackdrop: "#0b1520", paperBg: "#f4f8fb", agendaBg: "#e9f2f8", bannerBg: "#e4edf5", boardBorder: "#192e40", gridBorder: "#243c52", gridBackdrop: "#dce7f0", themeInk: "#0c2331", cellBg: "#ffffff", cellBorder: "#c8d9e6", cellMutedBg: "rgba(224, 236, 245, 0.45)", cellTodayBg: "#e0f2fe", todayAccent: "#0284c7", dayNumColor: "#082f49" },
-        weekdayColors: [{name:"SUN",bg:"#93c5fd",text:"#1e3a8a"},{name:"MON",bg:"#e2e8f0",text:"#334155"},{name:"TUE",bg:"#e2e8f0",text:"#334155"},{name:"WED",bg:"#bae6fd",text:"#0369a1"},{name:"THU",bg:"#e2e8f0",text:"#334155"},{name:"FRI",bg:"#e2e8f0",text:"#334155"},{name:"SAT",bg:"#cbd5e1",text:"#1e293b"}],
-        footerNote: "❄️ Winter Frost & Snowfall Edition"
+        palette: {
+          screenBackdrop: "#0b1520",
+          paperBg: "#f5f9fc",
+          agendaBg: "#ebf2f7",
+          bannerBg: "#e2eff7",
+          boardBorder: "#1b3a4b",
+          gridBorder: "#244356",
+          gridBackdrop: "#d2e3eb",
+          themeInk: "#1b3a4b",
+          cellBg: "#ffffff",
+          cellBorder: "#b2c8d4",
+          cellMutedBg: "rgba(224, 236, 245, 0.45)",
+          cellTodayBg: "#e8f2f8",
+          todayAccent: "#4a82a6",
+          dayNumColor: "#0f2b3c"
+        },
+        weekdayColors: [
+          {name:"SUN",bg:"#b83b3b",text:"#ffffff"},
+          {name:"MON",bg:"#d2e3eb",text:"#1b3a4b"},
+          {name:"TUE",bg:"#e5edf2",text:"#2c4656"},
+          {name:"WED",bg:"#88b3cc",text:"#0f2b3c"},
+          {name:"THU",bg:"#e5edf2",text:"#2c4656"},
+          {name:"FRI",bg:"#2d5a43",text:"#ffffff"},
+          {name:"SAT",bg:"#6d4e38",text:"#ffffff"}
+        ],
+        footerNote: "❄️ Winter Frost & Evergreen Edition"
       },
       1: {
         name: "February",
-        bannerImage: "banner_2.png",
+        bannerImage: "banner_2.jpg",
         fonts: { title: "'Playfair Display', serif", accent: "'Great Vibes', cursive", body: "'Source Sans 3', sans-serif" },
-        palette: { screenBackdrop: "#1c0d12", paperBg: "#fff9fa", agendaBg: "#fdf0f2", bannerBg: "#fae8eb", boardBorder: "#4a1926", gridBorder: "#5c2432", gridBackdrop: "#f3d9df", themeInk: "#380d17", cellBg: "#ffffff", cellBorder: "#ebd0d7", cellMutedBg: "rgba(247, 228, 233, 0.45)", cellTodayBg: "#ffe4e6", todayAccent: "#e11d48", dayNumColor: "#4c0519" },
-        weekdayColors: [{name:"SUN",bg:"#fda4af",text:"#881337"},{name:"MON",bg:"#fecdd3",text:"#9f1239"},{name:"TUE",bg:"#fce7f3",text:"#831843"},{name:"WED",bg:"#fed7aa",text:"#7c2d12"},{name:"THU",bg:"#fecdd3",text:"#9f1239"},{name:"FRI",bg:"#f43f5e",text:"#ffffff"},{name:"SAT",bg:"#fecdd3",text:"#9f1239"}],
-        footerNote: "💖 Vintage Valentine & Cozy Hearth"
+        palette: {
+          screenBackdrop: "#1c0d12",
+          paperBg: "#fff5f6",
+          agendaBg: "#fcf0f2",
+          bannerBg: "#fae8eb",
+          boardBorder: "#4a1525",
+          gridBorder: "#5c2432",
+          gridBackdrop: "#f3d9df",
+          themeInk: "#4a1525",
+          cellBg: "#ffffff",
+          cellBorder: "#dfb8c2",
+          cellMutedBg: "rgba(247, 228, 233, 0.45)",
+          cellTodayBg: "#fdebee",
+          todayAccent: "#b8425a",
+          dayNumColor: "#4a1525"
+        },
+        weekdayColors: [
+          {name:"SUN",bg:"#a82943",text:"#ffffff"},
+          {name:"MON",bg:"#f4c2cb",text:"#5a1b2a"},
+          {name:"TUE",bg:"#fde2e6",text:"#6d2836"},
+          {name:"WED",bg:"#8a5247",text:"#ffffff"},
+          {name:"THU",bg:"#f4c2cb",text:"#5a1b2a"},
+          {name:"FRI",bg:"#8c1d35",text:"#ffffff"},
+          {name:"SAT",bg:"#36533f",text:"#ffffff"}
+        ],
+        footerNote: "💖 Rose Hearth & Cranberry Pine"
       },
       2: {
         name: "March",
-        bannerImage: "banner_3.png",
+        bannerImage: "banner_3.jpg",
         fonts: { title: "'Caveat', cursive", accent: "'Patrick Hand', cursive", body: "'Source Sans 3', sans-serif" },
-        palette: { screenBackdrop: "#0b1c11", paperBg: "#f6fcf8", agendaBg: "#ecf7ef", bannerBg: "#e3f5e8", boardBorder: "#143a21", gridBorder: "#1e4d2d", gridBackdrop: "#d7edd9", themeInk: "#0e2917", cellBg: "#ffffff", cellBorder: "#c2e5ca", cellMutedBg: "rgba(225, 242, 229, 0.45)", cellTodayBg: "#dcfce7", todayAccent: "#16a34a", dayNumColor: "#14532d" },
-        weekdayColors: [{name:"SUN",bg:"#86efac",text:"#14532d"},{name:"MON",bg:"#bbf7d0",text:"#166534"},{name:"TUE",bg:"#dcfce7",text:"#14532d"},{name:"WED",bg:"#bbf7d0",text:"#166534"},{name:"THU",bg:"#dcfce7",text:"#14532d"},{name:"FRI",bg:"#22c55e",text:"#ffffff"},{name:"SAT",bg:"#86efac",text:"#14532d"}],
-        footerNote: "🍀 Emerald Spring Clover Edition"
+        palette: {
+          screenBackdrop: "#0b1c11",
+          paperBg: "#fbfdf6",
+          agendaBg: "#ecf7ef",
+          bannerBg: "#e3f5e8",
+          boardBorder: "#184323",
+          gridBorder: "#1e4d2d",
+          gridBackdrop: "#d7edd9",
+          themeInk: "#184323",
+          cellBg: "#ffffff",
+          cellBorder: "#b8d8be",
+          cellMutedBg: "rgba(225, 242, 229, 0.45)",
+          cellTodayBg: "#edf8ef",
+          todayAccent: "#2e8b46",
+          dayNumColor: "#184323"
+        },
+        weekdayColors: [
+          {name:"SUN",bg:"#e2a829",text:"#3d2600"},
+          {name:"MON",bg:"#c7e8cf",text:"#164e23"},
+          {name:"TUE",bg:"#dcf2e1",text:"#1b4f28"},
+          {name:"WED",bg:"#88c4e8",text:"#0d3a56"},
+          {name:"THU",bg:"#dcf2e1",text:"#1b4f28"},
+          {name:"FRI",bg:"#1e7837",text:"#ffffff"},
+          {name:"SAT",bg:"#a07849",text:"#ffffff"}
+        ],
+        footerNote: "🍀 Shamrock Meadow & Spring Bloom"
       },
       3: {
         name: "April",
-        bannerImage: "banner_4.png",
+        bannerImage: "banner_4.jpg",
         fonts: { title: "'Playfair Display', serif", accent: "'Comfortaa', cursive", body: "'Source Sans 3', sans-serif" },
-        palette: { screenBackdrop: "#111827", paperBg: "#f8fafc", agendaBg: "#f1f5f9", bannerBg: "#e2e8f0", boardBorder: "#1e293b", gridBorder: "#334155", gridBackdrop: "#cbd5e1", themeInk: "#0f172a", cellBg: "#ffffff", cellBorder: "#cbd5e1", cellMutedBg: "rgba(226, 232, 240, 0.45)", cellTodayBg: "#e0f2fe", todayAccent: "#0284c7", dayNumColor: "#0f172a" },
-        weekdayColors: [{name:"SUN",bg:"#7dd3fc",text:"#0369a1"},{name:"MON",bg:"#bae6fd",text:"#0284c7"},{name:"TUE",bg:"#e2e8f0",text:"#334155"},{name:"WED",bg:"#bae6fd",text:"#0284c7"},{name:"THU",bg:"#e2e8f0",text:"#334155"},{name:"FRI",bg:"#fed7aa",text:"#7c2d12"},{name:"SAT",bg:"#cbd5e1",text:"#1e293b"}],
-        footerNote: "🌧️ April Showers & Garden Bloom"
+        palette: {
+          screenBackdrop: "#111827",
+          paperBg: "#fdfdf8",
+          agendaBg: "#f4f3fa",
+          bannerBg: "#f6f3fc",
+          boardBorder: "#2f2640",
+          gridBorder: "#3d3254",
+          gridBackdrop: "#c5d6dd",
+          themeInk: "#2f2640",
+          cellBg: "#ffffff",
+          cellBorder: "#c5d6dd",
+          cellMutedBg: "rgba(230, 236, 242, 0.45)",
+          cellTodayBg: "#faeef2",
+          todayAccent: "#d4597d",
+          dayNumColor: "#2f2640"
+        },
+        weekdayColors: [
+          {name:"SUN",bg:"#ea7e9d",text:"#ffffff"},
+          {name:"MON",bg:"#fae89f",text:"#54430a"},
+          {name:"TUE",bg:"#a0d1e8",text:"#133b4d"},
+          {name:"WED",bg:"#c9b6e4",text:"#372354"},
+          {name:"THU",bg:"#6aa4b2",text:"#ffffff"},
+          {name:"FRI",bg:"#7ebc6f",text:"#1c4412"},
+          {name:"SAT",bg:"#b08658",text:"#ffffff"}
+        ],
+        footerNote: "🌧️ Spring Tulips & Robin Egg Rain"
       },
       4: {
         name: "May",
-        bannerImage: "banner_5.png",
+        bannerImage: "banner_5.jpg",
         fonts: { title: "'Playfair Display', serif", accent: "'Comfortaa', cursive", body: "'Source Sans 3', sans-serif" },
-        palette: { screenBackdrop: "#111b15", paperBg: "#f6f8f5", agendaBg: "#edf3ee", bannerBg: "#e3eee6", boardBorder: "#203a2c", gridBorder: "#274736", gridBackdrop: "#d0e3d5", themeInk: "#1a3526", cellBg: "#ffffff", cellBorder: "#c0d9c7", cellMutedBg: "rgba(227, 237, 230, 0.45)", cellTodayBg: "#f0fdf4", todayAccent: "#16a34a", dayNumColor: "#143823" },
-        weekdayColors: [{name:"SUN",bg:"#fbcfe8",text:"#831843"},{name:"MON",bg:"#dcfce7",text:"#14532d"},{name:"TUE",bg:"#e2e8f0",text:"#334155"},{name:"WED",bg:"#d1fae5",text:"#065f46"},{name:"THU",bg:"#e2e8f0",text:"#334155"},{name:"FRI",bg:"#fef08a",text:"#713f12"},{name:"SAT",bg:"#e0e7ff",text:"#3730a3"}],
-        footerNote: "🌿 Peony Blossom & Garden Bloom"
+        palette: {
+          screenBackdrop: "#111b15",
+          paperBg: "#fcfbf5",
+          agendaBg: "#f7f5ed",
+          bannerBg: "#fcf4e8",
+          boardBorder: "#362b20",
+          gridBorder: "#4a3c2c",
+          gridBackdrop: "#dce7da",
+          themeInk: "#362b20",
+          cellBg: "#ffffff",
+          cellBorder: "#c6d9c4",
+          cellMutedBg: "rgba(230, 238, 228, 0.45)",
+          cellTodayBg: "#fbf5eb",
+          todayAccent: "#8b5ba8",
+          dayNumColor: "#362b20"
+        },
+        weekdayColors: [
+          {name:"SUN",bg:"#f29bb2",text:"#ffffff"},
+          {name:"MON",bg:"#c5a7dc",text:"#3b1d54"},
+          {name:"TUE",bg:"#a4d59a",text:"#1a4312"},
+          {name:"WED",bg:"#f2bf42",text:"#4d3705"},
+          {name:"THU",bg:"#bf6c47",text:"#ffffff"},
+          {name:"FRI",bg:"#79aab2",text:"#ffffff"},
+          {name:"SAT",bg:"#6b4a36",text:"#ffffff"}
+        ],
+        footerNote: "🌿 Maypole Blossom & Garden Herbs"
       },
       5: {
         name: "June",
-        bannerImage: "banner_6.png",
+        bannerImage: "banner_6.jpg",
         fonts: { title: "'Pacifico', cursive", accent: "'Patrick Hand', cursive", body: "'Source Sans 3', sans-serif" },
-        palette: { screenBackdrop: "#1c1809", paperBg: "#fffef7", agendaBg: "#fef9e7", bannerBg: "#fdf4d4", boardBorder: "#3d3209", gridBorder: "#4a3c0a", gridBackdrop: "#f5e7b5", themeInk: "#292104", cellBg: "#ffffff", cellBorder: "#eed89a", cellMutedBg: "rgba(254, 243, 199, 0.35)", cellTodayBg: "#fef3c7", todayAccent: "#f59e0b", dayNumColor: "#451a03" },
-        weekdayColors: [{name:"SUN",bg:"#fde047",text:"#713f12"},{name:"MON",bg:"#fef08a",text:"#713f12"},{name:"TUE",bg:"#fed7aa",text:"#7c2d12"},{name:"WED",bg:"#fef08a",text:"#713f12"},{name:"THU",bg:"#fed7aa",text:"#7c2d12"},{name:"FRI",bg:"#fde047",text:"#713f12"},{name:"SAT",bg:"#fef08a",text:"#713f12"}],
-        footerNote: "☀️ Midsummer Solstice & Meadow Berry"
+        palette: {
+          screenBackdrop: "#1c1809",
+          paperBg: "#fefdf7",
+          agendaBg: "#fbf6e8",
+          bannerBg: "#fef8e6",
+          boardBorder: "#3d2817",
+          gridBorder: "#4f3520",
+          gridBackdrop: "#e0d2b7",
+          themeInk: "#3d2817",
+          cellBg: "#ffffff",
+          cellBorder: "#e0d2b7",
+          cellMutedBg: "rgba(254, 243, 199, 0.35)",
+          cellTodayBg: "#fef9e4",
+          todayAccent: "#339bb5",
+          dayNumColor: "#3d2817"
+        },
+        weekdayColors: [
+          {name:"SUN",bg:"#f5b638",text:"#4d3202"},
+          {name:"MON",bg:"#fae58c",text:"#594905"},
+          {name:"TUE",bg:"#e26d7c",text:"#ffffff"},
+          {name:"WED",bg:"#52afc4",text:"#ffffff"},
+          {name:"THU",bg:"#eb7d65",text:"#ffffff"},
+          {name:"FRI",bg:"#9e6037",text:"#ffffff"},
+          {name:"SAT",bg:"#2b7399",text:"#ffffff"}
+        ],
+        footerNote: "☀️ Lemonade Sun & Coastal Roses"
       },
       6: {
         name: "July",
-        bannerImage: "banner_7.png",
+        bannerImage: "banner_7.jpg",
         fonts: { title: "'Cinzel', serif", accent: "'Source Sans 3', sans-serif", body: "'Source Sans 3', sans-serif" },
-        palette: { screenBackdrop: "#0a0e1a", paperBg: "#f8fafc", agendaBg: "#f1f5f9", bannerBg: "#172554", boardBorder: "#1e293b", gridBorder: "#27354a", gridBackdrop: "#cbd5e1", themeInk: "#0f172a", cellBg: "#ffffff", cellBorder: "#cbd5e1", cellMutedBg: "rgba(226, 232, 240, 0.45)", cellTodayBg: "#e0e7ff", todayAccent: "#4338ca", dayNumColor: "#1e1b4b" },
-        weekdayColors: [{name:"SUN",bg:"#fca5a5",text:"#7f1d1d"},{name:"MON",bg:"#e2e8f0",text:"#334155"},{name:"TUE",bg:"#e2e8f0",text:"#334155"},{name:"WED",bg:"#e2e8f0",text:"#334155"},{name:"THU",bg:"#93c5fd",text:"#1e3a8a"},{name:"FRI",bg:"#e2e8f0",text:"#334155"},{name:"SAT",bg:"#cbd5e1",text:"#1e293b"}],
-        footerNote: "🎆 Independence & Starlight Solstice"
+        palette: {
+          screenBackdrop: "#0a0e1a",
+          paperBg: "#fcfbf6",
+          agendaBg: "#f4f3ed",
+          bannerBg: "#e9edfa",
+          boardBorder: "#172342",
+          gridBorder: "#273554",
+          gridBackdrop: "#b2bed4",
+          themeInk: "#172342",
+          cellBg: "#ffffff",
+          cellBorder: "#b2bed4",
+          cellMutedBg: "rgba(226, 232, 245, 0.45)",
+          cellTodayBg: "#edf1fa",
+          todayAccent: "#c93636",
+          dayNumColor: "#172342"
+        },
+        weekdayColors: [
+          {name:"SUN",bg:"#be2b2b",text:"#ffffff"},
+          {name:"MON",bg:"#ea6075",text:"#ffffff"},
+          {name:"TUE",bg:"#f0a728",text:"#4d3102"},
+          {name:"WED",bg:"#264478",text:"#ffffff"},
+          {name:"THU",bg:"#e8732a",text:"#ffffff"},
+          {name:"FRI",bg:"#345934",text:"#ffffff"},
+          {name:"SAT",bg:"#b89767",text:"#ffffff"}
+        ],
+        footerNote: "🎆 Twilight Fireworks & Lakeside Fire"
       },
       7: {
         name: "August",
-        bannerImage: "banner_8.png",
+        bannerImage: "banner_8.jpg",
         fonts: { title: "'Playfair Display', serif", accent: "'Cinzel', serif", body: "'Source Sans 3', sans-serif" },
-        palette: { screenBackdrop: "#1c1409", paperBg: "#fffdf5", agendaBg: "#faf3e6", bannerBg: "#faedd0", boardBorder: "#452d10", gridBorder: "#523714", gridBackdrop: "#ede0bc", themeInk: "#38230b", cellBg: "#ffffff", cellBorder: "#e5d4a7", cellMutedBg: "rgba(250, 237, 212, 0.45)", cellTodayBg: "#fef3c7", todayAccent: "#d97706", dayNumColor: "#451a03" },
-        weekdayColors: [{name:"SUN",bg:"#fbbf24",text:"#78350f"},{name:"MON",bg:"#fed7aa",text:"#7c2d12"},{name:"TUE",bg:"#fef08a",text:"#713f12"},{name:"WED",bg:"#fed7aa",text:"#7c2d12"},{name:"THU",bg:"#fef08a",text:"#713f12"},{name:"FRI",bg:"#fbbf24",text:"#78350f"},{name:"SAT",bg:"#fed7aa",text:"#7c2d12"}],
-        footerNote: "🌻 Golden Sunflower Harvest Edition"
+        palette: {
+          screenBackdrop: "#1c1409",
+          paperBg: "#fffdf4",
+          agendaBg: "#faf4e4",
+          bannerBg: "#faefd8",
+          boardBorder: "#42220d",
+          gridBorder: "#542c11",
+          gridBackdrop: "#dec59e",
+          themeInk: "#42220d",
+          cellBg: "#ffffff",
+          cellBorder: "#dec59e",
+          cellMutedBg: "rgba(250, 237, 212, 0.45)",
+          cellTodayBg: "#fef4e2",
+          todayAccent: "#dc652f",
+          dayNumColor: "#42220d"
+        },
+        weekdayColors: [
+          {name:"SUN",bg:"#f0a518",text:"#4a3000"},
+          {name:"MON",bg:"#ea7e52",text:"#ffffff"},
+          {name:"TUE",bg:"#fae07a",text:"#524305"},
+          {name:"WED",bg:"#d48a37",text:"#ffffff"},
+          {name:"THU",bg:"#43939e",text:"#ffffff"},
+          {name:"FRI",bg:"#c43c29",text:"#ffffff"},
+          {name:"SAT",bg:"#5a6b32",text:"#ffffff"}
+        ],
+        footerNote: "🌻 Golden Hour Sunflower & Peach Trail"
       },
       8: {
         name: "September",
-        bannerImage: "banner_9.png",
+        bannerImage: "banner_9.jpg",
         fonts: { title: "'Caveat', cursive", accent: "'Patrick Hand', cursive", body: "'Source Sans 3', sans-serif" },
-        palette: { screenBackdrop: "#1c110e", paperBg: "#fffbf5", agendaBg: "#faf0e6", bannerBg: "#fae7d4", boardBorder: "#3d2216", gridBorder: "#4a2a1c", gridBackdrop: "#edd3bd", themeInk: "#2b170e", cellBg: "#ffffff", cellBorder: "#e5c5aa", cellMutedBg: "rgba(247, 231, 218, 0.45)", cellTodayBg: "#ffedd5", todayAccent: "#ea580c", dayNumColor: "#431407" },
-        weekdayColors: [{name:"SUN",bg:"#fca5a5",text:"#7f1d1d"},{name:"MON",bg:"#fed7aa",text:"#7c2d12"},{name:"TUE",bg:"#fef08a",text:"#713f12"},{name:"WED",bg:"#bbf7d0",text:"#14532d"},{name:"THU",bg:"#fed7aa",text:"#7c2d12"},{name:"FRI",bg:"#ef4444",text:"#ffffff"},{name:"SAT",bg:"#fed7aa",text:"#7c2d12"}],
-        footerNote: "🍎 Autumn Orchard & Spiced Cider"
+        palette: {
+          screenBackdrop: "#1c110e",
+          paperBg: "#fcf7ed",
+          agendaBg: "#f6ede0",
+          bannerBg: "#faedd8",
+          boardBorder: "#3b1c0e",
+          gridBorder: "#4d2514",
+          gridBackdrop: "#d6be9f",
+          themeInk: "#3b1c0e",
+          cellBg: "#ffffff",
+          cellBorder: "#d6be9f",
+          cellMutedBg: "rgba(247, 231, 218, 0.45)",
+          cellTodayBg: "#faeee0",
+          todayAccent: "#b83523",
+          dayNumColor: "#3b1c0e"
+        },
+        weekdayColors: [
+          {name:"SUN",bg:"#b83323",text:"#ffffff"},
+          {name:"MON",bg:"#e6a117",text:"#3d2800"},
+          {name:"TUE",bg:"#cb6427",text:"#ffffff"},
+          {name:"WED",bg:"#98a846",text:"#ffffff"},
+          {name:"THU",bg:"#822c22",text:"#ffffff"},
+          {name:"FRI",bg:"#bd7a44",text:"#ffffff"},
+          {name:"SAT",bg:"#694e3b",text:"#ffffff"}
+        ],
+        footerNote: "🍎 Autumn Apple Orchard & School Slate"
       },
       9: {
         name: "October",
-        bannerImage: "banner_10.png",
+        bannerImage: "banner_10.jpg",
         fonts: { title: "'Caveat', cursive", accent: "'Patrick Hand', cursive", body: "'Patrick Hand', cursive, sans-serif" },
-        palette: { screenBackdrop: "#16120e", paperBg: "#fffcf4", agendaBg: "#faf4e8", bannerBg: "#faefd9", boardBorder: "#271b12", gridBorder: "#271b12", gridBackdrop: "#ebdcc0", themeInk: "#261a11", cellBg: "#ffffff", cellBorder: "#dec8a6", cellMutedBg: "rgba(247, 240, 226, 0.45)", cellTodayBg: "#fff7ed", todayAccent: "#ea580c", dayNumColor: "#1f150e" },
-        weekdayColors: [{name:"SUN",bg:"#fca679",text:"#6b240c"},{name:"MON",bg:"#d8cce4",text:"#3b2259"},{name:"TUE",bg:"#f7b988",text:"#78350f"},{name:"WED",bg:"#bee3c8",text:"#1e3a2b"},{name:"THU",bg:"#e0cdf7",text:"#432b68"},{name:"FRI",bg:"#fed7aa",text:"#7c2d12"},{name:"SAT",bg:"#c5d2c1",text:"#2a3e2a"}],
-        footerNote: "🎃 The Grand Spooky Harvest Edition"
+        palette: {
+          screenBackdrop: "#16120e",
+          paperBg: "#fffbf2",
+          agendaBg: "#fbf2e3",
+          bannerBg: "#faebd3",
+          boardBorder: "#1c1322",
+          gridBorder: "#523624",
+          gridBackdrop: "#e2ceba",
+          themeInk: "#1c1322",
+          cellBg: "#ffffff",
+          cellBorder: "#dec8a6",
+          cellMutedBg: "rgba(247, 240, 226, 0.45)",
+          cellTodayBg: "#fff3e5",
+          todayAccent: "#dd541a",
+          dayNumColor: "#1c1322"
+        },
+        weekdayColors: [
+          {name:"SUN",bg:"#e05c1d",text:"#ffffff"},
+          {name:"MON",bg:"#472b5c",text:"#ffffff"},
+          {name:"TUE",bg:"#f2a92b",text:"#3b2300"},
+          {name:"WED",bg:"#627e57",text:"#ffffff"},
+          {name:"THU",bg:"#a384b8",text:"#231230"},
+          {name:"FRI",bg:"#be431f",text:"#ffffff"},
+          {name:"SAT",bg:"#231b26",text:"#ffffff"}
+        ],
+        footerNote: "🎃 Spooky Jack-o'-Lantern & Black Cat"
       },
       10: {
         name: "November",
-        bannerImage: "banner_11.png",
+        bannerImage: "banner_11.jpg",
         fonts: { title: "'Playfair Display', serif", accent: "'Cinzel', serif", body: "'Source Sans 3', sans-serif" },
-        palette: { screenBackdrop: "#1c1511", paperBg: "#faf5ed", agendaBg: "#f4ebe0", bannerBg: "#faebd7", boardBorder: "#422817", gridBorder: "#533420", gridBackdrop: "#ebd7c3", themeInk: "#382215", cellBg: "#ffffff", cellBorder: "#e0c8b0", cellMutedBg: "rgba(235, 222, 207, 0.45)", cellTodayBg: "#fef3c7", todayAccent: "#b45309", dayNumColor: "#382215" },
-        weekdayColors: [{name:"SUN",bg:"#d97706",text:"#ffffff"},{name:"MON",bg:"#e2c499",text:"#451a03"},{name:"TUE",bg:"#eed9be",text:"#451a03"},{name:"WED",bg:"#d59b62",text:"#ffffff"},{name:"THU",bg:"#991b1b",text:"#ffffff"},{name:"FRI",bg:"#e2c499",text:"#451a03"},{name:"SAT",bg:"#eed9be",text:"#451a03"}],
-        footerNote: "🍂 Cozy Thanksgiving Harvest & Abundance"
+        palette: {
+          screenBackdrop: "#1c130d",
+          paperBg: "#faf4ea",
+          agendaBg: "#f4ebe0",
+          bannerBg: "#fbeedc",
+          boardBorder: "#3d1e11",
+          gridBorder: "#532b1a",
+          gridBackdrop: "#dec4a8",
+          themeInk: "#3d1e11",
+          cellBg: "#ffffff",
+          cellBorder: "#dec4a8",
+          cellMutedBg: "rgba(235, 222, 207, 0.45)",
+          cellTodayBg: "#faecdb",
+          todayAccent: "#b84f22",
+          dayNumColor: "#3d1e11"
+        },
+        weekdayColors: [
+          {name:"SUN",bg:"#d96924",text:"#ffffff"},
+          {name:"MON",bg:"#e8af46",text:"#3d2105"},
+          {name:"TUE",bg:"#707a4a",text:"#ffffff"},
+          {name:"WED",bg:"#ad402a",text:"#ffffff"},
+          {name:"THU",bg:"#8a5233",text:"#ffffff"},
+          {name:"FRI",bg:"#c76f28",text:"#ffffff"},
+          {name:"SAT",bg:"#452115",text:"#ffffff"}
+        ],
+        footerNote: "🍂 Pumpkin Pie, Acorns & Harvest Cornucopia"
       },
       11: {
         name: "December",
-        bannerImage: "banner_12.png",
+        bannerImage: "banner_12.jpg",
         fonts: { title: "'Mountains of Christmas', cursive", accent: "'Cinzel', serif", body: "'Source Sans 3', sans-serif" },
-        palette: { screenBackdrop: "#0a131a", paperBg: "#f6fafc", agendaBg: "#edf5f8", bannerBg: "#e3eff5", boardBorder: "#132d3d", gridBorder: "#1a384b", gridBackdrop: "#d4e6f0", themeInk: "#0c2331", cellBg: "#ffffff", cellBorder: "#c4dbe6", cellMutedBg: "rgba(224, 237, 245, 0.45)", cellTodayBg: "#e0f2fe", todayAccent: "#0284c7", dayNumColor: "#082f49" },
-        weekdayColors: [{name:"SUN",bg:"#b91c1c",text:"#ffffff"},{name:"MON",bg:"#dbeafe",text:"#1e3a8a"},{name:"TUE",bg:"#e2e8f0",text:"#334155"},{name:"WED",bg:"#dcfce7",text:"#166534"},{name:"THU",bg:"#e2e8f0",text:"#334155"},{name:"FRI",bg:"#15803d",text:"#ffffff"},{name:"SAT",bg:"#fef08a",text:"#713f12"}],
-        footerNote: "🎄 Merry Holiday & Winter Hearth"
+        palette: {
+          screenBackdrop: "#0a131a",
+          paperBg: "#f8faf9",
+          agendaBg: "#eff4f1",
+          bannerBg: "#e5ede8",
+          boardBorder: "#193d2b",
+          gridBorder: "#25533b",
+          gridBackdrop: "#cddfd5",
+          themeInk: "#193d2b",
+          cellBg: "#ffffff",
+          cellBorder: "#b5cdbf",
+          cellMutedBg: "rgba(224, 237, 230, 0.45)",
+          cellTodayBg: "#edf5f0",
+          todayAccent: "#9e2832",
+          dayNumColor: "#193d2b"
+        },
+        weekdayColors: [
+          {name:"SUN",bg:"#a6212b",text:"#ffffff"},
+          {name:"MON",bg:"#1d5939",text:"#ffffff"},
+          {name:"TUE",bg:"#b8743b",text:"#ffffff"},
+          {name:"WED",bg:"#e0ad38",text:"#3d2800"},
+          {name:"THU",bg:"#45705b",text:"#ffffff"},
+          {name:"FRI",bg:"#c4353f",text:"#ffffff"},
+          {name:"SAT",bg:"#133824",text:"#ffffff"}
+        ],
+        footerNote: "🎄 Holly Berries, Evergreen & Gingerbread"
       }
     };
 
