@@ -709,7 +709,7 @@
 
       document.getElementById("bannerContainer").innerHTML = `
         <div class="relative w-full h-full overflow-hidden select-none bg-[var(--banner-bg)]">
-          <img src="${theme.bannerImage}" alt="${theme.name}" class="w-full h-full object-cover object-center pointer-events-none" onerror="this.style.display='none'" />
+          <img src="${theme.bannerImage}" alt="${theme.name}" class="w-full h-full object-cover object-center pointer-events-none" />
           <button class="nav-arrow absolute left-4 top-1/2 -translate-y-1/2" onclick="navigateMonth(-1)">◀</button>
           <button class="nav-arrow absolute right-4 top-1/2 -translate-y-1/2" onclick="navigateMonth(1)">▶</button>
         </div>
@@ -853,8 +853,13 @@
       const badge = document.getElementById("syncStatusBadge");
       badge.textContent = "GCal: Syncing...";
 
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 12000);
+
       try {
-        const res = await fetch(PROXY_URL);
+        const res = await fetch(PROXY_URL, { signal: controller.signal });
+        clearTimeout(timeoutId);
+
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
         const rawEvents = await res.json();
@@ -862,7 +867,7 @@
         state.events = rawEvents.map(e => {
           if (e.date && !e.start) {
             return {
-              summary: e.summary,
+              summary: e.summary || "Untitled Event",
               date: e.date,
               time: e.time || "All Day",
               calendarTitle: e.calendarTitle || "General"
@@ -871,14 +876,14 @@
 
           if (e.allDay || (e.start && e.start.length === 10)) {
             return {
-              summary: e.summary,
-              date: e.start,
+              summary: e.summary || "Untitled Event",
+              date: (e.start || e.date).slice(0, 10),
               time: "All Day",
               calendarTitle: e.calendarTitle || "General"
             };
           }
 
-          const d = new Date(e.start);
+          const d = new Date(e.start || e.date);
           const dateParts = new Intl.DateTimeFormat("en-US", {
             timeZone: "America/Chicago",
             year: "numeric",
@@ -898,7 +903,7 @@
           }).format(d);
 
           return {
-            summary: e.summary,
+            summary: e.summary || "Untitled Event",
             date: `${y}-${m}-${day}`,
             time: timeStr,
             calendarTitle: e.calendarTitle || "General"
@@ -907,8 +912,9 @@
 
         badge.textContent = `GCal: Synced (${state.events.length})`;
       } catch (err) {
+        clearTimeout(timeoutId);
         console.warn("Could not sync from proxy:", err);
-        badge.textContent = `GCal: Sync failed`;
+        badge.textContent = `GCal: Sync failed (${err.message})`;
       }
 
       renderCalendar();
