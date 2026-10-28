@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cozy Wall Calendar</title>
+    <!-- Google Fonts: Handwriting & Thematic Serifs -->
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Quicksand:wght@500;600;700&family=Cinzel:wght@600;700&family=Cormorant+Garamond:ital,wght@0,600;1,600&family=Baskerville:ital,wght@0,700;1,700&family=Bodoni+Moda:ital,wght@0,600;1,600&family=Caslon+Antique&family=Cardo:wght@700&family=Playfair+Display:ital,wght@0,700;1,700&family=Spectral:wght@600;700&family=Garamond:wght@700&family=Cinzel+Decorative:wght@700&family=Bitter:wght@600;700&family=Prata&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #fcfbf9;
+            --grid-border: #e0ded8;
+            --text-main: #2c2a29;
+            --day-header-color: #5c6b73;
+            --num-color-1: #3b4252;
+            --num-color-2: #4c566a;
+            --font-family-theme: 'Playfair Display', serif;
+            --font-family-hand: 'Caveat', cursive;
+            --font-family-sans: 'Quicksand', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-family-sans);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            padding: 12px;
+            gap: 10px;
+        }
+
+        /* Top Image Banner Container */
+        .banner-container {
+            width: 100%;
+            height: 130px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #ffffff;
+            border: 1px solid var(--grid-border);
+            border-radius: 4px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            flex-shrink: 0;
+        }
+
+        .banner-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        /* Main App Body Layout: Calendar Left, Sidebar Right */
+        .app-body {
+            flex: 1;
+            display: flex;
+            gap: 12px;
+            overflow: hidden;
+        }
+
+        /* Main Calendar Container - Clean Paper Aesthetic */
+        .calendar-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #ffffff;
+            border: 1px solid var(--grid-border);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        /* Sidebar for Upcoming Events */
+        .sidebar {
+            width: 320px;
+            background: #ffffff;
+            border: 1px solid var(--grid-border);
+            border-radius: 4px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            padding: 12px 15px;
+            background-color: rgba(0,0,0,0.02);
+            border-bottom: 2px solid var(--grid-border);
+            font-weight: 700;
+            font-size: 1.1rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--day-header-color);
+        }
+
+        .sidebar-events-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .sidebar-event-card {
+            padding: 8px 10px;
+            border-radius: 6px;
+            border-left: 4px solid transparent;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .sidebar-event-date {
+            font-size: 0.85rem;
+            font-weight: 700;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        .sidebar-event-title {
+            font-family: var(--font-family-hand);
+            font-size: 1.25rem;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .error-banner {
+            background: #fff5f5;
+            border: 1px solid #feb2b2;
+            color: #9b2c2c;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        /* Days of the Week Header */
+        .weekdays-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            background-color: rgba(0,0,0,0.02);
+            border-bottom: 2px solid var(--grid-border);
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.05rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--day-header-color);
+            padding: 8px 0;
+        }
+
+        /* Days Grid Matrix (6 rows x 7 cols) */
+        .days-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            grid-template-rows: repeat(6, 1fr);
+        }
+
+        /* Individual Day Cell */
+        .day-cell {
+            border-right: 1px solid var(--grid-border);
+            border-bottom: 1px solid var(--grid-border);
+            padding: 6px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            background: #ffffff;
+            overflow: hidden;
+        }
+
+        .day-cell:nth-child(7n) {
+            border-right: none;
+        }
+
+        .day-cell.other-month {
+            background-color: rgba(0,0,0,0.015);
+            opacity: 0.4;
+        }
+
+        .day-cell.today {
+            background-color: rgba(255, 248, 220, 0.4);
+        }
+
+        /* Date Number Styling with Alternating Palette Colors */
+        .day-number-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2px;
+        }
+
+        .day-number {
+            font-family: var(--font-family-hand);
+            font-size: 1.7rem;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .day-number.alt-1 {
+            color: var(--num-color-1);
+        }
+
+        .day-number.alt-2 {
+            color: var(--num-color-2);
+        }
+
+        /* Holiday / Pizazz Badge */
+        .holiday-badge {
+            font-family: var(--font-family-hand);
+            font-size: 0.9rem;
+            color: #b45309;
+            background: #fef3c7;
+            padding: 0px 4px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-bottom: 2px;
+            line-height: 1.2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Events List Container inside Day Cell */
+        .events-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            overflow-y: auto;
+            max-height: calc(100% - 26px);
+        }
+
+        /* Event Tag - Muted Sophisticated Pastels */
+        .event-item {
+            font-family: var(--font-family-hand);
+            font-size: 1.1rem;
+            padding: 1px 5px;
+            border-radius: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.2;
+            border-left: 3px solid transparent;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Image Banner -->
+    <div class="banner-container">
+        <img id="monthBannerImg" class="banner-image" src="" alt="Month Banner">
+    </div>
+
+    <!-- Main Content Body -->
+    <div class="app-body">
+        <!-- Calendar Grid Section -->
+        <div class="calendar-wrapper">
+            <div class="weekdays-grid" id="weekdaysGrid">
+                <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+            </div>
+            <div class="days-grid" id="daysGrid">
+                <!-- Dynamically populated day cells -->
+            </div>
+        </div>
+
+        <!-- Upcoming Events Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">Upcoming Events</div>
+            <div class="sidebar-events-list" id="sidebarEventsList">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // CLOUDFLARE WORKER & ICAL FEEDS CONFIG
+        // ==========================================
+        const WORKER_URL = "https://calendar-proxy.mvgrosskreuz.workers.dev/?url=";
+
+        const iCalFeeds = [
+            {
+                name: "Matt",
+                url: WORKER_URL + encodeURIComponent("https://calendar.google.com/calendar/ical/mvgrosskreuz%40gmail.com/private-6967b2d9e8dded3b802e8e991539c06e/basic.ics"),
+                bg: "#edf2f7",  
+                text: "#4a5568" 
+            },
+            {
+                name: "Wedding Calendar",
+                url: WORKER_URL + encodeURIComponent("https://calendar.google.com/calendar/ical/37e4fdd7f8070268e391c35a0bbc6bc5e4964186321ca7d15707cc15b7ae5c72%40group.calendar.google.com/private-d054f7d756fff0d9bed8342303946f74/basic.ics"),
+                bg: "#fff5f5", 
+                text: "#9b2c2c"
+            },
+            {
+                name: "Kayla",
+                url: WORKER_URL + encodeURIComponent("https://calendar.google.com/calendar/ical/kayla.gundersen726%40gmail.com/private-54cacf527e826d1a61660ecc334067ee/basic.ics"),
+                bg: "#ebf8ff", 
+                text: "#2b6cb0"
+            }
+        ];
+
+        // Month Themes & Palettes (Jan - Dec)
+        const monthThemes = {
+            0: { name: "January", dayHeader: "#4a5568", colors: ["#3b5998", "#2b6cb0"] },
+            1: { name: "February", dayHeader: "#7b341e", colors: ["#9b2c2c", "#c53030"] },
+            2: { name: "March", dayHeader: "#276749", colors: ["#2f855a", "#38a169"] },
+            3: { name: "April", dayHeader: "#97266d", colors: ["#d53f8c", "#b83280"] },
+            4: { name: "May", dayHeader: "#975a16", colors: ["#d69e2e", "#b7791f"] },
+            5: { name: "June", dayHeader: "#b7791f", colors: ["#d69e2e", "#3182ce"] },
+            6: { name: "July", dayHeader: "#9b2c2c", colors: ["#c53030", "#2b6cb0"] },
+            7: { name: "August", dayHeader: "#744210", colors: ["#d69e2e", "#b7791f"] },
+            8: { name: "September", dayHeader: "#7b341e", colors: ["#9c4221", "#7b341e"] },
+            9: { name: "October", dayHeader: "#7b341e", colors: ["#dd6b20", "#c05621"] },
+            10: { name: "November", dayHeader: "#652b19", colors: ["#9c4221", "#744210"] },
+            11: { name: "December", dayHeader: "#1c4532", colors: ["#22543d", "#9b2c2c"] }
+        };
+
+        const staticHolidays = {
+            "2027-01-01": "New Year's Day ✨",
+            "2027-02-14": "Valentine's Day 💌",
+            "2027-07-04": "Independence Day 🎆",
+            "2027-10-31": "Halloween 🎃",
+            "2027-11-25": "Thanksgiving 🦃",
+            "2027-12-25": "Christmas Day 🎄"
+        };
+
+        let allEvents = [];
+        let fetchErrors = [];
+
+        async function fetchAllCalendars() {
+            allEvents = [];
+            fetchErrors = [];
+
+            for (const feed of iCalFeeds) {
+                try {
+                    const response = await fetch(feed.url);
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    const text = await response.text();
+                    parseICal(text, feed);
+                } catch (err) {
+                    console.error(`Error fetching calendar feed (${feed.name}):`, err);
+                    fetchErrors.push(`${feed.name}: ${err.message}`);
+                }
+            }
+            renderCalendarGrid();
+            renderSidebar();
+        }
+
+        function parseICal(icsData, feed) {
+            const lines = icsData.split(/\r?\n/);
+            let inEvent = false;
+            let currentEvent = {};
+
+            for (let line of lines) {
+                if (line === 'BEGIN:VEVENT') {
+                    inEvent = true;
+                    currentEvent = { bg: feed.bg, text: feed.text };
+                } else if (line === 'END:VEVENT') {
+                    if (currentEvent.date && currentEvent.summary) {
+                        allEvents.push(currentEvent);
+                    }
+                    inEvent = false;
+                    currentEvent = {};
+                } else if (inEvent) {
+                    if (line.startsWith('DTSTART')) {
+                        const val = line.split(':')[1];
+                        if (val) {
+                            const year = val.substring(0, 4);
+                            const month = val.substring(4, 6);
+                            const day = val.substring(6, 8);
+                            currentEvent.date = `${year}-${month}-${day}`;
+                        }
+                    } else if (line.startsWith('SUMMARY:')) {
+                        currentEvent.summary = line.substring(8);
+                    }
+                }
+            }
+        }
+
+        function renderCalendar() {
+            fetchAllCalendars();
+        }
+
+        function renderCalendarGrid() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth();
+
+            const bannerImg = document.getElementById('monthBannerImg');
+            bannerImg.src = `${month + 1}.png`;
+
+            const theme = monthThemes[month] || monthThemes[0];
+            document.documentElement.style.setProperty('--day-header-color', theme.dayHeader);
+            document.documentElement.style.setProperty('--num-color-1', theme.colors[0]);
+            document.documentElement.style.setProperty('--num-color-2', theme.colors[1]);
+
+            const daysGrid = document.getElementById('daysGrid');
+            daysGrid.innerHTML = '';
+
+            const firstDayIndex = new Date(year, month, 1).getDay();
+            const totalDays = new Date(year, month + 1, 0).getDate();
+            const prevTotalDays = new Date(year, month, 0).getDate();
+
+            let cellCount = 0;
+
+            for (let i = firstDayIndex; i > 0; i--) {
+                const dayNum = prevTotalDays - i + 1;
+                appendCell(daysGrid, dayNum, true, cellCount);
+                cellCount++;
+            }
+
+            for (let i = 1; i <= totalDays; i++) {
+                const isToday = (i === now.getDate() && month === now.getMonth() && year === now.getFullYear());
+                appendCell(daysGrid, i, false, cellCount, year, month, isToday);
+                cellCount++;
+            }
+
+            let nextMonthDay = 1;
+            while (cellCount < 42) {
+                appendCell(daysGrid, nextMonthDay, true, cellCount);
+                nextMonthDay++;
+                cellCount++;
+            }
+        }
+
+        function appendCell(grid, dayNum, isOtherMonth, index, year, month, isToday) {
+            const cell = document.createElement('div');
+            cell.className = `day-cell ${isOtherMonth ? 'other-month' : ''} ${isToday ? 'today' : ''}`;
+
+            const numContainer = document.createElement('div');
+            numContainer.className = 'day-number-container';
+
+            const numberSpan = document.createElement('span');
+            numberSpan.className = `day-number ${index % 2 === 0 ? 'alt-1' : 'alt-2'}`;
+            numberSpan.textContent = dayNum;
+            numContainer.appendChild(numberSpan);
+
+            cell.appendChild(numContainer);
+
+            if (!isOtherMonth && year && month !== undefined) {
+                const formattedDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
+                
+                if (staticHolidays[formattedDate]) {
+                    const badge = document.createElement('div');
+                    badge.className = 'holiday-badge';
+                    badge.textContent = staticHolidays[formattedDate];
+                    cell.appendChild(badge);
+                }
+
+                const eventsDiv = document.createElement('div');
+                eventsDiv.className = 'events-container';
+                
+                const dayEvents = allEvents.filter(e => e.date === formattedDate);
+                dayEvents.forEach(ev => {
+                    const tag = document.createElement('div');
+                    tag.className = 'event-item';
+                    tag.style.backgroundColor = ev.bg;
+                    tag.style.color = ev.text;
+                    tag.style.borderLeftColor = ev.text;
+                    tag.textContent = ev.summary;
+                    eventsDiv.appendChild(tag);
+                });
+
+                cell.appendChild(eventsDiv);
+            }
+
+            grid.appendChild(cell);
+        }
+
+        function renderSidebar() {
+            const sidebarList = document.getElementById('sidebarEventsList');
+            sidebarList.innerHTML = '';
+
+            if (fetchErrors.length > 0) {
+                const errDiv = document.createElement('div');
+                errDiv.className = 'error-banner';
+                errDiv.innerHTML = `<strong>⚠️ iCal Proxy Error:</strong><br>` + fetchErrors.join('<br>');
+                sidebarList.appendChild(errDiv);
+            }
+
+            const todayStr = new Date().toISOString().split('T')[0];
+            const upcoming = allEvents
+                .filter(e => e.date >= todayStr)
+                .sort((a, b) => a.date.localeCompare(b.date))
+                .slice(0, 15);
+
+            if (upcoming.length === 0 && fetchErrors.length === 0) {
+                sidebarList.innerHTML += '<div style="font-size: 1rem; font-family: var(--font-family-hand); color: #718096; padding: 10px;">No upcoming events found.</div>';
+                return;
+            }
+
+            upcoming.forEach(ev => {
+                const card = document.createElement('div');
+                card.className = 'sidebar-event-card';
+                card.style.backgroundColor = ev.bg;
+                card.style.borderLeftColor = ev.text;
+                card.style.color = ev.text;
+
+                const dateTag = document.createElement('div');
+                dateTag.className = 'sidebar-event-date';
+                
+                const [y, m, d] = ev.date.split('-');
+                const eventDateObj = new Date(y, m - 1, d);
+                dateTag.textContent = eventDateObj.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+
+                const titleTag = document.createElement('div');
+                titleTag.className = 'sidebar-event-title';
+                titleTag.textContent = ev.summary;
+
+                card.appendChild(dateTag);
+                card.appendChild(titleTag);
+                sidebarList.appendChild(card);
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', renderCalendar);
+    </script>
+</body>
+</html>
