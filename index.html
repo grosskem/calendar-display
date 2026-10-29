@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Themed Wall Calendar Display</title>
+  <title>Cozy Wall Calendar Display</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Cinzel:wght@600;700;800&family=Comfortaa:wght@600;700&family=Great+Vibes&family=Mountains+of+Christmas:wght@700&family=Pacifico&family=Patrick+Hand&family=Playfair+Display:ital,wght@0,600;0,700;0,900;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
@@ -17,7 +17,7 @@
       overflow: hidden;
       background-color: var(--screen-backdrop, #14110e);
       color: var(--theme-ink, #251b14);
-      font-family: var(--font-body, 'Source Sans 3'), sans-serif;
+      font-family: var(--font-body, 'Patrick Hand'), cursive, sans-serif;
       user-select: none;
     }
 
@@ -33,7 +33,7 @@
 
     @media (min-width: 1024px) {
       .calendar-frame {
-        grid-template-columns: 1fr 340px;
+        grid-template-columns: 1fr 360px;
       }
     }
 
@@ -49,23 +49,24 @@
     .banner-container {
       position: relative;
       width: 100%;
-      height: 220px;
-      min-height: 220px;
-      max-height: 220px;
+      height: 140px;
+      min-height: 140px;
+      max-height: 140px;
       overflow: hidden;
       border-bottom: 2.5px solid var(--grid-border, #2d2016);
       background-color: var(--banner-bg, #fffbf2);
+      flex-shrink: 0;
     }
 
     .weekday-strip {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       gap: 6px;
-      padding: 6px 12px;
+      padding: 8px 12px;
       background: var(--paper-bg, #fffdf8);
       border-bottom: 2px solid var(--grid-border, #2d2016);
       font-weight: 700;
-      font-size: 0.95rem;
+      font-size: 1.15rem;
       letter-spacing: 1.5px;
       text-transform: uppercase;
       font-family: var(--font-accent, 'Patrick Hand'), cursive;
@@ -73,7 +74,7 @@
     }
 
     .weekday-pill {
-      padding: 5px 0;
+      padding: 6px 0;
       text-align: center;
       border-radius: 9999px;
       display: flex;
@@ -81,7 +82,7 @@
       justify-content: center;
       box-shadow: 0 1px 3px rgba(0,0,0,0.06);
       border: 1px solid rgba(0,0,0,0.08);
-      font-size: 0.9rem;
+      font-size: 1.1rem;
       line-height: 1.1;
     }
 
@@ -119,7 +120,6 @@
       box-shadow: 0 3px 8px rgba(0,0,0,0.05), 0 0 0 1px var(--cell-border, #e5dfd3);
       position: relative;
       overflow: hidden;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
 
     .day-tile.muted-tile {
@@ -139,10 +139,11 @@
       justify-content: flex-start;
       align-items: center;
       margin-bottom: 4px;
+      flex-shrink: 0;
     }
 
     .day-number-badge {
-      font-size: 1.35rem;
+      font-size: 1.7rem;
       font-weight: 700;
       line-height: 1;
       color: var(--day-num-color, #1a120c);
@@ -155,10 +156,10 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 28px;
-      height: 28px;
+      width: 32px;
+      height: 32px;
       border-radius: 9999px;
-      font-size: 1.1rem;
+      font-size: 1.4rem;
       box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     }
 
@@ -171,22 +172,34 @@
       min-height: 0;
     }
 
+    /* Adaptive Font Sizing for Event Badges depending on density */
     .event-badge {
-      font-size: 0.8rem;
-      padding: 2px 7px;
+      font-size: 1.15rem;
+      padding: 2px 8px;
       border-radius: 8px;
-      line-height: 1.2;
+      line-height: 1.25;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       box-shadow: 0 1px 2px rgba(0,0,0,0.06);
-      font-family: var(--font-body, 'Source Sans 3'), sans-serif;
-      font-weight: 600;
-      border-left: 3.5px solid #d97706;
+      font-family: var(--font-body, 'Patrick Hand'), cursive;
+      font-weight: 700;
+      border-left: 4px solid #d97706;
       background-color: #fef3c7;
       color: #451a03;
     }
 
+    .event-badge.compact-badge {
+      font-size: 1rem;
+      padding: 1px 6px;
+    }
+
+    .event-badge.dense-badge {
+      font-size: 0.85rem;
+      padding: 1px 5px;
+    }
+
+    /* Calendar Color Coding */
     .cal-wedding { border-left-color: #d97706 !important; background-color: #fef3c7 !important; color: #78350f !important; }
     .cal-kayla   { border-left-color: #9333ea !important; background-color: #faf5ff !important; color: #581c87 !important; }
     .cal-mvg     { border-left-color: #2563eb !important; background-color: #eff6ff !important; color: #1e3a8a !important; }
@@ -221,14 +234,14 @@
     }
 
     .agenda-card {
-      padding: 10px 12px;
+      padding: 12px 14px;
       border-radius: 12px;
       background: #ffffff;
       border: 1px solid rgba(0,0,0,0.08);
       box-shadow: 0 2px 6px rgba(0,0,0,0.04);
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 4px;
     }
 
     .agenda-card.agenda-today {
@@ -237,27 +250,27 @@
     }
 
     .nav-arrow {
-      background: rgba(0,0,0,0.25);
+      background: rgba(0,0,0,0.35);
       backdrop-filter: blur(4px);
       color: #ffffff;
       border-radius: 9999px;
-      width: 34px;
-      height: 34px;
+      width: 40px;
+      height: 40px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      font-size: 0.9rem;
+      font-size: 1.1rem;
       transition: background 0.15s ease, transform 0.1s ease;
-      border: 1px solid rgba(255,255,255,0.3);
+      border: 1px solid rgba(255,255,255,0.4);
     }
     .nav-arrow:hover {
-      background: rgba(0,0,0,0.45);
+      background: rgba(0,0,0,0.55);
       transform: scale(1.08);
     }
 
-    ::-webkit-scrollbar { width: 4px; height: 4px; }
-    ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 9999px; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.25); border-radius: 9999px; }
   </style>
 </head>
 <body>
@@ -273,14 +286,14 @@
       <div class="sidebar-header">
         <div>
           <h2 class="text-2xl font-bold tracking-tight text-[var(--theme-ink)]" style="font-family: var(--font-title);">Upcoming Events</h2>
-          <p class="text-xs uppercase tracking-widest opacity-70 font-bold" style="font-family: var(--font-accent);">Next 30 Days</p>
+          <p class="text-xs uppercase tracking-widest opacity-75 font-bold" style="font-family: var(--font-accent);">Next 30 Days</p>
         </div>
         <span class="text-xs px-2.5 py-0.5 rounded-full font-bold bg-amber-500/20 text-amber-900 border border-amber-500/30" id="agendaCountBadge">0</span>
       </div>
 
       <div class="agenda-scroll-area" id="agendaList"></div>
 
-      <div class="pt-3 border-t border-[var(--grid-border)] flex justify-between items-center text-[0.7rem] opacity-60 font-semibold" style="color: var(--theme-ink);">
+      <div class="pt-3 border-t border-[var(--grid-border)] flex justify-between items-center text-[0.75rem] opacity-70 font-semibold" style="color: var(--theme-ink);">
         <span id="footerSeasonLabel">Seasonal Wall Edition</span>
         <span id="syncStatusBadge">GCal: Active</span>
       </div>
@@ -288,377 +301,222 @@
   </main>
 
   <script>
+    // Your Cloudflare Worker proxy helper
     const PROXY_URL = "https://calendar-proxy.mvgrosskreuz.workers.dev";
 
     const THEMES = {
       0: {
         name: "January",
-        bannerImage: "banner_1.png",
-        fonts: { title: "'Mountains of Christmas', cursive", accent: "'Cinzel', serif", body: "'Source Sans 3', sans-serif" },
+        bannerImage: "1.png",
+        fonts: { title: "'Patrick Hand', cursive", accent: "'Patrick Hand', cursive", body: "'Patrick Hand', cursive" },
         palette: {
-          screenBackdrop: "#0b1520",
-          paperBg: "#f5f9fc",
-          agendaBg: "#ebf2f7",
-          bannerBg: "#e2eff7",
-          boardBorder: "#1b3a4b",
-          gridBorder: "#244356",
-          gridBackdrop: "#d2e3eb",
-          themeInk: "#1b3a4b",
-          cellBg: "#ffffff",
-          cellBorder: "#b2c8d4",
-          cellMutedBg: "rgba(224, 236, 245, 0.45)",
-          cellTodayBg: "#e8f2f8",
-          todayAccent: "#4a82a6",
-          dayNumColor: "#0f2b3c"
+          screenBackdrop: "#0b1520", paperBg: "#f5f9fc", agendaBg: "#ebf2f7", bannerBg: "#e2eff7",
+          boardBorder: "#1b3a4b", gridBorder: "#244356", gridBackdrop: "#d2e3eb", themeInk: "#1b3a4b",
+          cellBg: "#ffffff", cellBorder: "#b2c8d4", cellMutedBg: "rgba(224, 236, 245, 0.45)",
+          cellTodayBg: "#e8f2f8", todayAccent: "#4a82a6", dayNumColor: "#0f2b3c"
         },
         weekdayColors: [
-          {name:"SUN",bg:"#b83b3b",text:"#ffffff"},
-          {name:"MON",bg:"#d2e3eb",text:"#1b3a4b"},
-          {name:"TUE",bg:"#e5edf2",text:"#2c4656"},
-          {name:"WED",bg:"#88b3cc",text:"#0f2b3c"},
-          {name:"THU",bg:"#e5edf2",text:"#2c4656"},
-          {name:"FRI",bg:"#2d5a43",text:"#ffffff"},
+          {name:"SUN",bg:"#b83b3b",text:"#ffffff"}, {name:"MON",bg:"#d2e3eb",text:"#1b3a4b"},
+          {name:"TUE",bg:"#e5edf2",text:"#2c4656"}, {name:"WED",bg:"#88b3cc",text:"#0f2b3c"},
+          {name:"THU",bg:"#e5edf2",text:"#2c4656"}, {name:"FRI",bg:"#2d5a43",text:"#ffffff"},
           {name:"SAT",bg:"#6d4e38",text:"#ffffff"}
         ],
         footerNote: "❄️ Winter Frost & Evergreen Edition"
       },
       1: {
         name: "February",
-        bannerImage: "banner_2.png",
-        fonts: { title: "'Playfair Display', serif", accent: "'Great Vibes', cursive", body: "'Source Sans 3', sans-serif" },
+        bannerImage: "2.png",
+        fonts: { title: "'Patrick Hand', cursive", accent: "'Patrick Hand', cursive", body: "'Patrick Hand', cursive" },
         palette: {
-          screenBackdrop: "#1c0d12",
-          paperBg: "#fff5f6",
-          agendaBg: "#fcf0f2",
-          bannerBg: "#fae8eb",
-          boardBorder: "#4a1525",
-          gridBorder: "#5c2432",
-          gridBackdrop: "#f3d9df",
-          themeInk: "#4a1525",
-          cellBg: "#ffffff",
-          cellBorder: "#dfb8c2",
-          cellMutedBg: "rgba(247, 228, 233, 0.45)",
-          cellTodayBg: "#fdebee",
-          todayAccent: "#b8425a",
-          dayNumColor: "#4a1525"
+          screenBackdrop: "#1c0d12", paperBg: "#fff5f6", agendaBg: "#fcf0f2", bannerBg: "#fae8eb",
+          boardBorder: "#4a1525", gridBorder: "#5c2432", gridBackdrop: "#f3d9df", themeInk: "#4a1525",
+          cellBg: "#ffffff", cellBorder: "#dfb8c2", cellMutedBg: "rgba(247, 228, 233, 0.45)",
+          cellTodayBg: "#fdebee", todayAccent: "#b8425a", dayNumColor: "#4a1525"
         },
         weekdayColors: [
-          {name:"SUN",bg:"#a82943",text:"#ffffff"},
-          {name:"MON",bg:"#f4c2cb",text:"#5a1b2a"},
-          {name:"TUE",bg:"#fde2e6",text:"#6d2836"},
-          {name:"WED",bg:"#8a5247",text:"#ffffff"},
-          {name:"THU",bg:"#f4c2cb",text:"#5a1b2a"},
-          {name:"FRI",bg:"#8c1d35",text:"#ffffff"},
+          {name:"SUN",bg:"#a82943",text:"#ffffff"}, {name:"MON",bg:"#f4c2cb",text:"#5a1b2a"},
+          {name:"TUE",bg:"#fde2e6",text:"#6d2836"}, {name:"WED",bg:"#8a5247",text:"#ffffff"},
+          {name:"THU",bg:"#f4c2cb",text:"#5a1b2a"}, {name:"FRI",bg:"#8c1d35",text:"#ffffff"},
           {name:"SAT",bg:"#36533f",text:"#ffffff"}
         ],
         footerNote: "💖 Rose Hearth & Cranberry Pine"
       },
       2: {
         name: "March",
-        bannerImage: "banner_3.png",
-        fonts: { title: "'Caveat', cursive", accent: "'Patrick Hand', cursive", body: "'Source Sans 3', sans-serif" },
+        bannerImage: "3.png",
+        fonts: { title: "'Patrick Hand', cursive", accent: "'Patrick Hand', cursive", body: "'Patrick Hand', cursive" },
         palette: {
-          screenBackdrop: "#0b1c11",
-          paperBg: "#fbfdf6",
-          agendaBg: "#ecf7ef",
-          bannerBg: "#e3f5e8",
-          boardBorder: "#184323",
-          gridBorder: "#1e4d2d",
-          gridBackdrop: "#d7edd9",
-          themeInk: "#184323",
-          cellBg: "#ffffff",
-          cellBorder: "#b8d8be",
-          cellMutedBg: "rgba(225, 242, 229, 0.45)",
-          cellTodayBg: "#edf8ef",
-          todayAccent: "#2e8b46",
-          dayNumColor: "#184323"
+          screenBackdrop: "#0b1c11", paperBg: "#fbfdf6", agendaBg: "#ecf7ef", bannerBg: "#e3f5e8",
+          boardBorder: "#184323", gridBorder: "#1e4d2d", gridBackdrop: "#d7edd9", themeInk: "#184323",
+          cellBg: "#ffffff", cellBorder: "#b8d8be", cellMutedBg: "rgba(225, 242, 229, 0.45)",
+          cellTodayBg: "#edf8ef", todayAccent: "#2e8b46", dayNumColor: "#184323"
         },
         weekdayColors: [
-          {name:"SUN",bg:"#e2a829",text:"#3d2600"},
-          {name:"MON",bg:"#c7e8cf",text:"#164e23"},
-          {name:"TUE",bg:"#dcf2e1",text:"#1b4f28"},
-          {name:"WED",bg:"#88c4e8",text:"#0d3a56"},
-          {name:"THU",bg:"#dcf2e1",text:"#1b4f28"},
-          {name:"FRI",bg:"#1e7837",text:"#ffffff"},
+          {name:"SUN",bg:"#e2a829",text:"#3d2600"}, {name:"MON",bg:"#c7e8cf",text:"#164e23"},
+          {name:"TUE",bg:"#dcf2e1",text:"#1b4f28"}, {name:"WED",bg:"#88c4e8",text:"#0d3a56"},
+          {name:"THU",bg:"#dcf2e1",text:"#1b4f28"}, {name:"FRI",bg:"#1e7837",text:"#ffffff"},
           {name:"SAT",bg:"#a07849",text:"#ffffff"}
         ],
         footerNote: "🍀 Shamrock Meadow & Spring Bloom"
       },
       3: {
         name: "April",
-        bannerImage: "banner_4.png",
-        fonts: { title: "'Playfair Display', serif", accent: "'Comfortaa', cursive", body: "'Source Sans 3', sans-serif" },
+        bannerImage: "4.png",
+        fonts: { title: "'Patrick Hand', cursive", accent: "'Patrick Hand', cursive", body: "'Patrick Hand', cursive" },
         palette: {
-          screenBackdrop: "#111827",
-          paperBg: "#fdfdf8",
-          agendaBg: "#f4f3fa",
-          bannerBg: "#f6f3fc",
-          boardBorder: "#2f2640",
-          gridBorder: "#3d3254",
-          gridBackdrop: "#c5d6dd",
-          themeInk: "#2f2640",
-          cellBg: "#ffffff",
-          cellBorder: "#c5d6dd",
-          cellMutedBg: "rgba(230, 236, 242, 0.45)",
-          cellTodayBg: "#faeef2",
-          todayAccent: "#d4597d",
-          dayNumColor: "#2f2640"
+          screenBackdrop: "#111827", paperBg: "#fdfdf8", agendaBg: "#f4f3fa", bannerBg: "#f6f3fc",
+          boardBorder: "#2f2640", gridBorder: "#3d3254", gridBackdrop: "#c5d6dd", themeInk: "#2f2640",
+          cellBg: "#ffffff", cellBorder: "#c5d6dd", cellMutedBg: "rgba(230, 236, 242, 0.45)",
+          cellTodayBg: "#faeef2", todayAccent: "#d4597d", dayNumColor: "#2f2640"
         },
         weekdayColors: [
-          {name:"SUN",bg:"#ea7e9d",text:"#ffffff"},
-          {name:"MON",bg:"#fae89f",text:"#54430a"},
-          {name:"TUE",bg:"#a0d1e8",text:"#133b4d"},
-          {name:"WED",bg:"#c9b6e4",text:"#372354"},
-          {name:"THU",bg:"#6aa4b2",text:"#ffffff"},
-          {name:"FRI",bg:"#7ebc6f",text:"#1c4412"},
+          {name:"SUN",bg:"#ea7e9d",text:"#ffffff"}, {name:"MON",bg:"#fae89f",text:"#54430a"},
+          {name:"TUE",bg:"#a0d1e8",text:"#133b4d"}, {name:"WED",bg:"#c9b6e4",text:"#372354"},
+          {name:"THU",bg:"#6aa4b2",text:"#ffffff"}, {name:"FRI",bg:"#7ebc6f",text:"#1c4412"},
           {name:"SAT",bg:"#b08658",text:"#ffffff"}
         ],
         footerNote: "🌧️ Spring Tulips & Robin Egg Rain"
       },
       4: {
         name: "May",
-        bannerImage: "banner_5.png",
-        fonts: { title: "'Playfair Display', serif", accent: "'Comfortaa', cursive", body: "'Source Sans 3', sans-serif" },
+        bannerImage: "5.png",
+        fonts: { title: "'Patrick Hand', cursive", accent: "'Patrick Hand', cursive", body: "'Patrick Hand', cursive" },
         palette: {
-          screenBackdrop: "#111b15",
-          paperBg: "#fcfbf5",
-          agendaBg: "#f7f5ed",
-          bannerBg: "#fcf4e8",
-          boardBorder: "#362b20",
-          gridBorder: "#4a3c2c",
-          gridBackdrop: "#dce7da",
-          themeInk: "#362b20",
-          cellBg: "#ffffff",
-          cellBorder: "#c6d9c4",
-          cellMutedBg: "rgba(230, 238, 228, 0.45)",
-          cellTodayBg: "#fbf5eb",
-          todayAccent: "#8b5ba8",
-          dayNumColor: "#362b20"
+          screenBackdrop: "#111b15", paperBg: "#fcfbf5", agendaBg: "#f7f5ed", bannerBg: "#fcf4e8",
+          boardBorder: "#362b20", gridBorder: "#4a3c2c", gridBackdrop: "#dce7da", themeInk: "#362b20",
+          cellBg: "#ffffff", cellBorder: "#c6d9c4", cellMutedBg: "rgba(230, 238, 228, 0.45)",
+          cellTodayBg: "#fbf5eb", todayAccent: "#8b5ba8", dayNumColor: "#362b20"
         },
         weekdayColors: [
-          {name:"SUN",bg:"#f29bb2",text:"#ffffff"},
-          {name:"MON",bg:"#c5a7dc",text:"#3b1d54"},
-          {name:"TUE",bg:"#a4d59a",text:"#1a4312"},
-          {name:"WED",bg:"#f2bf42",text:"#4d3705"},
-          {name:"THU",bg:"#bf6c47",text:"#ffffff"},
-          {name:"FRI",bg:"#79aab2",text:"#ffffff"},
+          {name:"SUN",bg:"#f29bb2",text:"#ffffff"}, {name:"MON",bg:"#c5a7dc",text:"#3b1d54"},
+          {name:"TUE",bg:"#a4d59a",text:"#1a4312"}, {name:"WED",bg:"#f2bf42",text:"#4d3705"},
+          {name:"THU",bg:"#bf6c47",text:"#ffffff"}, {name:"FRI",bg:"#79aab2",text:"#ffffff"},
           {name:"SAT",bg:"#6b4a36",text:"#ffffff"}
         ],
         footerNote: "🌿 Maypole Blossom & Garden Herbs"
       },
       5: {
         name: "June",
-        bannerImage: "banner_6.png",
-        fonts: { title: "'Pacifico', cursive", accent: "'Patrick Hand', cursive", body: "'Source Sans 3', sans-serif" },
+        bannerImage: "6.png",
+        fonts: { title: "'Patrick Hand', cursive", accent: "'Patrick Hand', cursive", body: "'Patrick Hand', cursive" },
         palette: {
-          screenBackdrop: "#1c1809",
-          paperBg: "#fefdf7",
-          agendaBg: "#fbf6e8",
-          bannerBg: "#fef8e6",
-          boardBorder: "#3d2817",
-          gridBorder: "#4f3520",
-          gridBackdrop: "#e0d2b7",
-          themeInk: "#3d2817",
-          cellBg: "#ffffff",
-          cellBorder: "#e0d2b7",
-          cellMutedBg: "rgba(254, 243, 199, 0.35)",
-          cellTodayBg: "#fef9e4",
-          todayAccent: "#339bb5",
-          dayNumColor: "#3d2817"
+          screenBackdrop: "#1c1809", paperBg: "#fefdf7", agendaBg: "#fbf6e8", bannerBg: "#fef8e6",
+          boardBorder: "#3d2817", gridBorder: "#4f3520", gridBackdrop: "#e0d2b7", themeInk: "#3d2817",
+          cellBg: "#ffffff", cellBorder: "#e0d2b7", cellMutedBg: "rgba(254, 243, 199, 0.35)",
+          cellTodayBg: "#fef9e4", todayAccent: "#339bb5", dayNumColor: "#3d2817"
         },
         weekdayColors: [
-          {name:"SUN",bg:"#f5b638",text:"#4d3202"},
-          {name:"MON",bg:"#fae58c",text:"#594905"},
-          {name:"TUE",bg:"#e26d7c",text:"#ffffff"},
-          {name:"WED",bg:"#52afc4",text:"#ffffff"},
-          {name:"THU",bg:"#eb7d65",text:"#ffffff"},
-          {name:"FRI",bg:"#9e6037",text:"#ffffff"},
+          {name:"SUN",bg:"#f5b638",text:"#4d3202"}, {name:"MON",bg:"#fae58c",text:"#594905"},
+          {name:"TUE",bg:"#e26d7c",text:"#ffffff"}, {name:"WED",bg:"#52afc4",text:"#ffffff"},
+          {name:"THU",bg:"#eb7d65",text:"#ffffff"}, {name:"FRI",bg:"#9e6037",text:"#ffffff"},
           {name:"SAT",bg:"#2b7399",text:"#ffffff"}
         ],
         footerNote: "☀️ Lemonade Sun & Coastal Roses"
       },
       6: {
         name: "July",
-        bannerImage: "banner_7.png",
-        fonts: { title: "'Cinzel', serif", accent: "'Source Sans 3', sans-serif", body: "'Source Sans 3', sans-serif" },
+        bannerImage: "7.png",
+        fonts: { title: "'Patrick Hand', cursive", accent: "'Patrick Hand', cursive", body: "'Patrick Hand', cursive" },
         palette: {
-          screenBackdrop: "#0a0e1a",
-          paperBg: "#fcfbf6",
-          agendaBg: "#f4f3ed",
-          bannerBg: "#e9edfa",
-          boardBorder: "#172342",
-          gridBorder: "#273554",
-          gridBackdrop: "#b2bed4",
-          themeInk: "#172342",
-          cellBg: "#ffffff",
-          cellBorder: "#b2bed4",
-          cellMutedBg: "rgba(226, 232, 245, 0.45)",
-          cellTodayBg: "#edf1fa",
-          todayAccent: "#c93636",
-          dayNumColor: "#172342"
+          screenBackdrop: "#0a0e1a", paperBg: "#fcfbf6", agendaBg: "#f4f3ed", bannerBg: "#e9edfa",
+          boardBorder: "#172342", gridBorder: "#273554", gridBackdrop: "#b2bed4", themeInk: "#172342",
+          cellBg: "#ffffff", cellBorder: "#b2bed4", cellMutedBg: "rgba(226, 232, 245, 0.45)",
+          cellTodayBg: "#edf1fa", todayAccent: "#c93636", dayNumColor: "#172342"
         },
         weekdayColors: [
-          {name:"SUN",bg:"#be2b2b",text:"#ffffff"},
-          {name:"MON",bg:"#ea6075",text:"#ffffff"},
-          {name:"TUE",bg:"#f0a728",text:"#4d3102"},
-          {name:"WED",bg:"#264478",text:"#ffffff"},
-          {name:"THU",bg:"#e8732a",text:"#ffffff"},
-          {name:"FRI",bg:"#345934",text:"#ffffff"},
+          {name:"SUN",bg:"#be2b2b",text:"#ffffff"}, {name:"MON",bg:"#ea6075",text:"#ffffff"},
+          {name:"TUE",bg:"#f0a728",text:"#4d3102"}, {name:"WED",bg:"#264478",text:"#ffffff"},
+          {name:"THU",bg:"#e8732a",text:"#ffffff"}, {name:"FRI",bg:"#345934",text:"#ffffff"},
           {name:"SAT",bg:"#b89767",text:"#ffffff"}
         ],
         footerNote: "🎆 Twilight Fireworks & Lakeside Fire"
       },
       7: {
         name: "August",
-        bannerImage: "banner_8.png",
-        fonts: { title: "'Playfair Display', serif", accent: "'Cinzel', serif", body: "'Source Sans 3', sans-serif" },
+        bannerImage: "8.png",
+        fonts: { title: "'Patrick Hand', cursive", accent: "'Patrick Hand', cursive", body: "'Patrick Hand', cursive" },
         palette: {
-          screenBackdrop: "#1c1409",
-          paperBg: "#fffdf4",
-          agendaBg: "#faf4e4",
-          bannerBg: "#faefd8",
-          boardBorder: "#42220d",
-          gridBorder: "#542c11",
-          gridBackdrop: "#dec59e",
-          themeInk: "#42220d",
-          cellBg: "#ffffff",
-          cellBorder: "#dec59e",
-          cellMutedBg: "rgba(250, 237, 212, 0.45)",
-          cellTodayBg: "#fef4e2",
-          todayAccent: "#dc652f",
-          dayNumColor: "#42220d"
+          screenBackdrop: "#1c1409", paperBg: "#fffdf4", agendaBg: "#faf4e4", bannerBg: "#faefd8",
+          boardBorder: "#42220d", gridBorder: "#542c11", gridBackdrop: "#dec59e", themeInk: "#42220d",
+          cellBg: "#ffffff", cellBorder: "#dec59e", cellMutedBg: "rgba(250, 237, 212, 0.45)",
+          cellTodayBg: "#fef4e2", todayAccent: "#dc652f", dayNumColor: "#42220d"
         },
         weekdayColors: [
-          {name:"SUN",bg:"#f0a518",text:"#4a3000"},
-          {name:"MON",bg:"#ea7e52",text:"#ffffff"},
-          {name:"TUE",bg:"#fae07a",text:"#524305"},
-          {name:"WED",bg:"#d48a37",text:"#ffffff"},
-          {name:"THU",bg:"#43939e",text:"#ffffff"},
-          {name:"FRI",bg:"#c43c29",text:"#ffffff"},
+          {name:"SUN",bg:"#f0a518",text:"#4a3000"}, {name:"MON",bg:"#ea7e52",text:"#ffffff"},
+          {name:"TUE",bg:"#fae07a",text:"#524305"}, {name:"WED",bg:"#d48a37",text:"#ffffff"},
+          {name:"THU",bg:"#43939e",text:"#ffffff"}, {name:"FRI",bg:"#c43c29",text:"#ffffff"},
           {name:"SAT",bg:"#5a6b32",text:"#ffffff"}
         ],
         footerNote: "🌻 Golden Hour Sunflower & Peach Trail"
       },
       8: {
         name: "September",
-        bannerImage: "banner_9.png",
-        fonts: { title: "'Caveat', cursive", accent: "'Patrick Hand', cursive", body: "'Source Sans 3', sans-serif" },
+        bannerImage: "9.png",
+        fonts: { title: "'Patrick Hand', cursive", accent: "'Patrick Hand', cursive", body: "'Patrick Hand', cursive" },
         palette: {
-          screenBackdrop: "#1c110e",
-          paperBg: "#fcf7ed",
-          agendaBg: "#f6ede0",
-          bannerBg: "#faedd8",
-          boardBorder: "#3b1c0e",
-          gridBorder: "#4d2514",
-          gridBackdrop: "#d6be9f",
-          themeInk: "#3b1c0e",
-          cellBg: "#ffffff",
-          cellBorder: "#d6be9f",
-          cellMutedBg: "rgba(247, 231, 218, 0.45)",
-          cellTodayBg: "#faeee0",
-          todayAccent: "#b83523",
-          dayNumColor: "#3b1c0e"
+          screenBackdrop: "#1c110e", paperBg: "#fcf7ed", agendaBg: "#f6ede0", bannerBg: "#faedd8",
+          boardBorder: "#3b1c0e", gridBorder: "#4d2514", gridBackdrop: "#d6be9f", themeInk: "#3b1c0e",
+          cellBg: "#ffffff", cellBorder: "#d6be9f", cellMutedBg: "rgba(247, 231, 218, 0.45)",
+          cellTodayBg: "#faeee0", todayAccent: "#b83523", dayNumColor: "#3b1c0e"
         },
         weekdayColors: [
-          {name:"SUN",bg:"#b83323",text:"#ffffff"},
-          {name:"MON",bg:"#e6a117",text:"#3d2800"},
-          {name:"TUE",bg:"#cb6427",text:"#ffffff"},
-          {name:"WED",bg:"#98a846",text:"#ffffff"},
-          {name:"THU",bg:"#822c22",text:"#ffffff"},
-          {name:"FRI",bg:"#bd7a44",text:"#ffffff"},
+          {name:"SUN",bg:"#b83323",text:"#ffffff"}, {name:"MON",bg:"#e6a117",text:"#3d2800"},
+          {name:"TUE",bg:"#cb6427",text:"#ffffff"}, {name:"WED",bg:"#98a846",text:"#ffffff"},
+          {name:"THU",bg:"#822c22",text:"#ffffff"}, {name:"FRI",bg:"#bd7a44",text:"#ffffff"},
           {name:"SAT",bg:"#694e3b",text:"#ffffff"}
         ],
         footerNote: "🍎 Autumn Apple Orchard & School Slate"
       },
       9: {
         name: "October",
-        bannerImage: "banner_10.png",
-        fonts: { title: "'Caveat', cursive", accent: "'Patrick Hand', cursive", body: "'Patrick Hand', cursive, sans-serif" },
+        bannerImage: "10.png",
+        fonts: { title: "'Patrick Hand', cursive", accent: "'Patrick Hand', cursive", body: "'Patrick Hand', cursive" },
         palette: {
-          screenBackdrop: "#16120e",
-          paperBg: "#fffbf2",
-          agendaBg: "#fbf2e3",
-          bannerBg: "#faebd3",
-          boardBorder: "#1c1322",
-          gridBorder: "#523624",
-          gridBackdrop: "#e2ceba",
-          themeInk: "#1c1322",
-          cellBg: "#ffffff",
-          cellBorder: "#dec8a6",
-          cellMutedBg: "rgba(247, 240, 226, 0.45)",
-          cellTodayBg: "#fff3e5",
-          todayAccent: "#dd541a",
-          dayNumColor: "#1c1322"
+          screenBackdrop: "#16120e", paperBg: "#fffbf2", agendaBg: "#fbf2e3", bannerBg: "#faebd3",
+          boardBorder: "#1c1322", gridBorder: "#523624", gridBackdrop: "#e2ceba", themeInk: "#1c1322",
+          cellBg: "#ffffff", cellBorder: "#dec8a6", cellMutedBg: "rgba(247, 240, 226, 0.45)",
+          cellTodayBg: "#fff3e5", todayAccent: "#dd541a", dayNumColor: "#1c1322"
         },
         weekdayColors: [
-          {name:"SUN",bg:"#e05c1d",text:"#ffffff"},
-          {name:"MON",bg:"#472b5c",text:"#ffffff"},
-          {name:"TUE",bg:"#f2a92b",text:"#3b2300"},
-          {name:"WED",bg:"#627e57",text:"#ffffff"},
-          {name:"THU",bg:"#a384b8",text:"#231230"},
-          {name:"FRI",bg:"#be431f",text:"#ffffff"},
+          {name:"SUN",bg:"#e05c1d",text:"#ffffff"}, {name:"MON",bg:"#472b5c",text:"#ffffff"},
+          {name:"TUE",bg:"#f2a92b",text:"#3b2300"}, {name:"WED",bg:"#627e57",text:"#ffffff"},
+          {name:"THU",bg:"#a384b8",text:"#231230"}, {name:"FRI",bg:"#be431f",text:"#ffffff"},
           {name:"SAT",bg:"#231b26",text:"#ffffff"}
         ],
         footerNote: "🎃 Spooky Jack-o'-Lantern & Black Cat"
       },
       10: {
         name: "November",
-        bannerImage: "banner_11.png",
-        fonts: { title: "'Playfair Display', serif", accent: "'Cinzel', serif", body: "'Source Sans 3', sans-serif" },
+        bannerImage: "11.png",
+        fonts: { title: "'Patrick Hand', cursive", accent: "'Patrick Hand', cursive", body: "'Patrick Hand', cursive" },
         palette: {
-          screenBackdrop: "#1c130d",
-          paperBg: "#faf4ea",
-          agendaBg: "#f4ebe0",
-          bannerBg: "#fbeedc",
-          boardBorder: "#3d1e11",
-          gridBorder: "#532b1a",
-          gridBackdrop: "#dec4a8",
-          themeInk: "#3d1e11",
-          cellBg: "#ffffff",
-          cellBorder: "#dec4a8",
-          cellMutedBg: "rgba(235, 222, 207, 0.45)",
-          cellTodayBg: "#faecdb",
-          todayAccent: "#b84f22",
-          dayNumColor: "#3d1e11"
+          screenBackdrop: "#1c130d", paperBg: "#faf4ea", agendaBg: "#f4ebe0", bannerBg: "#fbeedc",
+          boardBorder: "#3d1e11", gridBorder: "#532b1a", gridBackdrop: "#dec4a8", themeInk: "#3d1e11",
+          cellBg: "#ffffff", cellBorder: "#dec4a8", cellMutedBg: "rgba(235, 222, 207, 0.45)",
+          cellTodayBg: "#faecdb", todayAccent: "#b84f22", dayNumColor: "#3d1e11"
         },
         weekdayColors: [
-          {name:"SUN",bg:"#d96924",text:"#ffffff"},
-          {name:"MON",bg:"#e8af46",text:"#3d2105"},
-          {name:"TUE",bg:"#707a4a",text:"#ffffff"},
-          {name:"WED",bg:"#ad402a",text:"#ffffff"},
-          {name:"THU",bg:"#8a5233",text:"#ffffff"},
-          {name:"FRI",bg:"#c76f28",text:"#ffffff"},
+          {name:"SUN",bg:"#d96924",text:"#ffffff"}, {name:"MON",bg:"#e8af46",text:"#3d2105"},
+          {name:"TUE",bg:"#707a4a",text:"#ffffff"}, {name:"WED",bg:"#ad402a",text:"#ffffff"},
+          {name:"THU",bg:"#8a5233",text:"#ffffff"}, {name:"FRI",bg:"#c76f28",text:"#ffffff"},
           {name:"SAT",bg:"#452115",text:"#ffffff"}
         ],
         footerNote: "🍂 Pumpkin Pie, Acorns & Harvest Cornucopia"
       },
       11: {
         name: "December",
-        bannerImage: "banner_12.png",
-        fonts: { title: "'Mountains of Christmas', cursive", accent: "'Cinzel', serif", body: "'Source Sans 3', sans-serif" },
+        bannerImage: "12.png",
+        fonts: { title: "'Patrick Hand', cursive", accent: "'Patrick Hand', cursive", body: "'Patrick Hand', cursive" },
         palette: {
-          screenBackdrop: "#0a131a",
-          paperBg: "#f8faf9",
-          agendaBg: "#eff4f1",
-          bannerBg: "#e5ede8",
-          boardBorder: "#193d2b",
-          gridBorder: "#25533b",
-          gridBackdrop: "#cddfd5",
-          themeInk: "#193d2b",
-          cellBg: "#ffffff",
-          cellBorder: "#b5cdbf",
-          cellMutedBg: "rgba(224, 237, 230, 0.45)",
-          cellTodayBg: "#edf5f0",
-          todayAccent: "#9e2832",
-          dayNumColor: "#193d2b"
+          screenBackdrop: "#0a131a", paperBg: "#f8faf9", agendaBg: "#eff4f1", bannerBg: "#e5ede8",
+          boardBorder: "#193d2b", gridBorder: "#25533b", gridBackdrop: "#cddfd5", themeInk: "#193d2b",
+          cellBg: "#ffffff", cellBorder: "#b5cdbf", cellMutedBg: "rgba(224, 237, 230, 0.45)",
+          cellTodayBg: "#edf5f0", todayAccent: "#9e2832", dayNumColor: "#193d2b"
         },
         weekdayColors: [
-          {name:"SUN",bg:"#a6212b",text:"#ffffff"},
-          {name:"MON",bg:"#1d5939",text:"#ffffff"},
-          {name:"TUE",bg:"#b8743b",text:"#ffffff"},
-          {name:"WED",bg:"#e0ad38",text:"#3d2800"},
-          {name:"THU",bg:"#45705b",text:"#ffffff"},
-          {name:"FRI",bg:"#c4353f",text:"#ffffff"},
+          {name:"SUN",bg:"#a6212b",text:"#ffffff"}, {name:"MON",bg:"#1d5939",text:"#ffffff"},
+          {name:"TUE",bg:"#b8743b",text:"#ffffff"}, {name:"WED",bg:"#e0ad38",text:"#3d2800"},
+          {name:"THU",bg:"#45705b",text:"#ffffff"}, {name:"FRI",bg:"#c4353f",text:"#ffffff"},
           {name:"SAT",bg:"#133824",text:"#ffffff"}
         ],
         footerNote: "🎄 Holly Berries, Evergreen & Gingerbread"
@@ -717,7 +575,7 @@
 
       document.getElementById("bannerContainer").innerHTML = `
         <div class="relative w-full h-full overflow-hidden select-none bg-[var(--banner-bg)]">
-          <img src="${theme.bannerImage}" alt="${theme.name}" class="w-full h-full object-cover object-center pointer-events-none" />
+          <img src="${theme.bannerImage}" alt="${theme.name}" class="w-full h-full object-contain object-center pointer-events-none" />
           <button class="nav-arrow absolute left-4 top-1/2 -translate-y-1/2" onclick="navigateMonth(-1)">◀</button>
           <button class="nav-arrow absolute right-4 top-1/2 -translate-y-1/2" onclick="navigateMonth(1)">▶</button>
         </div>
@@ -764,11 +622,16 @@
         const dateKey = `${year}-${mStr}-${dStr}`;
 
         const matchingEvents = state.events.filter(e => e.date === dateKey);
+        
+        // Adaptive class depending on how many events fall on this day
+        let badgeSizeClass = "";
+        if (matchingEvents.length > 3) badgeSizeClass = "dense-badge";
+        else if (matchingEvents.length > 2) badgeSizeClass = "compact-badge";
 
-        const chipsHtml = matchingEvents.slice(0, 4).map(e => {
+        const chipsHtml = matchingEvents.slice(0, 5).map(e => {
           const calClass = getEventClass(e.calendarTitle);
           return `
-            <div class="event-badge ${calClass}" title="${e.summary} (${e.time} - ${e.calendarTitle})">
+            <div class="event-badge ${calClass} ${badgeSizeClass}" title="${e.summary} (${e.time} - ${e.calendarTitle})">
               <span>${e.time !== "All Day" ? e.time + " " : ""}${e.summary}</span>
             </div>
           `;
@@ -815,7 +678,7 @@
 
       if (upcoming.length === 0) {
         agendaList.innerHTML = `
-          <div class="p-6 text-center text-xs opacity-60 font-semibold">
+          <div class="p-6 text-center text-sm opacity-70 font-semibold" style="font-family: var(--font-body);">
             No upcoming events found.
           </div>
         `;
@@ -840,15 +703,15 @@
 
         card.innerHTML = `
           <div class="flex items-center justify-between">
-            <span class="text-[0.7rem] uppercase font-bold tracking-wider" style="color: var(--day-num-color);">
+            <span class="text-[0.8rem] uppercase font-bold tracking-wider" style="color: var(--day-num-color);">
               ${isToday ? 'Today • ' : ''}${dateFormatted}
             </span>
-            <span class="text-[0.72rem] font-semibold opacity-75">${e.time}</span>
+            <span class="text-[0.8rem] font-semibold opacity-75">${e.time}</span>
           </div>
-          <div class="text-sm font-bold text-[var(--theme-ink)]">
+          <div class="text-base font-bold text-[var(--theme-ink)]" style="font-family: var(--font-body);">
             ${e.summary}
           </div>
-          <div class="text-[0.68rem] font-bold uppercase tracking-wider opacity-60 flex items-center gap-1 mt-0.5">
+          <div class="text-[0.75rem] font-bold uppercase tracking-wider opacity-65 flex items-center gap-1 mt-0.5">
             <span>🏷️</span>
             <span>${e.calendarTitle}</span>
           </div>
