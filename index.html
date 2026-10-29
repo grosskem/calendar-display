@@ -81,7 +81,7 @@
 
         /* Sidebar for Upcoming Events */
         .sidebar {
-            width: 320px;
+            width: 340px;
             background: #ffffff;
             border: 1px solid var(--grid-border);
             border-radius: 4px;
@@ -96,7 +96,7 @@
             background-color: rgba(0,0,0,0.02);
             border-bottom: 2px solid var(--grid-border);
             font-weight: 700;
-            font-size: 1.1rem;
+            font-size: 1.25rem;
             letter-spacing: 0.05em;
             text-transform: uppercase;
             color: var(--day-header-color);
@@ -108,30 +108,30 @@
             padding: 12px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 10px;
         }
 
         .sidebar-event-card {
-            padding: 8px 10px;
+            padding: 10px 12px;
             border-radius: 6px;
-            border-left: 4px solid transparent;
+            border-left: 5px solid transparent;
             box-shadow: 0 1px 3px rgba(0,0,0,0.02);
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 3px;
         }
 
         .sidebar-event-date {
-            font-size: 0.85rem;
+            font-size: 0.95rem;
             font-weight: 700;
-            opacity: 0.8;
+            opacity: 0.85;
             text-transform: uppercase;
             letter-spacing: 0.03em;
         }
 
         .sidebar-event-title {
             font-family: var(--font-family-hand);
-            font-size: 1.25rem;
+            font-size: 1.45rem;
             font-weight: 700;
             line-height: 1.2;
         }
@@ -140,11 +140,11 @@
             background: #fff5f5;
             border: 1px solid #feb2b2;
             color: #9b2c2c;
-            padding: 8px;
+            padding: 10px;
             border-radius: 4px;
-            font-size: 0.85rem;
+            font-size: 0.95rem;
             margin-bottom: 8px;
-            line-height: 1.2;
+            line-height: 1.3;
         }
 
         /* Days of the Week Header */
@@ -155,11 +155,11 @@
             border-bottom: 2px solid var(--grid-border);
             text-align: center;
             font-weight: 700;
-            font-size: 1.05rem;
+            font-size: 1.2rem;
             letter-spacing: 0.05em;
             text-transform: uppercase;
             color: var(--day-header-color);
-            padding: 8px 0;
+            padding: 10px 0;
         }
 
         /* Days Grid Matrix (6 rows x 7 cols) */
@@ -174,7 +174,7 @@
         .day-cell {
             border-right: 1px solid var(--grid-border);
             border-bottom: 1px solid var(--grid-border);
-            padding: 6px;
+            padding: 8px;
             display: flex;
             flex-direction: column;
             position: relative;
@@ -200,12 +200,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2px;
+            margin-bottom: 4px;
         }
 
         .day-number {
             font-family: var(--font-family-hand);
-            font-size: 1.7rem;
+            font-size: 2.2rem;
             font-weight: 700;
             line-height: 1;
         }
@@ -221,13 +221,13 @@
         /* Holiday / Pizazz Badge */
         .holiday-badge {
             font-family: var(--font-family-hand);
-            font-size: 0.9rem;
+            font-size: 1.05rem;
             color: #b45309;
             background: #fef3c7;
-            padding: 0px 4px;
+            padding: 1px 6px;
             border-radius: 4px;
             display: inline-block;
-            margin-bottom: 2px;
+            margin-bottom: 3px;
             line-height: 1.2;
             white-space: nowrap;
             overflow: hidden;
@@ -239,22 +239,22 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 2px;
+            gap: 3px;
             overflow-y: auto;
-            max-height: calc(100% - 26px);
+            max-height: calc(100% - 32px);
         }
 
         /* Event Tag - Muted Sophisticated Pastels */
         .event-item {
             font-family: var(--font-family-hand);
-            font-size: 1.1rem;
-            padding: 1px 5px;
+            font-size: 1.3rem;
+            padding: 2px 6px;
             border-radius: 4px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
             line-height: 1.2;
-            border-left: 3px solid transparent;
+            border-left: 4px solid transparent;
             box-shadow: 0 1px 2px rgba(0,0,0,0.02);
         }
     </style>
@@ -500,7 +500,7 @@
                 .slice(0, 15);
 
             if (upcoming.length === 0 && fetchErrors.length === 0) {
-                sidebarList.innerHTML += '<div style="font-size: 1rem; font-family: var(--font-family-hand); color: #718096; padding: 10px;">No upcoming events found.</div>';
+                sidebarList.innerHTML += '<div style="font-size: 1.15rem; font-family: var(--font-family-hand); color: #718096; padding: 10px;">No upcoming events found.</div>';
                 return;
             }
 
